@@ -1,0 +1,112 @@
+= REST Documentation for the API
+:toc: left
+
+== Case
+Cases have made it to the Supreme Court. They may have been combined from multiple lower court cases (dockets).
+They may or many not have been argued in front of or ruled on by the Supreme Court.
+
+=== Get All Cases
+Gets all cases in the API. This is unlikely to be commonly used.
+
+.curl request
+include::{snippets}/case/all/curl-request.adoc[]
+
+.request
+include::{snippets}/case/all/http-request.adoc[]
+
+.response fields
+include::{snippets}/case/all/response-fields.adoc[]
+
+.response body
+include::{snippets}/case/all/response-body.adoc[]
+
+=== Get Cases By Term
+Look up all Supreme Court cases in a given term
+
+.curl request
+include::{snippets}/case/term/curl-request.adoc[]
+
+.request
+include::{snippets}/case/term/http-request.adoc[]
+
+.request parameters
+include::{snippets}/case/term/request-parameters.adoc[]
+
+.response fields
+include::{snippets}/case/term/response-fields.adoc[]
+
+.response body
+include::{snippets}/case/term/response-body.adoc[]
+
+=== Get Case By Id
+Look up info on a specific case based on the case id. This will get you more detailed information than searching for lists of cases.
+
+.curl request
+include::{snippets}/case/id/curl-request.adoc[]
+
+.request
+include::{snippets}/case/id/http-request.adoc[]
+
+.path parameters
+include::{snippets}/case/id/path-parameters.adoc[]
+
+.response fields
+include::{snippets}/case/id/response-fields.adoc[]
+
+.response body
+include::{snippets}/case/id/response-body.adoc[]
+
+== Dockets
+Dockets represent cases that have made their way up through the lower courts with a petition to be reviewed by the Supreme Court.
+Each docket is assigned a number based on the SCOTUS term. A SCOTUS case may combine multiple dockets and rule on all of them at the same time.
+
+=== Get All Dockets
+Gets all the dockets in the API. This is unlikely to be used.
+
+.curl request
+include::{snippets}/docket/all/curl-request.adoc[]
+
+.request
+include::{snippets}/docket/all/http-request.adoc[]
+
+.response fields
+include::{snippets}/docket/all/response-fields.adoc[]
+
+.response body
+include::{snippets}/docket/all/response-body.adoc[]
+
+=== Get Dockets by Case
+Gets all dockets associated with a given Case
+
+.curl request
+include::{snippets}/docket/case/curl-request.adoc[]
+
+.request
+include::{snippets}/docket/case/http-request.adoc[]
+
+.path parameters
+include::{snippets}/docket/case/path-parameters.adoc[]
+
+.response fields
+include::{snippets}/docket/case/response-fields.adoc[]
+
+.response body
+include::{snippets}/docket/case/response-body.adoc[]
+
+=== Get Docket by Id
+Get detailed information about a specific Docket
+
+.curl request
+include::{snippets}/docket/id/curl-request.adoc[]
+
+.request
+include::{snippets}/docket/id/http-request.adoc[]
+
+.path parameters
+include::{snippets}/docket/id/path-parameters.adoc[]
+
+.response fields
+include::{snippets}/docket/id/response-fields.adoc[]
+
+.response body
+include::{snippets}/docket/id/response-body.adoc[]

@@ -7,4 +7,6 @@ interface JusticeRepo: JpaRepository<Justice, Long> {
 
   @Query("select j from Justice j where j.dateRetired is null")
   fun findActive(): List<Justice>
+
+  fun findByNameIgnoreCaseContaining(name: String): List<Justice>
 }

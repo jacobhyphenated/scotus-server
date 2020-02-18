@@ -2,6 +2,7 @@ package com.hyphenated.scotus.justice
 
 import java.time.LocalDate
 import javax.persistence.*
+import javax.validation.constraints.NotEmpty
 
 @Table
 @Entity
@@ -10,6 +11,7 @@ data class Justice (
     @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Long?,
 
+    @get:NotEmpty
     @Column
     val name: String,
 

@@ -1,0 +1,88 @@
+= REST Documentation for the Admin API
+This section of the API Docs is for admins only. All endpoints are protected by authentication and only authorized for admin users.
+:toc: left
+
+== Justices
+Manipulating the justices in the database
+
+=== Create Justice
+Create a new justice
+
+.curl request
+include::{snippets}/justice/admin/create/curl-request.adoc[]
+
+.request
+include::{snippets}/justice/admin/create/http-request.adoc[]
+
+.request fields
+include::{snippets}/justice/admin/create/request-fields.adoc[]
+
+.response fields
+include::{snippets}/justice/admin/create/response-fields.adoc[]
+
+.response body
+include::{snippets}/justice/admin/create/response-body.adoc[]
+
+=== Retire Justice
+Set a retire date for an existing justice
+
+.curl request
+include::{snippets}/justice/admin/retire/curl-request.adoc[]
+
+.request
+include::{snippets}/justice/admin/retire/http-request.adoc[]
+
+.request fields
+include::{snippets}/justice/admin/retire/request-fields.adoc[]
+
+.path parameters
+include::{snippets}/justice/admin/retire/path-parameters.adoc[]
+
+.response fields
+include::{snippets}/justice/admin/retire/response-fields.adoc[]
+
+.response body
+include::{snippets}/justice/admin/retire/response-body.adoc[]
+
+== Dockets
+Admin endpoints for managing dockets
+
+=== Create Docket
+Create a new docket
+
+.curl request
+include::{snippets}/docket/admin/create/curl-request.adoc[]
+
+.request
+include::{snippets}/docket/admin/create/http-request.adoc[]
+
+.request fields
+include::{snippets}/docket/admin/create/request-fields.adoc[]
+
+.response fields
+include::{snippets}/docket/admin/create/response-fields.adoc[]
+
+.response body
+include::{snippets}/docket/admin/create/response-body.adoc[]
+
+=== Edit Docket
+Edit an existing docket. The Edit operation is idempotent and uses PATCH to update only the values you supply.
+Leaving a field null means that field will not be modified, so you only have to include values you wish to change
+
+.curl request
+include::{snippets}/docket/admin/edit/curl-request.adoc[]
+
+.request
+include::{snippets}/docket/admin/edit/http-request.adoc[]
+
+.path parameters
+include::{snippets}/docket/admin/edit/path-parameters.adoc[]
+
+.request fields
+include::{snippets}/docket/admin/edit/request-fields.adoc[]
+
+.response fields
+include::{snippets}/docket/admin/edit/response-fields.adoc[]
+
+.response body
+include::{snippets}/docket/admin/edit/response-body.adoc[]

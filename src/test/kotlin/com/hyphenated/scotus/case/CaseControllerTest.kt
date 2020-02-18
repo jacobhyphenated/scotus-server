@@ -20,6 +20,7 @@ import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders
 import org.springframework.restdocs.operation.preprocess.Preprocessors
 import org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint
+import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
 import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import org.springframework.restdocs.request.RequestDocumentation.*
@@ -43,15 +44,15 @@ class CaseControllerTest {
   private lateinit var service: CaseService
 
   companion object{
-    val caseFields = arrayOf(fieldWithPath("id").description("unique id for the case"),
-        fieldWithPath("case").description("the case title"),
-        fieldWithPath("shortSummary").description("A short description of the case"),
-        fieldWithPath("argumentDate").optional().description("The date the case was argued (yyyy-MM-dd)"),
-        fieldWithPath("decisionDate").optional().description("The date the Supreme Court ruled on the case (yyyy-MM-dd)"),
-        fieldWithPath("result").optional().description("The high level result of the case. ex) 9-0"),
-        fieldWithPath("decisionSummary").optional().description("At a very high level, what this ruling means"),
-        fieldWithPath("status").description("Current status of the case"),
-        fieldWithPath("term").optional().description("The SCOTUS term the case where was granted"))
+    val caseFields = arrayOf(fieldWithPath("id").type(JsonFieldType.NUMBER).description("unique id for the case"),
+        fieldWithPath("case").type(JsonFieldType.STRING).description("the case title"),
+        fieldWithPath("shortSummary").type(JsonFieldType.STRING).description("A short description of the case"),
+        fieldWithPath("argumentDate").type(JsonFieldType.STRING).optional().description("The date the case was argued (yyyy-MM-dd)"),
+        fieldWithPath("decisionDate").type(JsonFieldType.STRING).optional().description("The date the Supreme Court ruled on the case (yyyy-MM-dd)"),
+        fieldWithPath("result").type(JsonFieldType.STRING).optional().description("The high level result of the case. ex) 9-0"),
+        fieldWithPath("decisionSummary").type(JsonFieldType.STRING).optional().description("At a very high level, what this ruling means"),
+        fieldWithPath("status").type(JsonFieldType.STRING).description("Current status of the case"),
+        fieldWithPath("term").type(JsonFieldType.STRING).optional().description("The SCOTUS term the case where was granted"))
   }
 
   @Test

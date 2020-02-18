@@ -110,3 +110,74 @@ include::{snippets}/docket/id/response-fields.adoc[]
 
 .response body
 include::{snippets}/docket/id/response-body.adoc[]
+
+== Justices
+These are the supreme court justices and information about them.
+
+=== Get All Justices
+This will get all the Supreme Court justices, including historical justices.
+
+.curl request
+include::{snippets}/justice/all/curl-request.adoc[]
+
+.request
+include::{snippets}/justice/all/http-request.adoc[]
+
+.response fields
+include::{snippets}/justice/all/response-fields.adoc[]
+
+.response body
+include::{snippets}/justice/all/response-body.adoc[]
+
+=== Get Active Justices
+Gets the justices currently serving on the Supreme Court
+
+.curl request
+include::{snippets}/justice/active/curl-request.adoc[]
+
+.request
+include::{snippets}/justice/active/http-request.adoc[]
+
+.response fields
+include::{snippets}/justice/active/response-fields.adoc[]
+
+.response body
+include::{snippets}/justice/active/response-body.adoc[]
+
+=== Get Justice By Id
+Gets info about a specific SCOTUS justice by the unique Id.
+
+.curl request
+include::{snippets}/justice/id/curl-request.adoc[]
+
+.request
+include::{snippets}/justice/id/http-request.adoc[]
+
+.path parameters
+include::{snippets}/justice/id/path-parameters.adoc[]
+
+.response fields
+include::{snippets}/justice/id/response-fields.adoc[]
+
+.response body
+include::{snippets}/justice/id/response-body.adoc[]
+
+=== Search Justices By Name
+Tries to look up justices by name. You can look up all or part of
+the name regardless of case.
+
+.curl request
+include::{snippets}/justice/name/curl-request.adoc[]
+
+.request
+include::{snippets}/justice/name/http-request.adoc[]
+
+.path parameters
+include::{snippets}/justice/name/path-parameters.adoc[]
+
+.response fields
+include::{snippets}/justice/name/response-fields.adoc[]
+
+.response body
+include::{snippets}/justice/name/response-body.adoc[]
+

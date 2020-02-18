@@ -1,10 +1,10 @@
 package com.hyphenated.scotus.docket
 
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
+import javax.validation.constraints.NotEmpty
 
 @RestController
 @RequestMapping("dockets")
@@ -26,4 +26,36 @@ class DocketController(private val docketService: DocketService) {
         ?.let { ResponseEntity.ok(it) }
         ?: ResponseEntity.notFound().build()
   }
+
+  @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
+  fun create(@Valid @RequestBody request: CreateDocketRequest): Docket {
+    return docketService.createDocket(request)
+  }
+
+  @PatchMapping("{docketId}")
+  fun update(@PathVariable docketId: Long, @RequestBody request: EditDocketRequest): Docket {
+    return docketService.editDocket(docketId, request)
+  }
+
 }
+
+data class CreateDocketRequest(
+    @get:NotEmpty
+    val title: String,
+    @get:NotEmpty
+    val docketNumber: String,
+    val lowerCourtId: Long,
+    val lowerCourtRuling: String,
+    @get:NotEmpty
+    val status: String
+)
+
+data class EditDocketRequest(
+    val title: String?,
+    val docketNumber: String?,
+    val lowerCourtRuling: String?,
+    val lowerCourtOverruled: Boolean?,
+    val status: String?,
+    val caseId: Long?
+)

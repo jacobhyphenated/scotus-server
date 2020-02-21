@@ -1,5 +1,6 @@
 package com.hyphenated.scotus.court
 
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
@@ -19,6 +20,7 @@ class CourtController(private val courtService: CourtService) {
   }
 
   @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
   fun createCourt(@Valid @RequestBody court: Court): Court {
     return courtService.createCourt(court)
   }
@@ -29,6 +31,7 @@ class CourtController(private val courtService: CourtService) {
   }
 
   @DeleteMapping("{id}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
   fun deleteCourt(@PathVariable id: Long) {
     return courtService.delete(id)
   }

@@ -16,7 +16,9 @@ import org.springframework.restdocs.payload.PayloadDocumentation.*
 import org.hamcrest.Matchers.*
 import com.nhaarman.mockitokotlin2.*
 import org.junit.jupiter.api.Test
+import org.springframework.http.MediaType
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders
 import org.springframework.restdocs.request.RequestDocumentation
 import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
@@ -60,7 +62,7 @@ class CourtControllerTests {
         .andExpect(jsonPath("$[0].id", `is`(1)))
         .andExpect(jsonPath("$[0].shortName", `is`("CA01")))
         .andExpect(jsonPath("$[5].name", `is`("Montana Supreme Court")))
-        .andDo(MockMvcRestDocumentation.document("court/all",
+        .andDo(document("court/all",
             preprocessResponse(prettyPrint()),
             responseFields(
                 fieldWithPath("[]").description("A list of all appeals courts")
@@ -75,7 +77,7 @@ class CourtControllerTests {
     this.mockMvc.perform(RestDocumentationRequestBuilders.get("/courts/{courtId}", 3))
         .andExpect(status().isOk)
         .andExpect(jsonPath("shortName", `is`("CA09")))
-        .andDo(MockMvcRestDocumentation.document("court/id",
+        .andDo(document("court/id",
             preprocessResponse(prettyPrint()),
             pathParameters(parameterWithName("courtId").description("Id of the court")),
             responseFields(*commonCourtFields)
@@ -86,5 +88,59 @@ class CourtControllerTests {
   fun testGetCourtByIdNotFound() {
     this.mockMvc.perform(get("/courts/100"))
         .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun testCreateCourt() {
+    val request = "{\"shortName\":\"CA02\",\"name\":\"Second Circuit Court of Appeals\"}"
+    whenever(service.createCourt(any())).thenAnswer {
+      val arg = it.arguments[0] as Court
+      Court(20, arg.shortName, arg.name)
+    }
+
+    this.mockMvc.perform(post("/courts")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(request))
+        .andExpect(status().isCreated)
+        .andExpect(jsonPath("id").value(20))
+        .andExpect(jsonPath("shortName").value("CA02"))
+        .andDo(document("court/admin/create",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint()),
+            requestFields(*commonCourtFields.copyOfRange(1, commonCourtFields.size)),
+            responseFields(*commonCourtFields)
+        ))
+  }
+
+  @Test
+  fun testDeleteCourt() {
+    this.mockMvc.perform(RestDocumentationRequestBuilders.delete("/courts/{courtId}", 5))
+        .andExpect(status().isNoContent)
+        .andDo(document("court/admin/delete",
+            pathParameters(parameterWithName("courtId").description("Id of the court to delete"))
+        ))
+  }
+
+  @Test
+  fun testEditCourt() {
+    val request = "{\"shortName\":\"CA02\",\"name\":\"Second Circuit Appeals Court\"}"
+    whenever(service.edit(eq(20), any())).thenAnswer {
+      val edit = it.arguments[1] as Court
+      Court(20, edit.shortName, edit.name)
+    }
+
+    this.mockMvc.perform(RestDocumentationRequestBuilders.put("/courts/{courtId}", 20)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(request))
+        .andExpect(status().isOk)
+        .andExpect(jsonPath("name").value("Second Circuit Appeals Court"))
+        .andExpect(jsonPath("id").value(20))
+        .andDo(document("court/admin/edit",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint()),
+            pathParameters(parameterWithName("courtId").description("Id of the court to edit")),
+            requestFields(*commonCourtFields.copyOfRange(1, commonCourtFields.size)),
+            responseFields(*commonCourtFields)
+        ))
   }
 }

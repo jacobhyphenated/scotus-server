@@ -1,12 +1,11 @@
 package com.hyphenated.scotus.config
 
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
-import com.hyphenated.scotus.docket.DocketNotFoundException
-import com.hyphenated.scotus.docket.NoCaseIdException
-import com.hyphenated.scotus.docket.NoCourtIdException
+import com.hyphenated.scotus.case.DocketAlreadyAssignedException
+import com.hyphenated.scotus.court.CourtDeleteConstraintException
+import com.hyphenated.scotus.docket.NoEntityIdException
 import com.hyphenated.scotus.docket.ObjectNotFoundException
 import com.hyphenated.scotus.justice.CreateWithIdException
-import com.hyphenated.scotus.justice.JusticeCreateWithIdException
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.slf4j.LoggerFactory
 import org.springframework.core.env.Environment
@@ -32,20 +31,14 @@ class ExceptionController(private val env: Environment) {
 
   @ExceptionHandler(CreateWithIdException::class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  fun justiceCreationError(e: CreateWithIdException): ErrorResponse {
+  fun handleCreateNewWithIdPresentException(e: CreateWithIdException): ErrorResponse {
     return ErrorResponse("CREATE_WITH_ID_PRESENT", e.message, null)
   }
 
-  @ExceptionHandler(NoCourtIdException::class)
+  @ExceptionHandler(NoEntityIdException::class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  fun handleNoCourtId(e: NoCourtIdException): ErrorResponse {
-    return ErrorResponse("INVALID_ID", "Court with id '${e.id}' does not exist", null)
-  }
-
-  @ExceptionHandler(NoCaseIdException::class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  fun handleNoCaseId(e: NoCaseIdException): ErrorResponse {
-    return ErrorResponse("INVALID_ID", "Case with id '${e.id}' does not exist", null)
+  fun handleNoIdException(e: NoEntityIdException): ErrorResponse {
+    return ErrorResponse("INVALID_ID", e.message, null)
   }
 
   @ExceptionHandler(HttpMessageNotReadableException::class)
@@ -72,6 +65,18 @@ class ExceptionController(private val env: Environment) {
             ?.let { "Invalid value for '${it.field}': ${it.defaultMessage}" }
             ?: e.message,
         null)
+  }
+
+  @ExceptionHandler(CourtDeleteConstraintException::class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  fun deleteCourtConstraintHandler(e: CourtDeleteConstraintException): ErrorResponse {
+    return ErrorResponse("CONSTRAINT_VIOLATION", e.message, null)
+  }
+
+  @ExceptionHandler(DocketAlreadyAssignedException::class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  fun docketAssignedHandler(e: DocketAlreadyAssignedException): ErrorResponse {
+    return ErrorResponse("CONSTRAINT_VIOLATION", "Cannot add this docket to the case, docket is already associated with a case", null)
   }
 
   @ExceptionHandler(ObjectNotFoundException::class)

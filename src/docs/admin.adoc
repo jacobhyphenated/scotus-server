@@ -86,3 +86,140 @@ include::{snippets}/docket/admin/edit/response-fields.adoc[]
 
 .response body
 include::{snippets}/docket/admin/edit/response-body.adoc[]
+
+== Courts
+Admin endpoints to modify the appeals court list
+
+=== Create Court
+Create a new Court
+
+.curl request
+include::{snippets}/court/admin/create/curl-request.adoc[]
+
+.request
+include::{snippets}/court/admin/create/http-request.adoc[]
+
+.request fields
+include::{snippets}/court/admin/create/request-fields.adoc[]
+
+.response fields
+include::{snippets}/court/admin/create/response-fields.adoc[]
+
+.response body
+include::{snippets}/court/admin/create/response-body.adoc[]
+
+=== Edit Court
+Edit an existing court. The Edit operation is idempotent and uses PUT to update every court field.
+Leaving a field null or empty is not allowed.
+
+.curl request
+include::{snippets}/court/admin/edit/curl-request.adoc[]
+
+.request
+include::{snippets}/court/admin/edit/http-request.adoc[]
+
+.path parameters
+include::{snippets}/court/admin/edit/path-parameters.adoc[]
+
+.request fields
+include::{snippets}/court/admin/edit/request-fields.adoc[]
+
+.response fields
+include::{snippets}/court/admin/edit/response-fields.adoc[]
+
+.response body
+include::{snippets}/court/admin/edit/response-body.adoc[]
+
+=== Delete Court
+Remove a court. This should only be done if you are sure a court can be safely deleted,
+meaning that no dockets in the database are tied to that court id.
+
+.curl request
+include::{snippets}/court/admin/delete/curl-request.adoc[]
+
+.request
+include::{snippets}/court/admin/delete/http-request.adoc[]
+
+.path parameters
+include::{snippets}/court/admin/delete/path-parameters.adoc[]
+
+.response
+include::{snippets}/court/admin/delete/http-response.adoc[]
+
+== Case
+Admin endpoints for managing cases.
+
+=== Create Case
+Create a new case
+
+.curl request
+include::{snippets}/case/admin/create/curl-request.adoc[]
+
+.request
+include::{snippets}/case/admin/create/http-request.adoc[]
+
+.request fields
+include::{snippets}/case/admin/create/request-fields.adoc[]
+
+.response fields
+include::{snippets}/case/admin/create/response-fields.adoc[]
+
+.response body
+include::{snippets}/case/admin/create/response-body.adoc[]
+
+=== Edit Case
+Edit an existing Case. This is an idempotent PATCH endpoint.
+All request fields are optional and only non-null values will be modified.
+
+.curl request
+include::{snippets}/case/admin/edit/curl-request.adoc[]
+
+.request
+include::{snippets}/case/admin/edit/http-request.adoc[]
+
+.path parameters
+include::{snippets}/case/admin/edit/path-parameters.adoc[]
+
+.request fields
+include::{snippets}/case/admin/edit/request-fields.adoc[]
+
+.response fields
+include::{snippets}/case/admin/edit/response-fields.adoc[]
+
+.response body
+include::{snippets}/case/admin/edit/response-body.adoc[]
+
+=== Add Docket
+This adds a docket to an existing case. This is a helper endpoint,
+the same thing can be accomplished by the <<Edit Docket>> endpoint.
+
+.curl request
+include::{snippets}/case/admin/assign/curl-request.adoc[]
+
+.request
+include::{snippets}/case/admin/assign/http-request.adoc[]
+
+.path parameters
+include::{snippets}/case/admin/assign/path-parameters.adoc[]
+
+.response fields
+include::{snippets}/case/admin/assign/response-fields.adoc[]
+
+.response body
+include::{snippets}/case/admin/assign/response-body.adoc[]
+
+=== Remove Docket
+Remove a docket from a case. This is a helper endpoint,
+the same thing can be accomplished by the <<Edit Docket>> endpoint.
+
+.curl request
+include::{snippets}/case/admin/remove/curl-request.adoc[]
+
+.request
+include::{snippets}/case/admin/remove/http-request.adoc[]
+
+.path parameters
+include::{snippets}/case/admin/remove/path-parameters.adoc[]
+
+.response
+include::{snippets}/case/admin/remove/http-response.adoc[]

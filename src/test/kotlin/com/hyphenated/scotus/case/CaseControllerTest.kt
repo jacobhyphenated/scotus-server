@@ -3,10 +3,14 @@ package com.hyphenated.scotus.case
 import com.hyphenated.scotus.court.Court
 import com.hyphenated.scotus.docket.Docket
 import com.hyphenated.scotus.docket.DocketCaseResponse
+import com.hyphenated.scotus.docket.DocketResponse
 import com.hyphenated.scotus.opinion.Opinion
 import com.hyphenated.scotus.opinion.OpinionJusticeResponse
 import com.hyphenated.scotus.opinion.OpinionResponse
 import com.hyphenated.scotus.opinion.OpinionType
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.eq
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.hasSize
@@ -16,16 +20,18 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.http.MediaType
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders
 import org.springframework.restdocs.operation.preprocess.Preprocessors
-import org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint
+import org.springframework.restdocs.operation.preprocess.Preprocessors.*
 import org.springframework.restdocs.payload.JsonFieldType
-import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
-import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
+import org.springframework.restdocs.payload.PayloadDocumentation.*
 import org.springframework.restdocs.request.RequestDocumentation.*
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -52,8 +58,31 @@ class CaseControllerTest {
         fieldWithPath("result").type(JsonFieldType.STRING).optional().description("The high level result of the case. ex) 9-0"),
         fieldWithPath("decisionSummary").type(JsonFieldType.STRING).optional().description("At a very high level, what this ruling means"),
         fieldWithPath("status").type(JsonFieldType.STRING).description("Current status of the case"),
-        fieldWithPath("term").type(JsonFieldType.STRING).optional().description("The SCOTUS term the case where was granted"))
+        fieldWithPath("term").type(JsonFieldType.STRING).description("The SCOTUS term the case where was granted"))
   }
+
+  private val caseResponseFull = responseFields(*caseFields,
+      fieldWithPath("opinions[]").description("A list of each opinion in the case. Any case may have " +
+          "multiple opinions with dissents and concurrences"))
+      .andWithPrefix("opinions[].",
+          fieldWithPath("opinionId").optional().type(JsonFieldType.NUMBER).description("Id of the opinion"),
+          fieldWithPath("opinionType").optional().type(JsonFieldType.STRING).description("What kind of opinion this is (MAJORITY, CONCURRING, DISSENTING, etc."),
+          fieldWithPath("summary").optional().type(JsonFieldType.STRING).description("A more detailed description of what this opinion is saying."),
+          fieldWithPath("justices[]").optional().type(JsonFieldType.ARRAY).description("A list of the justices who joined this opinion"))
+      .andWithPrefix("opinions[].justices[].",
+          fieldWithPath("justiceId").optional().type(JsonFieldType.NUMBER).description("The Id of the justice"),
+          fieldWithPath("isAuthor").optional().type(JsonFieldType.BOOLEAN).description("Flag to determine if this justice the author of this opinion"),
+          fieldWithPath("justiceName").optional().type(JsonFieldType.STRING).description("Name of the justice"))
+      .and(fieldWithPath("dockets[]").description("Individual cases from the lower courts seeking certiorari from the Supreme Court. Several may be combined into one SCOTUS case"))
+      .andWithPrefix("dockets[].",
+          fieldWithPath("docketId").description("Unique Docket Id. Can be used to look up more info on this particular lower court case"),
+          fieldWithPath("docketNumber").description("Docket number identifies this case with the Supreme Court"),
+          fieldWithPath("lowerCourtOverruled").optional().description("Was the lower court decision overturned by the Supreme Court. Can be null if SCOTUS has not yet ruled on the case"),
+          fieldWithPath("lowerCourt").description("Describes the lower appeals court this case came up through"))
+      .andWithPrefix("dockets[].lowerCourt.",
+          fieldWithPath("id").description("Unique Id for the lower court"),
+          fieldWithPath("shortName").description("Short hand way of referring to the court"),
+          fieldWithPath("name").description("Long form name of the appeals court"))
 
   @Test
   fun testGetAll() {
@@ -172,30 +201,9 @@ class CaseControllerTest {
         .andExpect(jsonPath("opinions[0].justices[0].justiceName", `is`("Anthony Kennedy")))
         .andDo(print())
         .andDo(document("case/id",
-            Preprocessors.preprocessResponse(prettyPrint()),
+            preprocessResponse(prettyPrint()),
             pathParameters(parameterWithName("caseId").description("ID of the case")),
-            responseFields(*caseFields,
-                fieldWithPath("opinions[]").description("A list of each opinion in the case. Any case may have " +
-                    "multiple opinions with dissents and concurrences"))
-                .andWithPrefix("opinions[].",
-                    fieldWithPath("opinionId").description("Id of the opinion"),
-                    fieldWithPath("opinionType").description("What kind of opinion this is (MAJORITY, CONCURRING, DISSENTING, etc."),
-                    fieldWithPath("summary").description("A more detailed description of what this opinion is saying."),
-                    fieldWithPath("justices[]").description("A list of the justices who joined this opinion"))
-                .andWithPrefix("opinions[].justices[].",
-                    fieldWithPath("justiceId").description("The Id of the justice"),
-                    fieldWithPath("isAuthor").description("Flag to determine if this justice the author of this opinion"),
-                    fieldWithPath("justiceName").description("Name of the justice"))
-                .and(fieldWithPath("dockets[]").description("Individual cases from the lower courts seeking certiorari from the Supreme Court. Several may be combined into one SCOTUS case"))
-                .andWithPrefix("dockets[].",
-                    fieldWithPath("docketId").description("Unique Docket Id. Can be used to look up more info on this particular lower court case"),
-                    fieldWithPath("docketNumber").description("Docket number identifies this case with the Supreme Court"),
-                    fieldWithPath("lowerCourtOverruled").optional().description("Was the lower court decision overturned by the Supreme Court. Can be null if SCOTUS has not yet ruled on the case"),
-                    fieldWithPath("lowerCourt").description("Describes the lower appeals court this case came up through"))
-                .andWithPrefix("dockets[].lowerCourt.",
-                    fieldWithPath("id").description("Unique Id for the lower court"),
-                    fieldWithPath("shortName").description("Short hand way of referring to the court"),
-                    fieldWithPath("name").description("Long form name of the appeals court"))
+            caseResponseFull
         ))
   }
 
@@ -203,5 +211,103 @@ class CaseControllerTest {
   fun testNoCaseFoundById() {
     this.mockMvc.perform(get("/cases/60"))
         .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun testCreateCase() {
+    val request = "{\"case\":\"Bostock v. Clayton County, Georgia\",\"shortSummary\":\"Civil rights act Title VII prohibits discrimination based on sex. " +
+        "The question is: does this cover sexual orientation. \",\"status\":\"PENDING\",\"term\":\"2019-2020\",\"docketIds\":[18,22]}"
+
+    whenever(service.createCase(any())).thenAnswer {
+      val arg = it.arguments[0] as CreateCaseRequest
+      val mockDockets = listOf(
+          DocketCaseResponse(18,  "19-225", Court(5, "CA11", "11th Circuit"), null),
+          DocketCaseResponse(22, "19-228", Court(2, "CA02", "2nd Circuit"), null))
+      CaseResponse(100, arg.case, arg.shortSummary, arg.status, null, null, null, null, arg.term, emptyList(), mockDockets)
+    }
+
+    this.mockMvc.perform(post("/cases")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(request))
+        .andExpect(status().isCreated)
+        .andExpect(jsonPath("id").value(100))
+        .andExpect(jsonPath("case").value("Bostock v. Clayton County, Georgia"))
+        .andExpect(jsonPath("dockets").value(hasSize<Any>(2)))
+        .andDo(document("case/admin/create",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint()),
+            requestFields(
+                fieldWithPath("case").description("the case title"),
+                fieldWithPath("shortSummary").description("A short description of the case"),
+                fieldWithPath("status").description("Current status of the case"),
+                fieldWithPath("term").description("The SCOTUS term the case where was granted"),
+                fieldWithPath("docketIds").description("Array of Id's referencing dockets this case comes from")
+            ),
+            caseResponseFull
+        ))
+  }
+
+  @Test
+  fun testEditCase() {
+    val request = "{\"status\":\"ARGUMENT_SCHEDULED\",\"argumentDate\":\"2020-03-28\"}"
+
+    val dockets = listOf(
+        DocketCaseResponse(18,  "19-225", Court(5, "CA11", "11th Circuit"), null),
+        DocketCaseResponse(22, "19-228", Court(2, "CA02", "2nd Circuit"), null))
+    val caseResponse = CaseResponse(100, "Bostock v. Clayton County, Georgia", "Civil rights act Title VII prohibits discrimination based on sex.",
+        "ARGUMENT_SCHEDULED", LocalDate.of(2020,3,28), null, null, null, "2019-2020", emptyList(), dockets)
+
+    whenever(service.editCase(eq(100), any())).thenReturn(caseResponse)
+
+    this.mockMvc.perform(RestDocumentationRequestBuilders.patch("/cases/{caseId}", 100)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(request))
+        .andExpect(status().isOk)
+        .andExpect(jsonPath("id").value(100))
+        .andDo(document("case/admin/edit",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint()),
+            pathParameters(parameterWithName("caseId").description("Id of the case to modify")),
+            requestFields(*caseFields.copyOfRange(1, caseFields.size).map { it.optional() }.toTypedArray()),
+            caseResponseFull
+        ))
+  }
+
+  @Test
+  fun testAssignDocket() {
+
+    val dockets = listOf(
+        DocketCaseResponse(18,  "19-225", Court(5, "CA11", "11th Circuit"), null),
+        DocketCaseResponse(22, "19-228", Court(2, "CA02", "2nd Circuit"), null))
+    val caseResponse = CaseResponse(100, "Bostock v. Clayton County, Georgia", "Civil rights act Title VII prohibits discrimination based on sex.",
+        "ARGUMENT_SCHEDULED", LocalDate.of(2020,3,28), null, null, null, "2019-2020", emptyList(), dockets)
+
+    whenever(service.assignDocket(eq(100), eq(22))).thenReturn(caseResponse)
+
+    this.mockMvc.perform(RestDocumentationRequestBuilders.put("/cases/{caseId}/dockets/{docketId}", 100, 22))
+        .andExpect(status().isOk)
+        .andExpect(jsonPath("id").value(100))
+        .andDo(document("case/admin/assign",
+            preprocessResponse(prettyPrint()),
+            pathParameters(
+                parameterWithName("caseId").description("Id of the case"),
+                parameterWithName("docketId").description("Id of the docket to add to the case")
+            ),
+            caseResponseFull
+        ))
+  }
+
+  @Test
+  fun testRemoveDocket() {
+    this.mockMvc.perform(RestDocumentationRequestBuilders.delete("/cases/{caseId}/dockets/{docketId}", 100, 18))
+        .andExpect(status().isNoContent)
+        .andExpect(jsonPath("id").doesNotExist())
+        .andDo(document("case/admin/remove",
+            pathParameters(
+                parameterWithName("caseId").description("Id of the case"),
+                parameterWithName("docketId").description("Id of the docket to remove from the case")
+            )
+        ))
+    verify(service).removeDocket(100, 18)
   }
 }

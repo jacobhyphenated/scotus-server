@@ -181,3 +181,41 @@ include::{snippets}/justice/name/response-fields.adoc[]
 .response body
 include::{snippets}/justice/name/response-body.adoc[]
 
+== Courts
+These are the appeals courts that rule on the cases before the make it to the Supreme Court.
+The Supreme Court is a court of last resort and does not hear new cases. Any case that comes before it
+has already been ruled on and appealed to a higher court. SCOTUS is the last step in the appeals process.
+
+=== Get All Courts
+Gets a list of app possible appeals courts who can have cases appealed to SCOTUS
+
+.curl request
+include::{snippets}/court/all/curl-request.adoc[]
+
+.request
+include::{snippets}/court/all/http-request.adoc[]
+
+.response fields
+include::{snippets}/court/all/response-fields.adoc[]
+
+.response body
+include::{snippets}/court/all/response-body.adoc[]
+
+=== Get Court By Id
+Gets info about a specific court by the unique Id.
+
+.curl request
+include::{snippets}/court/id/curl-request.adoc[]
+
+.request
+include::{snippets}/court/id/http-request.adoc[]
+
+.path parameters
+include::{snippets}/court/id/path-parameters.adoc[]
+
+.response fields
+include::{snippets}/court/id/response-fields.adoc[]
+
+.response body
+include::{snippets}/court/id/response-body.adoc[]
+

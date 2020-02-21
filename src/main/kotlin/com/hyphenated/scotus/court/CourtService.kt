@@ -4,6 +4,7 @@ import com.hyphenated.scotus.docket.CourtNotFoundException
 import com.hyphenated.scotus.docket.NoCourtIdException
 import com.hyphenated.scotus.justice.CourtCreateWithIdException
 import com.hyphenated.scotus.justice.Justice
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
@@ -38,6 +39,10 @@ class CourtService(private val courtRepo: CourtRepo) {
 
   @PreAuthorize("hasRole('ADMIN')")
   fun delete(id: Long) {
-    courtRepo.deleteById(id)
+    try {
+      courtRepo.deleteById(id)
+    } catch (e: DataIntegrityViolationException) {
+      throw CourtDeleteConstraintException(id)
+    }
   }
 }

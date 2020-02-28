@@ -3,7 +3,6 @@ package com.hyphenated.scotus.case
 import com.hyphenated.scotus.court.Court
 import com.hyphenated.scotus.docket.Docket
 import com.hyphenated.scotus.docket.DocketCaseResponse
-import com.hyphenated.scotus.docket.DocketResponse
 import com.hyphenated.scotus.opinion.Opinion
 import com.hyphenated.scotus.opinion.OpinionJusticeResponse
 import com.hyphenated.scotus.opinion.OpinionResponse
@@ -17,8 +16,7 @@ import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
@@ -29,7 +27,6 @@ import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation.*
 import org.springframework.restdocs.request.RequestDocumentation.*
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
@@ -37,9 +34,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
 
-// @WebMvcTest(CaseController::class) - Getting an error on application start - no entityManagerFactory bean
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(CaseController::class)
 @AutoConfigureRestDocs
 class CaseControllerTest {
 
@@ -77,7 +72,7 @@ class CaseControllerTest {
       .andWithPrefix("dockets[].",
           fieldWithPath("docketId").description("Unique Docket Id. Can be used to look up more info on this particular lower court case"),
           fieldWithPath("docketNumber").description("Docket number identifies this case with the Supreme Court"),
-          fieldWithPath("lowerCourtOverruled").optional().description("Was the lower court decision overturned by the Supreme Court. Can be null if SCOTUS has not yet ruled on the case"),
+          fieldWithPath("lowerCourtOverruled").optional().type(JsonFieldType.BOOLEAN).description("Was the lower court decision overturned by the Supreme Court. Can be null if SCOTUS has not yet ruled on the case"),
           fieldWithPath("lowerCourt").description("Describes the lower appeals court this case came up through"))
       .andWithPrefix("dockets[].lowerCourt.",
           fieldWithPath("id").description("Unique Id for the lower court"),

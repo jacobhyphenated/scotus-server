@@ -2,6 +2,7 @@ package com.hyphenated.scotus
 
 import com.hyphenated.scotus.case.Case
 import com.hyphenated.scotus.case.CaseRepo
+import com.hyphenated.scotus.config.JpaConfig
 import com.hyphenated.scotus.court.Court
 import com.hyphenated.scotus.court.CourtRepo
 import com.hyphenated.scotus.docket.Docket
@@ -16,12 +17,12 @@ import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Profile
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import java.time.LocalDate
 
 @SpringBootApplication
-@EnableJpaRepositories
 class ScotusTrackerApplication {
 
   @Profile("local")

@@ -219,3 +219,57 @@ include::{snippets}/court/id/response-fields.adoc[]
 .response body
 include::{snippets}/court/id/response-body.adoc[]
 
+== Opinions
+Every case that SCOTUS rules on has opinions. These are legal justifications of the ruling.
+There can be multiple opinions in a single case as justices sometimes disagree, or agree for different reasons.
+
+=== Get All Opinions (Deprecated)
+Gets a list of every opinion delivered by the court. This is unlikely to be used.
+
+.curl request
+include::{snippets}/opinion/all/curl-request.adoc[]
+
+.request
+include::{snippets}/opinion/all/http-request.adoc[]
+
+.response fields
+include::{snippets}/opinion/all/response-fields.adoc[]
+
+.response body
+include::{snippets}/opinion/all/response-body.adoc[]
+
+=== Get Opinions by Case Id
+This gets all opinions associated with a specific case
+
+.curl request
+include::{snippets}/opinion/case/curl-request.adoc[]
+
+.request
+include::{snippets}/opinion/case/http-request.adoc[]
+
+.path parameters
+include::{snippets}/opinion/case/path-parameters.adoc[]
+
+.response fields
+include::{snippets}/opinion/case/response-fields.adoc[]
+
+.response body
+include::{snippets}/opinion/case/response-body.adoc[]
+
+=== Get Opinion by Id
+This gets a single opinion by its unique Id
+
+.curl request
+include::{snippets}/opinion/id/curl-request.adoc[]
+
+.request
+include::{snippets}/opinion/id/http-request.adoc[]
+
+.path parameters
+include::{snippets}/opinion/id/path-parameters.adoc[]
+
+.response fields
+include::{snippets}/opinion/id/response-fields.adoc[]
+
+.response body
+include::{snippets}/opinion/id/response-body.adoc[]

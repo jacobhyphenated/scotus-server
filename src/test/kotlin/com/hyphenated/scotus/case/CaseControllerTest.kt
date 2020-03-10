@@ -5,7 +5,7 @@ import com.hyphenated.scotus.docket.Docket
 import com.hyphenated.scotus.docket.DocketCaseResponse
 import com.hyphenated.scotus.opinion.Opinion
 import com.hyphenated.scotus.opinion.OpinionJusticeResponse
-import com.hyphenated.scotus.opinion.OpinionResponse
+import com.hyphenated.scotus.opinion.OpinionCaseResponse
 import com.hyphenated.scotus.opinion.OpinionType
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.eq
@@ -143,7 +143,7 @@ class CaseControllerTest {
 
   @Test
   fun testGetCaseById() {
-    val majority = OpinionResponse(500, OpinionType.MAJORITY, "Democracy and legislation are important. But individuals who are harmed should not have to wait" +
+    val majority = OpinionCaseResponse(500, OpinionType.MAJORITY, "Democracy and legislation are important. But individuals who are harmed should not have to wait" +
         " for legislative action. A ruling against same sex couples would leave long lasting injuries unjustified under the 14th Amendment. Same sex couples may now exercise the " +
         " fundamental right to marry in all states", listOf(
         OpinionJusticeResponse(50, true, "Anthony Kennedy"),
@@ -151,22 +151,22 @@ class CaseControllerTest {
         OpinionJusticeResponse(52, false, "Elena Kagan"),
         OpinionJusticeResponse(53, false, "Sonya Sotomayor"),
         OpinionJusticeResponse(54, false, "Steven Breyer")))
-    val dissent1 = OpinionResponse(501, OpinionType.DISSENT, "Judges have the power to say what the law is, not what the law should be. The constitution does not " +
+    val dissent1 = OpinionCaseResponse(501, OpinionType.DISSENT, "Judges have the power to say what the law is, not what the law should be. The constitution does not " +
         "provide a theory on marriage, so states should be free to define it. Roberts points out that the majority applies the substantive due process test, but that is an extreme remedy. " +
         "Roberts quotes the Justice Curtis' dissent in Dred Scott",
         listOf(OpinionJusticeResponse(55, true, "John Roberts"),
             OpinionJusticeResponse(56, false, "Antonin Scalia"),
             OpinionJusticeResponse(57, false, "Clerence Thomas")))
-    val dissent2 = OpinionResponse(502, OpinionType.DISSENT, "Joins Chief Justices Roberts' dissent in full. Today's decree means that the true rulers of 320 Million " +
+    val dissent2 = OpinionCaseResponse(502, OpinionType.DISSENT, "Joins Chief Justices Roberts' dissent in full. Today's decree means that the true rulers of 320 Million " +
         "Americans are the 9 justices on the Supreme Court. Public debate over same sex marriage was American democracy at its best until the court stepped in. The Majority decision accuses " +
         "every state of violating the constitution for the last 135 years because of a fundamental right they just discovered.",
         listOf(OpinionJusticeResponse(56, true, "Anton Scalia"),
             OpinionJusticeResponse(57, false, "Clerence Thomas")))
-    val dissent3 = OpinionResponse(503, OpinionType.DISSENT, "The majority decision is at odds with the constitution and the principals the nation was build on. " +
+    val dissent3 = OpinionCaseResponse(503, OpinionType.DISSENT, "The majority decision is at odds with the constitution and the principals the nation was build on. " +
         "The Due Process clause should not be used to create substantive rights. Thomas also does not buy that same sex couples are deprived of liberty if their marriage is not recognized.",
         listOf(OpinionJusticeResponse(57, true, "Clerence Thomas"),
             OpinionJusticeResponse(56, false, "Anton Scalia")))
-    val dissent4 = OpinionResponse(504, OpinionType.DISSENT, "Constitution does not and should not answer the questions around same sex marriage. Rights protected by " +
+    val dissent4 = OpinionCaseResponse(504, OpinionType.DISSENT, "Constitution does not and should not answer the questions around same sex marriage. Rights protected by " +
         "the due process clause should only be those deeply rooted in the nations history and tradition. No country allowed same sex marriage until 2000. Traditionally marriage is linked " +
         "to procreation. While that understanding may not hold true today, states should be allowed to try to hang onto that tradition. Alito muses about how anyone who disagrees will be " +
         "labeled a bigot and treated as such by employers, government, and schools.",

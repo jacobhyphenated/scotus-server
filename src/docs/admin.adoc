@@ -223,3 +223,60 @@ include::{snippets}/case/admin/remove/path-parameters.adoc[]
 
 .response
 include::{snippets}/case/admin/remove/http-response.adoc[]
+
+== Opinion
+Admin endpoint for managing Opinions
+
+=== Create Opinion
+Create a new opinion for a case. The case must already exist.
+
+.curl request
+include::{snippets}/opinion/admin/create/curl-request.adoc[]
+
+.request
+include::{snippets}/opinion/admin/create/http-request.adoc[]
+
+.request fields
+include::{snippets}/opinion/admin/create/request-fields.adoc[]
+
+.response fields
+include::{snippets}/opinion/admin/create/response-fields.adoc[]
+
+.response body
+include::{snippets}/opinion/admin/create/response-body.adoc[]
+
+=== Edit Opinion Summary
+You can modify the summary of an existing opinion.
+
+.curl request
+include::{snippets}/opinion/admin/summary/curl-request.adoc[]
+
+.request
+include::{snippets}/opinion/admin/summary/http-request.adoc[]
+
+.path parameters
+include::{snippets}/opinion/admin/summary/path-parameters.adoc[]
+
+.request fields
+include::{snippets}/opinion/admin/summary/request-fields.adoc[]
+
+.response fields
+include::{snippets}/opinion/admin/summary/response-fields.adoc[]
+
+.response body
+include::{snippets}/opinion/admin/summary/response-body.adoc[]
+
+=== Delete Opinion
+Delete the specified opinion
+
+.curl request
+include::{snippets}/opinion/admin/delete/curl-request.adoc[]
+
+.request
+include::{snippets}/opinion/admin/delete/http-request.adoc[]
+
+.path parameters
+include::{snippets}/opinion/admin/delete/path-parameters.adoc[]
+
+.response
+include::{snippets}/opinion/admin/delete/http-response.adoc[]

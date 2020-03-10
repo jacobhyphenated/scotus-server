@@ -1,15 +1,70 @@
 package com.hyphenated.scotus.opinion
 
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
+import javax.validation.constraints.Min
+import javax.validation.constraints.NotEmpty
+import javax.validation.constraints.NotNull
 
 @RestController
 @RequestMapping("opinions")
-class OpinionController(private val opinionRepo: OpinionRepo) {
+class OpinionController(private val opinionService: OpinionService) {
 
   @GetMapping
-  fun getAllDecisions(): List<OpinionResponse> {
-    return opinionRepo.findAll().map { it.toResponse() };
+  fun getAllOpinions(): List<OpinionResponse> {
+    return opinionService.getAll()
+  }
+
+  @GetMapping("case/{caseId}")
+  fun getByCase(@PathVariable caseId: Long): List<OpinionResponse> {
+    return opinionService.getByCaseId(caseId)
+  }
+
+  @GetMapping("{id}")
+  fun getById(@PathVariable id: Long): ResponseEntity<OpinionResponse> {
+    return opinionService.getById(id)
+        ?.let { ResponseEntity.ok(it) }
+        ?: ResponseEntity.notFound().build()
+  }
+
+  @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
+  fun createOpinion(@RequestBody @Valid request: CreateOpinionRequest): OpinionResponse {
+    return opinionService.createOpinion(request)
+  }
+
+  @DeleteMapping("{id}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  fun deleteOpinion(@PathVariable id: Long) {
+    opinionService.deleteOpinion(id)
+  }
+
+  @PutMapping("{id}/summary")
+  fun editSummary(@PathVariable id: Long, @Valid @RequestBody request: EditSummaryRequest): OpinionResponse {
+    return opinionService.editSummary(id, request.summary)
   }
 }
+
+class CreateOpinionRequest(
+    @get:Min(1)
+    val caseId: Long,
+    val opinionType: OpinionType,
+    @get:NotEmpty
+    val summary: String,
+    @get:Valid
+    @get:NotEmpty
+    val justices: List<CreateOpinionJusticeRequest>
+)
+
+class CreateOpinionJusticeRequest(
+    @get:Min(1)
+    val justiceId: Long,
+    val isAuthor: Boolean = false
+)
+
+class EditSummaryRequest(
+    @get:NotEmpty
+    val summary: String
+)

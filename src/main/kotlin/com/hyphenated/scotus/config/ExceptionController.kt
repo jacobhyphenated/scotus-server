@@ -1,17 +1,21 @@
 package com.hyphenated.scotus.config
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.hyphenated.scotus.case.DocketAlreadyAssignedException
 import com.hyphenated.scotus.court.CourtDeleteConstraintException
 import com.hyphenated.scotus.docket.NoEntityIdException
 import com.hyphenated.scotus.docket.ObjectNotFoundException
 import com.hyphenated.scotus.justice.CreateWithIdException
+import com.hyphenated.scotus.opinion.MultipleOpinionAuthorException
+import com.hyphenated.scotus.opinion.NoOpinionAuthorException
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.slf4j.LoggerFactory
 import org.springframework.core.env.Environment
 import org.springframework.http.HttpStatus
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.validation.FieldError
+import org.springframework.web.HttpRequestMethodNotSupportedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -49,6 +53,11 @@ class ExceptionController(private val env: Environment) {
       ErrorResponse("MISSING_PARAMETER",
           "Required parameter: ${causedBy.parameter.name} (${causedBy.parameter.type}) is missing or null",
           null)
+    } else if (causedBy is InvalidFormatException) {
+
+      ErrorResponse("INVALID_FORMAT",
+          causedBy.localizedMessage,
+          null)
     } else {
       log.error("Unhandled HttpMessageNotReadableException", e)
       ErrorResponse("INVALID_REQUEST",
@@ -79,10 +88,28 @@ class ExceptionController(private val env: Environment) {
     return ErrorResponse("CONSTRAINT_VIOLATION", "Cannot add this docket to the case, docket is already associated with a case", null)
   }
 
+  @ExceptionHandler(NoOpinionAuthorException::class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  fun noOpinionAuthorHandler(e: NoOpinionAuthorException): ErrorResponse {
+    return ErrorResponse("NO_AUTHOR", "Cannot create an opinion with no author", null)
+  }
+
+  @ExceptionHandler(MultipleOpinionAuthorException::class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  fun multipleOpinionAuthorHandler(e: MultipleOpinionAuthorException): ErrorResponse {
+    return ErrorResponse("MULTIPLE_AUTHORS", "An opinion can have only one author", null)
+  }
+
   @ExceptionHandler(ObjectNotFoundException::class)
   @ResponseStatus(HttpStatus.NOT_FOUND)
   fun requestNotValidHandler(e: ObjectNotFoundException): ErrorResponse {
     return ErrorResponse("INVALID_ID", e.message, null)
+  }
+
+  @ExceptionHandler(HttpRequestMethodNotSupportedException::class)
+  @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+  fun handleMethodNotSupported(e: HttpRequestMethodNotSupportedException): ErrorResponse {
+    return ErrorResponse("METHOD_NOT_SUPPORTED", e.message, null)
   }
 
   @ExceptionHandler(Exception::class)

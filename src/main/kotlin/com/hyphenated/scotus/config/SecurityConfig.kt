@@ -31,7 +31,9 @@ class SecurityConfig(private val env: Environment): WebSecurityConfigurerAdapter
   @Bean
   fun unauthorizedEntryPoint(): AuthenticationEntryPoint = AuthenticationEntryPoint {
     _: HttpServletRequest?, response: HttpServletResponse, _: AuthenticationException? ->
-    response.sendError(SC_UNAUTHORIZED)
+      //use this header to prompt browser dialog
+      response.addHeader("WWW-Authenticate", "Basic realm=SCOTUS Application")
+      response.sendError(SC_UNAUTHORIZED)
   }
 
   @Bean(name = ["corsFilterBean"])
@@ -69,18 +71,21 @@ class SecurityConfig(private val env: Environment): WebSecurityConfigurerAdapter
     http
         .authorizeRequests()
           // Add path specific authorizations to restrict
+          .mvcMatchers("/docs/admin.html").hasRole("ADMIN")
+          .mvcMatchers("/actuator", "/actuator/**").hasRole("ADMIN")
+          .antMatchers("/h2-console", "/h2-console/**").hasRole("ADMIN")
           .anyRequest().permitAll()
           .and()
         .httpBasic()
-          .realmName("SCOTUS Application")
           .and()
         .addFilterBefore(corsFilterBean(), ChannelProcessingFilter::class.java)
         .exceptionHandling()
           .authenticationEntryPoint(unauthorizedEntryPoint())
           .and()
-        //CSRF protection is not necessary because this service does not depend on session cookies.
-        //Authenticated requests require a header or other user input that cannot be faked via CSRF.
+        // CSRF protection is not necessary because this service does not depend on session cookies.
+        // Authenticated requests require a header or other user input that cannot be faked via CSRF.
         .csrf().disable()
+        .headers().frameOptions().sameOrigin().and()
         .sessionManagement()
           .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
           .and()

@@ -2,8 +2,8 @@ package com.hyphenated.scotus.case
 
 import com.hyphenated.scotus.docket.DocketCaseResponse
 import com.hyphenated.scotus.docket.toCaseResponse
-import com.hyphenated.scotus.opinion.OpinionResponse
-import com.hyphenated.scotus.opinion.toResponse
+import com.hyphenated.scotus.opinion.OpinionCaseResponse
+import com.hyphenated.scotus.opinion.toCaseResponse
 import java.time.LocalDate
 
 class CaseResponse(
@@ -16,11 +16,11 @@ class CaseResponse(
     val result: String?,
     val decisionSummary: String?,
     val term: String,
-    val opinions: List<OpinionResponse>,
+    val opinions: List<OpinionCaseResponse>,
     val dockets: List<DocketCaseResponse>
 )
 
 fun Case.toResponse(): CaseResponse {
   return CaseResponse(id!!, case, shortSummary, status, argumentDate, decisionDate, result, decisionSummary, term,
-      opinions.map { it.toResponse() }, dockets.map { it.toCaseResponse() })
+      opinions.map { it.toCaseResponse() }, dockets.map { it.toCaseResponse() })
 }

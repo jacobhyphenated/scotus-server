@@ -1,5 +1,6 @@
 package com.hyphenated.scotus.case
 
+import com.hyphenated.scotus.case.term.Term
 import com.hyphenated.scotus.docket.DocketCaseResponse
 import com.hyphenated.scotus.docket.toCaseResponse
 import com.hyphenated.scotus.opinion.OpinionCaseResponse
@@ -15,7 +16,7 @@ class CaseResponse(
     val decisionDate: LocalDate?,
     val result: String?,
     val decisionSummary: String?,
-    val term: String,
+    val term: Term,
     val opinions: List<OpinionCaseResponse>,
     val dockets: List<DocketCaseResponse>
 )

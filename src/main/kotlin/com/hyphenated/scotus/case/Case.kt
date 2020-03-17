@@ -1,6 +1,7 @@
 package com.hyphenated.scotus.case
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.hyphenated.scotus.case.term.Term
 import com.hyphenated.scotus.docket.Docket
 import com.hyphenated.scotus.opinion.Opinion
 import java.time.LocalDate
@@ -34,8 +35,9 @@ data class Case (
     @Column(name = "decision_summary_short", nullable = true)
     val decisionSummary: String?,
 
-    @Column
-    val term: String,
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "termId")
+    val term: Term,
 
     @get:JsonIgnore
     @OneToMany(mappedBy = "case", fetch = FetchType.LAZY)

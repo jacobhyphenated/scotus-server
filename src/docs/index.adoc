@@ -29,14 +29,29 @@ include::{snippets}/case/term/curl-request.adoc[]
 .request
 include::{snippets}/case/term/http-request.adoc[]
 
-.request parameters
-include::{snippets}/case/term/request-parameters.adoc[]
+.path parameters
+include::{snippets}/case/term/path-parameters.adoc[]
 
 .response fields
 include::{snippets}/case/term/response-fields.adoc[]
 
 .response body
 include::{snippets}/case/term/response-body.adoc[]
+
+=== Get all Terms
+Gets a list of every SCOTUS term.
+
+.curl request
+include::{snippets}/case/allterm/curl-request.adoc[]
+
+.request
+include::{snippets}/case/allterm/http-request.adoc[]
+
+.response fields
+include::{snippets}/case/allterm/response-fields.adoc[]
+
+.response body
+include::{snippets}/case/allterm/response-body.adoc[]
 
 === Get Case By Id
 Look up info on a specific case based on the case id. This will get you more detailed information than searching for lists of cases.

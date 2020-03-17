@@ -2,24 +2,23 @@ package com.hyphenated.scotus
 
 import com.hyphenated.scotus.case.Case
 import com.hyphenated.scotus.case.CaseRepo
-import com.hyphenated.scotus.config.JpaConfig
+import com.hyphenated.scotus.case.term.Term
+import com.hyphenated.scotus.case.term.TermRepo
 import com.hyphenated.scotus.court.Court
 import com.hyphenated.scotus.court.CourtRepo
 import com.hyphenated.scotus.docket.Docket
 import com.hyphenated.scotus.docket.DocketRepo
+import com.hyphenated.scotus.justice.Justice
+import com.hyphenated.scotus.justice.JusticeRepo
 import com.hyphenated.scotus.opinion.Opinion
 import com.hyphenated.scotus.opinion.OpinionJustice
 import com.hyphenated.scotus.opinion.OpinionRepo
 import com.hyphenated.scotus.opinion.OpinionType
-import com.hyphenated.scotus.justice.Justice
-import com.hyphenated.scotus.justice.JusticeRepo
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Profile
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import java.time.LocalDate
 
 @SpringBootApplication
@@ -28,7 +27,7 @@ class ScotusTrackerApplication {
   @Profile("local")
   @Bean
   fun localTestData(justiceRepo: JusticeRepo, opinionRepo: OpinionRepo, caseRepo: CaseRepo,
-                    docketRepo: DocketRepo, courtRepo: CourtRepo) = CommandLineRunner {
+                    docketRepo: DocketRepo, courtRepo: CourtRepo, termRepo: TermRepo) = CommandLineRunner {
     val ca09 = courtRepo.save(Court(null, "CA09", "Ninth Circuit Court of Appeals"))
     val ca05 = courtRepo.save(Court(null, "CA05", "Fifth Circuit Court of Appeals"))
     courtRepo.save(Court(null, "Federal", "Federal Appeals Court"))
@@ -40,9 +39,11 @@ class ScotusTrackerApplication {
     val j3 = justiceRepo.save(Justice(null,"Roberts", LocalDate.of(2005, 5, 10), LocalDate.of(1975, 10, 10), null))
     justiceRepo.save(Justice(null,"Elena Kegan", LocalDate.of(2010, 5, 10), LocalDate.of(1971, 4, 20), null))
 
+    val t1 = termRepo.save(Term(null, "2019-2020", "OT2019"))
+
     val case = caseRepo.save(Case(null, "People vs Other People", "Some people sue some other people", "DECIDED",
         LocalDate.of(2019, 11, 11), LocalDate.of(2020, 1, 15), "2-0",
-        "Judges decided to rule for people", "2019-2020", emptyList(), emptyList()))
+        "Judges decided to rule for people", t1, emptyList(), emptyList()))
     val decisionJustices = mutableListOf<OpinionJustice>()
     val decision = Opinion(null, case, OpinionType.MAJORITY, decisionJustices, "Important ruling on the issue")
     decisionJustices.add(OpinionJustice(null, true, decision, j1))
@@ -51,7 +52,7 @@ class ScotusTrackerApplication {
     opinionRepo.save(decision)
 
     val case2 = caseRepo.save(Case(null, "texas v bacerra", "CA and TX showdown", "GRANTED", null, null,
-        null, null, "2020-2021", emptyList(), emptyList()))
+        null, null, t1, emptyList(), emptyList()))
 
     docketRepo.save(Docket(null, case, "People v Other People","165464",  ca09, "Other People win this round", true, "REMANDED"))
     docketRepo.save(Docket(null, case, "All the People v Other People","165465"  ,ca05, "Other People win this round", true, "REMANDED"))

@@ -1,6 +1,7 @@
 package com.hyphenated.scotus.case
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.hyphenated.scotus.case.term.Term
 import com.hyphenated.scotus.docket.Docket
 import com.hyphenated.scotus.opinion.Opinion
 import org.springframework.http.HttpStatus
@@ -9,7 +10,9 @@ import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
 import javax.persistence.*
 import javax.validation.Valid
+import javax.validation.constraints.Min
 import javax.validation.constraints.NotEmpty
+import javax.websocket.server.PathParam
 
 @RestController
 @RequestMapping("cases")
@@ -18,12 +21,21 @@ class CaseController(private val caseService: CaseService) {
   @GetMapping
   fun getAllCases() = caseService.getAllCases()
 
-  @GetMapping("term")
-  fun getCasesByTerm(@RequestParam term: String) = caseService.getTermCases(term)
+  @GetMapping("term/{termId}")
+  fun getCasesByTerm(@PathVariable termId: Long) = caseService.getTermCases(termId)
 
   @GetMapping("{id}")
   fun getCaseById(@PathVariable id: Long): ResponseEntity<CaseResponse> {
     return caseService.getCase(id)?.let { ResponseEntity.ok(it) } ?: ResponseEntity.notFound().build()
+  }
+
+  @GetMapping("term")
+  fun getTerms() = caseService.getAllTerms()
+
+  @PostMapping("term")
+  @ResponseStatus(HttpStatus.CREATED)
+  fun createTerm(@Valid @RequestBody request: CreateTermRequest): Term {
+    return caseService.createTerm(request.name, request.otName)
   }
 
   @PostMapping
@@ -61,8 +73,8 @@ data class CreateCaseRequest(
     @get:NotEmpty
     val status: String,
 
-    @get:NotEmpty
-    val term: String,
+    @get:Min(1)
+    val termId: Long,
 
     @get:NotEmpty
     val docketIds: List<Long>
@@ -76,5 +88,12 @@ data class PatchCaseRequest (
   val decisionDate: LocalDate?,
   val result: String?,
   val decisionSummary: String?,
-  val term: String?
+  val termId: Long?
+)
+
+data class CreateTermRequest(
+    @get:NotEmpty
+    val name: String,
+    @get:NotEmpty
+    val otName: String
 )

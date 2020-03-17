@@ -4,5 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface CaseRepo: JpaRepository<Case, Long> {
 
-  fun findByTerm(term: String): List<Case>
+  fun findByTermId(termId: Long): List<Case>
 }

@@ -93,6 +93,25 @@ class DocketControllerTests {
   }
 
   @Test
+  fun testGetOpenDockets() {
+    val d6 = DocketResponse(6, null, "Patterson v. Walgreen Co.", "18-349", 11,
+        "Accommodation for religious practice is reasonable and not a jury question (CA02, CA07, CA09 hold differently)", null,"RELIST")
+
+    whenever(docketService.findUnassigned()).thenReturn(listOf(d6))
+
+    this.mockMvc.perform(get("/dockets/unassigned"))
+        .andExpect(status().isOk)
+        .andExpect(jsonPath("$", hasSize<Any>(1)))
+        .andExpect(jsonPath("$[0].id", `is`(6)))
+        .andDo(document("docket/unassigned",
+            preprocessResponse(prettyPrint()),
+            responseFields(
+                fieldWithPath("[]").description("A list of dockets not yet assigned to a SCOTUS case")
+            ).andWithPrefix("[].", *commonDocketFields, *docketResponseFields)
+        ))
+  }
+
+  @Test
   fun testGetDocketsByCase() {
     whenever(docketService.findByCaseId(43)).thenReturn(listOf(*obergefellDockets))
 

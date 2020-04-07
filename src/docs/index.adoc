@@ -90,6 +90,22 @@ include::{snippets}/docket/all/response-fields.adoc[]
 .response body
 include::{snippets}/docket/all/response-body.adoc[]
 
+=== Get Unassigned Dockets
+Gets a list of dockets that have not been assigned a SCOTUS case.
+These will be dockets related to certiorari petitions that SCOTUS has not yet granted.
+
+.curl request
+include::{snippets}/docket/unassigned/curl-request.adoc[]
+
+.request
+include::{snippets}/docket/unassigned/http-request.adoc[]
+
+.response fields
+include::{snippets}/docket/unassigned/response-fields.adoc[]
+
+.response body
+include::{snippets}/docket/unassigned/response-body.adoc[]
+
 === Get Dockets by Case
 Gets all dockets associated with a given Case
 

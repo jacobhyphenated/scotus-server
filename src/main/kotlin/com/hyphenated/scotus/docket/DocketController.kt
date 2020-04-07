@@ -27,6 +27,11 @@ class DocketController(private val docketService: DocketService) {
         ?: ResponseEntity.notFound().build()
   }
 
+  @GetMapping("unassigned")
+  fun getUnassignedDockets(): List<DocketResponse> {
+    return docketService.findUnassigned()
+  }
+
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   fun create(@Valid @RequestBody request: CreateDocketRequest): Docket {

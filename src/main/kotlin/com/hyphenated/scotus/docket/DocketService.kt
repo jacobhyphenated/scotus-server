@@ -24,6 +24,10 @@ class DocketService(private val docketRepo: DocketRepo,
     return docketRepo.findByIdOrNull(id)
   }
 
+  fun findUnassigned(): List<DocketResponse> {
+    return docketRepo.findByCaseIsNull().map { it.toResponse() }
+  }
+
   @Transactional
   @PreAuthorize("hasRole('ADMIN')")
   fun createDocket(request: CreateDocketRequest): Docket {

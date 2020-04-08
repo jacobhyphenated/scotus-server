@@ -112,6 +112,25 @@ class DocketControllerTests {
   }
 
   @Test
+  fun testSearchByTitle() {
+    val d1 = DocketResponse(3, 43, "DeBoer v. Snyder", "14-571", 6,
+        "Something as big as gay marriage should not be decided by a three judge panel", true, "RESOLVED")
+
+    whenever(docketService.searchByTitle("boe")).thenReturn(listOf(d1))
+
+    this.mockMvc.perform(RestDocumentationRequestBuilders.get("/dockets/title/{title}", "boe"))
+        .andExpect(status().isOk)
+        .andExpect(jsonPath("$", hasSize<Any>(1)))
+        .andDo(document("docket/title",
+            preprocessResponse(prettyPrint()),
+            pathParameters(parameterWithName("title")
+                .description("Search string for the docket title - case insensitive, must match some part of the docket title")),
+            responseFields(
+                fieldWithPath("[]").description("A list of all dockets associated with the case Id")
+            ).andWithPrefix("[].", *commonDocketFields, *docketResponseFields)))
+  }
+
+  @Test
   fun testGetDocketsByCase() {
     whenever(docketService.findByCaseId(43)).thenReturn(listOf(*obergefellDockets))
 

@@ -5,14 +5,13 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import javax.transaction.Transactional
-import javax.validation.ValidationException
 
 @Service
 class JusticeService(private val justiceRepo: JusticeRepo) {
 
   fun findAll(): List<Justice> = justiceRepo.findAll()
 
-  fun findActive(): List<Justice> = justiceRepo.findActive()
+  fun findActive(): List<Justice> = justiceRepo.findByDateRetiredIsNull()
 
   fun findByName(name: String): List<Justice> = justiceRepo.findByNameIgnoreCaseContaining(name)
 

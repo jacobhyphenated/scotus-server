@@ -106,6 +106,24 @@ include::{snippets}/docket/unassigned/response-fields.adoc[]
 .response body
 include::{snippets}/docket/unassigned/response-body.adoc[]
 
+=== Search Dockets
+Gets all dockets associated with a given Case
+
+.curl request
+include::{snippets}/docket/title/curl-request.adoc[]
+
+.request
+include::{snippets}/docket/title/http-request.adoc[]
+
+.path parameters
+include::{snippets}/docket/title/path-parameters.adoc[]
+
+.response fields
+include::{snippets}/docket/title/response-fields.adoc[]
+
+.response body
+include::{snippets}/docket/title/response-body.adoc[]
+
 === Get Dockets by Case
 Gets all dockets associated with a given Case
 

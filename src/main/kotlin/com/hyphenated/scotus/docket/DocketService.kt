@@ -28,6 +28,10 @@ class DocketService(private val docketRepo: DocketRepo,
     return docketRepo.findByCaseIsNull().map { it.toResponse() }
   }
 
+  fun searchByTitle(title: String): List<DocketResponse> {
+    return docketRepo.findByTitleIgnoreCaseContaining(title).map { it.toResponse() }
+  }
+
   @Transactional
   @PreAuthorize("hasRole('ADMIN')")
   fun createDocket(request: CreateDocketRequest): Docket {

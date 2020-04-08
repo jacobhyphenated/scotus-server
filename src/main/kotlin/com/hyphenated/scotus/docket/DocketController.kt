@@ -32,6 +32,11 @@ class DocketController(private val docketService: DocketService) {
     return docketService.findUnassigned()
   }
 
+  @GetMapping("title/{title}")
+  fun searchByTitle(@PathVariable title: String): List<DocketResponse> {
+    return docketService.searchByTitle(title)
+  }
+
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   fun create(@Valid @RequestBody request: CreateDocketRequest): Docket {

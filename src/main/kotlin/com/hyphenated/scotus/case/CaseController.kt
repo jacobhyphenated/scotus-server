@@ -32,6 +32,9 @@ class CaseController(private val caseService: CaseService) {
   @GetMapping("term")
   fun getTerms() = caseService.getAllTerms()
 
+  @GetMapping("title/{title}")
+  fun searchByCaseTitle(@PathVariable title: String) = caseService.searchByCaseTitle(title)
+
   @PostMapping("term")
   @ResponseStatus(HttpStatus.CREATED)
   fun createTerm(@Valid @RequestBody request: CreateTermRequest): Term {
@@ -76,7 +79,6 @@ data class CreateCaseRequest(
     @get:Min(1)
     val termId: Long,
 
-    @get:NotEmpty
     val docketIds: List<Long>
 )
 

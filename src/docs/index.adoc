@@ -38,6 +38,24 @@ include::{snippets}/case/term/response-fields.adoc[]
 .response body
 include::{snippets}/case/term/response-body.adoc[]
 
+=== Search for Cases
+Search for cases by the case title
+
+.curl request
+include::{snippets}/case/title/curl-request.adoc[]
+
+.request
+include::{snippets}/case/title/http-request.adoc[]
+
+.path parameters
+include::{snippets}/case/title/path-parameters.adoc[]
+
+.response fields
+include::{snippets}/case/title/response-fields.adoc[]
+
+.response body
+include::{snippets}/case/title/response-body.adoc[]
+
 === Get all Terms
 Gets a list of every SCOTUS term.
 

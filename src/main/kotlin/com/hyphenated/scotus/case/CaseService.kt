@@ -25,6 +25,8 @@ class CaseService(private val caseRepo: CaseRepo,
     return caseRepo.findByTermId(termId)
   }
 
+  fun searchByCaseTitle(caseTitle: String): List<Case> = caseRepo.findByCaseIgnoreCaseContaining(caseTitle)
+
   fun getAllTerms(): List<Term> {
     return termRepo.findAll()
   }

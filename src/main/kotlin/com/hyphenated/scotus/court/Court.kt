@@ -7,7 +7,7 @@ import javax.validation.constraints.NotEmpty
 @Table
 data class Court(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long?,
 
     @get:NotEmpty

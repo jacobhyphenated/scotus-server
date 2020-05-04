@@ -8,7 +8,7 @@ import javax.persistence.*
 data class OpinionJustice(
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long?,
 
     @Column(name = "is_author")

@@ -8,7 +8,7 @@ import javax.persistence.*
 @Table
 data class Docket (
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   val id: Long?,
 
   @ManyToOne(optional = true)

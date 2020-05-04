@@ -11,7 +11,7 @@ import javax.persistence.*
 @Table(name = "scotus_case")
 data class Case (
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long?,
 
     @Column(name = "case_title")

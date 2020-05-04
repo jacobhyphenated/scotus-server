@@ -8,7 +8,7 @@ import javax.persistence.*
 data class Opinion (
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long?,
 
     @ManyToOne

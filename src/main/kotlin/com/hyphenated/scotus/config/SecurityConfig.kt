@@ -53,7 +53,7 @@ class SecurityConfig(private val env: Environment): WebSecurityConfigurerAdapter
    * Create an admin user for local testing only
    */
   override fun userDetailsService(): UserDetailsService {
-    if (env.activeProfiles.contains("local") || env.activeProfiles.contains("test")) {
+    if (env.activeProfiles.contains("local") || env.activeProfiles.contains("dev") || env.activeProfiles.contains("test")) {
       val user = User.withDefaultPasswordEncoder()
           .username("admin")
           .password("password")

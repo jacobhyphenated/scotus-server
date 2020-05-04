@@ -41,7 +41,7 @@ class OpinionService(private val opinionRepo: OpinionRepo,
     request.justices.forEach {
       val justice = justiceRepo.findByIdOrNull(it.justiceId) ?: throw NoJusticeIdException(it.justiceId)
       opinionJustices.add(OpinionJustice(null, it.isAuthor, opinion, justice))
-      hasAuthor = if (it.isAuthor && hasAuthor) throw MultipleOpinionAuthorException() else it.isAuthor
+      hasAuthor = if (it.isAuthor && hasAuthor) throw MultipleOpinionAuthorException() else hasAuthor || it.isAuthor
     }
     if (!hasAuthor) {
       throw NoOpinionAuthorException()

@@ -8,7 +8,7 @@ import javax.validation.constraints.NotEmpty
 @Entity
 data class Justice (
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long?,
 
     @get:NotEmpty

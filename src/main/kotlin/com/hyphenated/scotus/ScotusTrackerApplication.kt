@@ -43,7 +43,7 @@ class ScotusTrackerApplication {
 
     val case = caseRepo.save(Case(null, "People vs Other People", "Some people sue some other people", "DECIDED",
         LocalDate.of(2019, 11, 11), LocalDate.of(2020, 1, 15), "2-0",
-        "Judges decided to rule for people", t1, emptyList(), emptyList()))
+        "Judges decided to rule for people", t1, true, emptyList(), emptyList()))
     val decisionJustices = mutableListOf<OpinionJustice>()
     val decision = Opinion(null, case, OpinionType.MAJORITY, decisionJustices, "Important ruling on the issue")
     decisionJustices.add(OpinionJustice(null, true, decision, j1))
@@ -52,7 +52,7 @@ class ScotusTrackerApplication {
     opinionRepo.save(decision)
 
     val case2 = caseRepo.save(Case(null, "texas v bacerra", "CA and TX showdown", "GRANTED", null, null,
-        null, null, t1, emptyList(), emptyList()))
+        null, null, t1, false, emptyList(), emptyList()))
 
     docketRepo.save(Docket(null, case, "People v Other People","165464",  ca09, "Other People win this round", true, "REMANDED"))
     docketRepo.save(Docket(null, case, "All the People v Other People","165465"  ,ca05, "Other People win this round", true, "REMANDED"))

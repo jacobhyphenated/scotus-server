@@ -54,6 +54,7 @@ class CaseControllerTest {
         fieldWithPath("result").type(JsonFieldType.STRING).optional().description("The high level result of the case. ex) 9-0"),
         fieldWithPath("decisionSummary").type(JsonFieldType.STRING).optional().description("At a very high level, what this ruling means"),
         fieldWithPath("status").type(JsonFieldType.STRING).description("Current status of the case"),
+        fieldWithPath("important").type(JsonFieldType.BOOLEAN).description("A flag indicating this is an important case to watch"),
         fieldWithPath("term").type(JsonFieldType.OBJECT).description("The SCOTUS term the case where was granted"),
         fieldWithPath("term.id").type(JsonFieldType.NUMBER).description("Id of the term"),
         fieldWithPath("term.name").type(JsonFieldType.STRING).description("Term defined as a year range ex) 2014-2015"),
@@ -94,20 +95,20 @@ class CaseControllerTest {
   fun testGetAll() {
     val case1 = Case(100, "Spy v Spy", "SNL makes it to the supreme court", "RESOLVED",
         LocalDate.of(2019, 11,25), LocalDate.of(2020,1,10), "5-4",
-        "It was a close one, a lot of back and forth", Term(2, "2019-2020", "OT2019"), emptyList(), emptyList())
+        "It was a close one, a lot of back and forth", Term(2, "2019-2020", "OT2019"), false, emptyList(), emptyList())
 
     val decisionCase2 = mutableListOf<Opinion>()
     val docketCase2 = mutableListOf<Docket>()
     val case2 =  Case(102, "People v Mr. Peanut","Mr peanut was murdered and the court needs to decide why",
         "RESOLVED", LocalDate.of(2020,2,2), LocalDate.of(2020, 2,3),
-        "9-0", "Not justiciable", Term(1, "2020-2021", "OT2020"), decisionCase2, docketCase2)
+        "9-0", "Not justiciable", Term(1, "2020-2021", "OT2020"), true, decisionCase2, docketCase2)
     decisionCase2.add(Opinion(5, case2, OpinionType.PER_CURIUM, emptyList(), "DIG"))
     docketCase2.add(Docket(15, case2, "People v Mr. Peanut", "16-513", Court(1, "CA11", "11th circuit"),
         "Ruled for peanut", true, "REMANDED"))
 
     val case3 = Case(55, "Helicopter v Kobe", "Wrongful death estate claim", "ARGUED",
         LocalDate.of(2020,10,11), null, null, null,
-        Term(1, "2020-2021", "OT2020"), emptyList(), emptyList())
+        Term(1, "2020-2021", "OT2020"), false, emptyList(), emptyList())
     val cases = listOf(case1, case2, case3)
 
     whenever(service.getAllCases()).thenReturn(cases)
@@ -135,7 +136,7 @@ class CaseControllerTest {
   fun testGetCaseByTerm() {
     val case1 = Case(100, "Spy v Spy", "SNL makes it to the supreme court", "RESOLVED",
         LocalDate.of(2019, 11,25), LocalDate.of(2020,1,10), "5-4",
-        "It was a close one, a lot of back and forth", Term(50, "2019-2020", "OT2019"), emptyList(), emptyList())
+        "It was a close one, a lot of back and forth", Term(50, "2019-2020", "OT2019"), false, emptyList(), emptyList())
     val cases = listOf(case1)
 
     whenever(service.getTermCases(50)).thenReturn(cases)
@@ -157,7 +158,7 @@ class CaseControllerTest {
   fun testSearchCasesByTitle() {
     val case1 = Case(100, "Spy v Spy", "SNL makes it to the supreme court", "RESOLVED",
         LocalDate.of(2019, 11,25), LocalDate.of(2020,1,10), "5-4",
-        "It was a close one, a lot of back and forth", Term(50, "2019-2020", "OT2019"), emptyList(), emptyList())
+        "It was a close one, a lot of back and forth", Term(50, "2019-2020", "OT2019"), false, emptyList(), emptyList())
     val cases = listOf(case1)
 
     whenever(service.searchByCaseTitle("spy")).thenReturn(cases)
@@ -216,7 +217,7 @@ class CaseControllerTest {
     val case = CaseResponse(200, "Obergefell v Hodges", "A state marriage license for a same sex couple should be recognized in all states",
         "RESOLVED", LocalDate.of(2015,4,28), LocalDate.of(2015,6,26),
         "5-4", "Right to marry is a fundamental right guaranteed by the Fourteenth Amendment. State laws prohibiting same sex marriage are invalidated",
-        Term(33, "2014-2015", "OT2014"), listOf(majority, dissent1, dissent2, dissent3, dissent4), listOf(docket1, docket2, docket3, docket4))
+        Term(33, "2014-2015", "OT2014"), true, listOf(majority, dissent1, dissent2, dissent3, dissent4), listOf(docket1, docket2, docket3, docket4))
 
     whenever(service.getCase(200)).thenReturn(case)
 
@@ -224,6 +225,7 @@ class CaseControllerTest {
         .andExpect(status().isOk)
         .andExpect(jsonPath("case", `is`("Obergefell v Hodges")))
         .andExpect(jsonPath("result", `is`("5-4")))
+        .andExpect(jsonPath("important").value(true))
         .andExpect(jsonPath("opinions", hasSize<Any>(5)))
         .andExpect(jsonPath("opinions[0].opinionType", `is`("MAJORITY")))
         .andExpect(jsonPath("opinions[0].justices[0].isAuthor", `is`(true)))
@@ -245,7 +247,7 @@ class CaseControllerTest {
   @Test
   fun testCreateCase() {
     val request = "{\"case\":\"Bostock v. Clayton County, Georgia\",\"shortSummary\":\"Civil rights act Title VII prohibits discrimination based on sex. " +
-        "The question is: does this cover sexual orientation. \",\"status\":\"PENDING\",\"termId\":50,\"docketIds\":[18,22]}"
+        "The question is: does this cover sexual orientation. \",\"status\":\"PENDING\",\"termId\":50,\"important\":false,\"docketIds\":[18,22]}"
 
     whenever(service.createCase(any())).thenAnswer {
       val arg = it.arguments[0] as CreateCaseRequest
@@ -253,7 +255,7 @@ class CaseControllerTest {
           DocketCaseResponse(18,  "19-225", Court(5, "CA11", "11th Circuit"), null),
           DocketCaseResponse(22, "19-228", Court(2, "CA02", "2nd Circuit"), null))
       CaseResponse(100, arg.case, arg.shortSummary, arg.status, null, null, null, null,
-          Term(arg.termId, "2019-2020", "OT2019"), emptyList(), mockDockets)
+          Term(arg.termId, "2019-2020", "OT2019"), arg.important, emptyList(), mockDockets)
     }
 
     this.mockMvc.perform(post("/cases")
@@ -271,6 +273,7 @@ class CaseControllerTest {
                 fieldWithPath("shortSummary").description("A short description of the case"),
                 fieldWithPath("status").description("Current status of the case"),
                 fieldWithPath("termId").description("The Id of the SCOTUS term the case where was granted"),
+                fieldWithPath("important").description("True if this is an important case to watch"),
                 fieldWithPath("docketIds").description("Array of Id's referencing dockets this case comes from")
             ),
             caseResponseFull
@@ -286,7 +289,7 @@ class CaseControllerTest {
         DocketCaseResponse(22, "19-228", Court(2, "CA02", "2nd Circuit"), null))
     val caseResponse = CaseResponse(100, "Bostock v. Clayton County, Georgia", "Civil rights act Title VII prohibits discrimination based on sex.",
         "ARGUMENT_SCHEDULED", LocalDate.of(2020,3,28), null, null, null,
-        Term(33, "2019-2020", "OT2019"), emptyList(), dockets)
+        Term(33, "2019-2020", "OT2019"), true, emptyList(), dockets)
 
     whenever(service.editCase(eq(100), any())).thenReturn(caseResponse)
 
@@ -321,7 +324,7 @@ class CaseControllerTest {
         DocketCaseResponse(22, "19-228", Court(2, "CA02", "2nd Circuit"), null))
     val caseResponse = CaseResponse(100, "Bostock v. Clayton County, Georgia", "Civil rights act Title VII prohibits discrimination based on sex.",
         "ARGUMENT_SCHEDULED", LocalDate.of(2020,3,28), null, null, null,
-        Term(33, "2019-2020", "OT2019"), emptyList(), dockets)
+        Term(33, "2019-2020", "OT2019"), true, emptyList(), dockets)
 
     whenever(service.assignDocket(eq(100), eq(22))).thenReturn(caseResponse)
 

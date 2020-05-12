@@ -39,6 +39,9 @@ data class Case (
     @JoinColumn(name = "termId")
     val term: Term,
 
+    @Column
+    val important: Boolean,
+
     @get:JsonIgnore
     @OneToMany(mappedBy = "case", fetch = FetchType.LAZY)
     val opinions: List<Opinion>,

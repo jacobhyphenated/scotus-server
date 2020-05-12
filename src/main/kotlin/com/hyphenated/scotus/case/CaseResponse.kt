@@ -17,11 +17,12 @@ class CaseResponse(
     val result: String?,
     val decisionSummary: String?,
     val term: Term,
+    val important: Boolean,
     val opinions: List<OpinionResponse>,
     val dockets: List<DocketCaseResponse>
 )
 
 fun Case.toResponse(): CaseResponse {
   return CaseResponse(id!!, case, shortSummary, status, argumentDate, decisionDate, result, decisionSummary, term,
-      opinions.map { it.toResponse() }, dockets.map { it.toCaseResponse() })
+      important, opinions.map { it.toResponse() }, dockets.map { it.toCaseResponse() })
 }

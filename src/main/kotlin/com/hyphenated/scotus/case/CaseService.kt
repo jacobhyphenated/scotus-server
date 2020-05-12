@@ -49,7 +49,7 @@ class CaseService(private val caseRepo: CaseRepo,
     val term = termRepo.findByIdOrNull(request.termId) ?: throw NoTermIdException(request.termId)
 
     val newCase = caseRepo.save(Case(null, request.case, request.shortSummary, request.status, null, null, null,
-        null, term, emptyList(), dockets))
+        null, term, request.important, emptyList(), dockets))
     docketRepo.saveAll(dockets.map { it.copy(case = newCase) })
     return newCase.toResponse()
   }
@@ -69,6 +69,7 @@ class CaseService(private val caseRepo: CaseRepo,
         request.result ?: case.result,
         request.decisionSummary ?: case.decisionSummary,
         term ?: case.term,
+        request.important ?: case.important,
         case.opinions,
         case.dockets
     )

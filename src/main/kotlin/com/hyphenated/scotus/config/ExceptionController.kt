@@ -124,7 +124,7 @@ class ExceptionController(private val env: Environment) {
   }
 
   private fun isLocal(): Boolean {
-    return env.activeProfiles.contains("local")
+    return env.activeProfiles.contains("local") || env.activeProfiles.contains("dev")
   }
 
   companion object {

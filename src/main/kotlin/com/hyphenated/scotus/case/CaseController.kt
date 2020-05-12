@@ -79,6 +79,8 @@ data class CreateCaseRequest(
     @get:Min(1)
     val termId: Long,
 
+    val important: Boolean,
+
     val docketIds: List<Long>
 )
 
@@ -90,7 +92,8 @@ data class PatchCaseRequest (
   val decisionDate: LocalDate?,
   val result: String?,
   val decisionSummary: String?,
-  val termId: Long?
+  val termId: Long?,
+  val important: Boolean?
 )
 
 data class CreateTermRequest(

@@ -9,6 +9,7 @@ import com.hyphenated.scotus.docket.ObjectNotFoundException
 import com.hyphenated.scotus.justice.CreateWithIdException
 import com.hyphenated.scotus.opinion.MultipleOpinionAuthorException
 import com.hyphenated.scotus.opinion.NoOpinionAuthorException
+import com.hyphenated.scotus.user.UsernameNotAvailable
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.slf4j.LoggerFactory
 import org.springframework.core.env.Environment
@@ -98,6 +99,12 @@ class ExceptionController(private val env: Environment) {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   fun multipleOpinionAuthorHandler(e: MultipleOpinionAuthorException): ErrorResponse {
     return ErrorResponse("MULTIPLE_AUTHORS", "An opinion can have only one author", null)
+  }
+
+  @ExceptionHandler(UsernameNotAvailable::class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  fun usernameNotAvailableHandler(e: UsernameNotAvailable): ErrorResponse {
+    return ErrorResponse("USERNAME_NOT_AVAILABLE", e.message, null)
   }
 
   @ExceptionHandler(ObjectNotFoundException::class)

@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   java
+  idea
   id("org.springframework.boot") version "2.2.4.RELEASE"
   id("io.spring.dependency-management") version "1.0.9.RELEASE"
   id("org.asciidoctor.convert") version "1.5.9.2"
@@ -23,6 +24,13 @@ configurations {
 
 repositories {
   mavenCentral()
+}
+
+idea {
+  module {
+    isDownloadJavadoc = true
+    isDownloadSources = true
+  }
 }
 
 val snippetsDir = file("build/generated-snippets")

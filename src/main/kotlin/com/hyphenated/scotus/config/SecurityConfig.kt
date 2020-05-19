@@ -12,12 +12,15 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.access.channel.ChannelProcessingFilter
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.filter.CorsFilter
+import java.security.SecureRandom
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED
@@ -26,7 +29,8 @@ import javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-class SecurityConfig(private val env: Environment): WebSecurityConfigurerAdapter() {
+class SecurityConfig(private val env: Environment,
+                     private val userDetailsService: UserDetailsService) : WebSecurityConfigurerAdapter() {
 
   @Bean
   fun unauthorizedEntryPoint(): AuthenticationEntryPoint = AuthenticationEntryPoint {
@@ -48,23 +52,8 @@ class SecurityConfig(private val env: Environment): WebSecurityConfigurerAdapter
     return CorsFilter(source)
   }
 
-  @Bean
-  /**
-   * Create an admin user for local testing only
-   */
   override fun userDetailsService(): UserDetailsService {
-    if (env.activeProfiles.contains("local") || env.activeProfiles.contains("dev") || env.activeProfiles.contains("test")) {
-      val user = User.withDefaultPasswordEncoder()
-          .username("admin")
-          .password("password")
-          .roles("ADMIN")
-          .build()
-      return InMemoryUserDetailsManager(user)
-    }
-
-    // TODO: real auth manager
-    return InMemoryUserDetailsManager()
-
+    return userDetailsService
   }
 
   override fun configure(http: HttpSecurity) {

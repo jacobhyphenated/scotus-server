@@ -19,6 +19,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Profile
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
+import java.security.SecureRandom
 import java.time.LocalDate
 
 @SpringBootApplication
@@ -58,6 +61,11 @@ class ScotusTrackerApplication {
     docketRepo.save(Docket(null, case, "All the People v Other People","165465"  ,ca05, "Other People win this round", true, "REMANDED"))
     docketRepo.save(Docket(null, case2, "Texas v Bacerra", "19-501", texas, "Ruled in favor of texas. Because Texas", null, "GRANTED"))
     docketRepo.save(Docket(null, null, "Goober v Peas","20-001", texas, "Docketing so hard right now", null, "REQUEST_CERT"))
+  }
+
+  @Bean
+  fun passwordEncoder(): PasswordEncoder {
+    return BCryptPasswordEncoder(10, SecureRandom())
   }
 }
 

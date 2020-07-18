@@ -78,6 +78,7 @@ class CaseControllerTest {
       .andWithPrefix("dockets[].",
           fieldWithPath("docketId").description("Unique Docket Id. Can be used to look up more info on this particular lower court case"),
           fieldWithPath("docketNumber").description("Docket number identifies this case with the Supreme Court"),
+          fieldWithPath("title").description("Title of the case in the lower court. May be the same as the case title"),
           fieldWithPath("lowerCourtOverruled").optional().type(JsonFieldType.BOOLEAN).description("Was the lower court decision overturned by the Supreme Court. Can be null if SCOTUS has not yet ruled on the case"),
           fieldWithPath("lowerCourt").description("Describes the lower appeals court this case came up through"))
       .andWithPrefix("dockets[].lowerCourt.",
@@ -209,10 +210,10 @@ class CaseControllerTest {
             OpinionJusticeResponse(57, false, "Clerence Thomas"),
             OpinionJusticeResponse(56, false, "Anton Scalia")))
 
-    val docket1 = DocketCaseResponse(1, "14-556", Court(1, "CA06", "6th Circuit Court of Appeals"), true)
-    val docket2 = DocketCaseResponse(2, "14-562", Court(1, "CA06", "6th Circuit Court of Appeals"), true)
-    val docket3 = DocketCaseResponse(3, "14-571", Court(1, "CA06", "6th Circuit Court of Appeals"), true)
-    val docket4 = DocketCaseResponse(4, "14-574", Court(1, "CA06", "6th Circuit Court of Appeals"), true)
+    val docket1 = DocketCaseResponse(1, "14-556", "Obergefell v. Hodges", Court(1, "CA06", "6th Circuit Court of Appeals"), true)
+    val docket2 = DocketCaseResponse(2, "14-562", "Tanco v. Haslam", Court(1, "CA06", "6th Circuit Court of Appeals"), true)
+    val docket3 = DocketCaseResponse(3, "14-571", "DeBoer v. Snyder", Court(1, "CA06", "6th Circuit Court of Appeals"), true)
+    val docket4 = DocketCaseResponse(4, "14-574", "Bourke v. Beshear", Court(1, "CA06", "6th Circuit Court of Appeals"), true)
 
     val case = CaseResponse(200, "Obergefell v Hodges", "A state marriage license for a same sex couple should be recognized in all states",
         "RESOLVED", LocalDate.of(2015,4,28), LocalDate.of(2015,6,26),
@@ -252,8 +253,8 @@ class CaseControllerTest {
     whenever(service.createCase(any())).thenAnswer {
       val arg = it.arguments[0] as CreateCaseRequest
       val mockDockets = listOf(
-          DocketCaseResponse(18,  "19-225", Court(5, "CA11", "11th Circuit"), null),
-          DocketCaseResponse(22, "19-228", Court(2, "CA02", "2nd Circuit"), null))
+          DocketCaseResponse(18,  "19-225", "Bostock v. Clayton County, Georgia", Court(5, "CA11", "11th Circuit"), null),
+          DocketCaseResponse(22, "19-228", "R.G Funeral Holmes v. EEOC", Court(2, "CA02", "2nd Circuit"), null))
       CaseResponse(100, arg.case, arg.shortSummary, arg.status, null, null, null, null,
           Term(arg.termId, "2019-2020", "OT2019"), arg.important, emptyList(), mockDockets)
     }
@@ -285,8 +286,8 @@ class CaseControllerTest {
     val request = "{\"status\":\"ARGUMENT_SCHEDULED\",\"argumentDate\":\"2020-03-28\"}"
 
     val dockets = listOf(
-        DocketCaseResponse(18,  "19-225", Court(5, "CA11", "11th Circuit"), null),
-        DocketCaseResponse(22, "19-228", Court(2, "CA02", "2nd Circuit"), null))
+        DocketCaseResponse(18,  "19-225", "Bostock v. Clayton County, Georgia", Court(5, "CA11", "11th Circuit"), null),
+        DocketCaseResponse(22, "19-228", "R.G Funeral Holmes v. EEOC", Court(2, "CA02", "2nd Circuit"), null))
     val caseResponse = CaseResponse(100, "Bostock v. Clayton County, Georgia", "Civil rights act Title VII prohibits discrimination based on sex.",
         "ARGUMENT_SCHEDULED", LocalDate.of(2020,3,28), null, null, null,
         Term(33, "2019-2020", "OT2019"), true, emptyList(), dockets)
@@ -320,8 +321,8 @@ class CaseControllerTest {
   fun testAssignDocket() {
 
     val dockets = listOf(
-        DocketCaseResponse(18,  "19-225", Court(5, "CA11", "11th Circuit"), null),
-        DocketCaseResponse(22, "19-228", Court(2, "CA02", "2nd Circuit"), null))
+        DocketCaseResponse(18,  "19-225","Bostock v. Clayton County, Georgia",  Court(5, "CA11", "11th Circuit"), null),
+        DocketCaseResponse(22, "19-228", "R.G Funeral Holmes v. EEOC", Court(2, "CA02", "2nd Circuit"), null))
     val caseResponse = CaseResponse(100, "Bostock v. Clayton County, Georgia", "Civil rights act Title VII prohibits discrimination based on sex.",
         "ARGUMENT_SCHEDULED", LocalDate.of(2020,3,28), null, null, null,
         Term(33, "2019-2020", "OT2019"), true, emptyList(), dockets)

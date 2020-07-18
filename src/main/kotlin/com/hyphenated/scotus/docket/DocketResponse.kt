@@ -7,6 +7,7 @@ import javax.persistence.*
 class DocketCaseResponse (
     val docketId: Long,
     val docketNumber: String,
+    val title: String,
     val lowerCourt: Court,
     val lowerCourtOverruled: Boolean?
 )
@@ -23,7 +24,7 @@ class DocketResponse (
 )
 
 fun Docket.toCaseResponse(): DocketCaseResponse {
-  return DocketCaseResponse(id!!, docketNumber, lowerCourt, lowerCourtOverruled)
+  return DocketCaseResponse(id!!, docketNumber, title, lowerCourt, lowerCourtOverruled)
 }
 
 fun Docket.toResponse(): DocketResponse {

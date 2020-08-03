@@ -1,15 +1,18 @@
 package com.hyphenated.scotus.case
 
-import com.hyphenated.scotus.case.term.Term
-import com.hyphenated.scotus.case.term.TermRepo
+import com.hyphenated.scotus.case.term.*
+import com.hyphenated.scotus.court.Court
 import com.hyphenated.scotus.docket.CaseNotFoundException
 import com.hyphenated.scotus.docket.DocketRepo
 import com.hyphenated.scotus.docket.NoDocketIdException
 import com.hyphenated.scotus.docket.NoTermIdException
+import com.hyphenated.scotus.justice.Justice
+import com.hyphenated.scotus.opinion.OpinionType
 import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 import javax.transaction.Transactional
 
 @Service
@@ -29,6 +32,26 @@ class CaseService(private val caseRepo: CaseRepo,
 
   fun getAllTerms(): List<Term> {
     return termRepo.findAll()
+  }
+
+  @Transactional
+  fun getTermSummary(termId: Long): TermSummaryResponse {
+    val termCases = getTermCases(termId)
+    if (termCases.isEmpty()) {
+      throw NoTermIdException(termId)
+    }
+    val justiceSummary = mutableListOf<TermJusticeSummary>()
+    val courtSummary = mutableListOf<TermCourtSummary>()
+    var lastCaseDate = LocalDate.MIN
+    val casesWithOpinions = termCases.filter { it.opinions.isNotEmpty() }
+    casesWithOpinions.forEach {
+      if (it.decisionDate?.isAfter(lastCaseDate) == true) {
+        lastCaseDate = it.decisionDate
+      }
+      this.evaluateOpinionAuthorSummary(it, justiceSummary)
+      this.evaluateCourtSummary(it, courtSummary)
+    }
+    return TermSummaryResponse(termId, lastCaseDate, justiceSummary, courtSummary)
   }
 
   @Transactional
@@ -101,7 +124,57 @@ class CaseService(private val caseRepo: CaseRepo,
     caseRepo.save(case.copy(dockets = newDocketList))
   }
 
+  private fun evaluateOpinionAuthorSummary(case: Case, justiceSummary: MutableList<TermJusticeSummary>) {
+    case.opinions.map {
+      JusticeOpinionAuthorType(it.opinionJustices.first { oj -> oj.isAuthor }.justice, it.opinionType)
+    }.toSet()
+    .forEach { author -> retrieveJusticeSummary(justiceSummary, author.justice).incrementType(author.opinionType) }
+
+    case.opinions.filter { o ->  o.opinionType == OpinionType.MAJORITY || o.opinionType == OpinionType.CONCUR_JUDGEMENT || o.opinionType == OpinionType.PER_CURIUM || o.opinionType == OpinionType.CONCURRENCE }
+        .flatMap { o -> o.opinionJustices.map { oj -> oj.justice }}
+        .toSet()
+        .forEach { justice -> retrieveJusticeSummary(justiceSummary, justice).casesInMajority++ }
+
+    case.opinions.flatMap { o -> o.opinionJustices.map { oj -> oj.justice } }
+        .toSet()
+        .forEach { justice -> retrieveJusticeSummary(justiceSummary, justice).casesWithOpinion++ }
+  }
+
+  private fun retrieveJusticeSummary(justiceSummary:MutableList<TermJusticeSummary>, justice: Justice): TermJusticeSummary {
+    var summary = justiceSummary.find { it.justice.id == justice.id }
+    if (summary == null) {
+      summary = TermJusticeSummary(justice)
+      justiceSummary.add(summary)
+    }
+    return summary
+  }
+
+  private fun evaluateCourtSummary(case: Case, courtSummary: MutableList<TermCourtSummary>) {
+     case.dockets.filter { it.lowerCourtOverruled != null }
+         .map { CourtOverturned(it.lowerCourt, it.lowerCourtOverruled!!) }
+        .toSet()
+        .forEach {
+          var summary = courtSummary.find { cs -> cs.court.id === it.court.id }
+          if (summary == null) {
+            summary = TermCourtSummary(it.court)
+            courtSummary.add(summary)
+          }
+          summary.cases++
+          if (it.overturned) summary.reversedRemanded++ else summary.affirmed++
+        }
+  }
+
   companion object {
     private val log = LoggerFactory.getLogger(CaseService::class.java)
   }
 }
+
+private data class JusticeOpinionAuthorType(
+    val justice: Justice,
+    val opinionType: OpinionType
+)
+
+private data class CourtOverturned(
+    val court: Court,
+    val overturned: Boolean
+)

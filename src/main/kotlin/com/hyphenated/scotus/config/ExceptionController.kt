@@ -13,6 +13,7 @@ import com.hyphenated.scotus.user.UsernameNotAvailable
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.slf4j.LoggerFactory
 import org.springframework.core.env.Environment
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.validation.FieldError
@@ -105,6 +106,19 @@ class ExceptionController(private val env: Environment) {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   fun usernameNotAvailableHandler(e: UsernameNotAvailable): ErrorResponse {
     return ErrorResponse("USERNAME_NOT_AVAILABLE", e.message, null)
+  }
+
+  @ExceptionHandler(DataIntegrityViolationException::class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  fun dataIntegrityHandler(e: DataIntegrityViolationException): ErrorResponse {
+    val message = if (e.mostSpecificCause.message?.contains(("value too long for type character varying")) == true) {
+       "Value is too long for the input field"
+    } else {
+      "Not a valid value"
+    }
+    return ErrorResponse("DATA_INTEGRITY_VIOLATION",
+        message,
+        if (isLocal()) ExceptionUtils.getStackTrace(e) else null)
   }
 
   @ExceptionHandler(ObjectNotFoundException::class)

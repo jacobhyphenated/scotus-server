@@ -33,11 +33,13 @@ class CourtControllerTests {
   @MockBean
   private lateinit var service: CourtService
 
-  private val commonCourtFields = arrayOf(
-      fieldWithPath("id").description("Unique Id of the appeals court"),
-      fieldWithPath("shortName").description("Short name or abbreviation for the court"),
-      fieldWithPath("name").description("Full name of the court")
-  )
+  companion object {
+    val commonCourtFields = arrayOf(
+        fieldWithPath("id").description("Unique Id of the appeals court"),
+        fieldWithPath("shortName").description("Short name or abbreviation for the court"),
+        fieldWithPath("name").description("Full name of the court")
+    )
+  }
 
   @Test
   fun testGetAllCourts() {

@@ -1,9 +1,15 @@
 package com.hyphenated.scotus.case
 
 import com.hyphenated.scotus.case.term.Term
+import com.hyphenated.scotus.case.term.TermCourtSummary
+import com.hyphenated.scotus.case.term.TermJusticeSummary
+import com.hyphenated.scotus.case.term.TermSummaryResponse
 import com.hyphenated.scotus.court.Court
+import com.hyphenated.scotus.court.CourtControllerTests
 import com.hyphenated.scotus.docket.Docket
 import com.hyphenated.scotus.docket.DocketCaseResponse
+import com.hyphenated.scotus.justice.Justice
+import com.hyphenated.scotus.justice.JusticeControllerTest
 import com.hyphenated.scotus.opinion.Opinion
 import com.hyphenated.scotus.opinion.OpinionJusticeResponse
 import com.hyphenated.scotus.opinion.OpinionResponse
@@ -395,6 +401,56 @@ class CaseControllerTest {
                 *termFields.copyOfRange(1, termFields.size)
             ),
             responseFields(*termFields)
+        ))
+  }
+
+  @Test
+  fun testTermSummary() {
+    val rgb = Justice(1, "Ruth Bader Ginsburg", LocalDate.of(1970,1,1), LocalDate.of(1970,1,1), null)
+    val roberts = Justice(2, "John Roberts", LocalDate.of(1970,1,1), LocalDate.of(1970,1,1), null)
+    whenever(service.getTermSummary(3)).thenReturn(
+        TermSummaryResponse(3, LocalDate.of(2019, 6, 30),
+            listOf(
+                TermJusticeSummary(rgb, 6, 2, 1, 3, 0, 50, 57),
+                TermJusticeSummary(roberts, 5, 0, 0, 2, 1, 55, 57)
+            ),
+            listOf(
+                TermCourtSummary(Court(1, "CA05", "Fifth Circuit Court of Appeals"), 5, 1, 4),
+                TermCourtSummary(Court(2, "CA04", "Fourth Circuit Court of Appeals"), 3, 3, 0),
+                TermCourtSummary(Court(3, "CA09", "Ninth Circuit Court of Appeals"), 7, 2, 5)
+            )
+        )
+    )
+
+    this.mockMvc.perform(RestDocumentationRequestBuilders.get("/cases/term/{termId}/summary", 3))
+        .andExpect(status().isOk)
+        .andExpect(jsonPath("termId").value(3))
+        .andExpect(jsonPath("justiceSummary[0].majorityAuthor").value(6))
+        .andDo(document("case/termsummary",
+            preprocessResponse(prettyPrint()),
+            pathParameters(parameterWithName("termId").description("Id of the term")),
+            responseFields(
+                fieldWithPath("termId").description("Id of the Term this summary is for"),
+                fieldWithPath("termEndDate").description("Date of the last decision handed down this term"),
+                fieldWithPath("justiceSummary[]").description("Summary statistics for each justice who participated in the term"),
+                fieldWithPath("courtSummary[]").description("Summary statistics for each court that had a case appealed before SCOTUS this term")
+            ).andWithPrefix("justiceSummary[].",
+                fieldWithPath("justice").description("The justice the following summary information relates to"),
+                fieldWithPath("majorityAuthor").description("The number of cases for which this justice wrote the majority opinion"),
+                fieldWithPath("concurringAuthor").description("The number of cases for which this justice wrote a concurring opinion"),
+                fieldWithPath("concurJudgementAuthor").description("The number of cases for which this justice wrote an opinion concurring in judgement with the opinion of the court"),
+                fieldWithPath("dissentAuthor").description("The number of cases for which this justice wrote a dissenting opinion"),
+                fieldWithPath("dissentJudgementAuthor").description("The number of cases for which this justice wrote an opinion dissenting in judgment and concurring in part with the opinion of the court"),
+                fieldWithPath("casesWithOpinion").description("The number of cases this justice participated in this term"),
+                fieldWithPath("casesInMajority").description("The number of cases in which this justice was in the majority this term"),
+                fieldWithPath("percentInMajority").description("The percentage describing the how often this justice was in the majority")
+            ).andWithPrefix("justiceSummary[].justice.", *JusticeControllerTest.justiceFields
+            ).andWithPrefix("courtSummary[].",
+                fieldWithPath("court").description("The court the following summary information relates to"),
+                fieldWithPath("cases").description("The total number of cases from this court that SCOTUS decided on appeal this term"),
+                fieldWithPath("affirmed").description("The number of cases that SCOTUS affirmed"),
+                fieldWithPath("reversedRemanded").description("The number of cases that SCOTUS overturned, either by reversing or by remanding for further orders")
+            ).andWithPrefix("courtSummary[].court.", *CourtControllerTests.commonCourtFields)
         ))
   }
 }

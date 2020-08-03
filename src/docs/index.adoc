@@ -1,5 +1,9 @@
-= REST Documentation for the API
+= Documentation for the REST API
 :toc: left
+
+*Note:* All response values in this documentation are examples only and do not represent actual data that will be returned from the API.
+Use the examples here for identifying the structure of the responses and the response types. Values such as Ids, case titles, statuses, etc. are
+not tied to any real values and will not match the live API.
 
 == Case
 Cases have made it to the Supreme Court. They may have been combined from multiple lower court cases (dockets).
@@ -89,6 +93,24 @@ include::{snippets}/case/id/response-fields.adoc[]
 .response body
 include::{snippets}/case/id/response-body.adoc[]
 
+=== Get End of Term Summary
+Get Summary information for a single term
+
+.curl request
+include::{snippets}/case/termsummary/curl-request.adoc[]
+
+.request
+include::{snippets}/case/termsummary/http-request.adoc[]
+
+.path parameters
+include::{snippets}/case/termsummary/path-parameters.adoc[]
+
+.response fields
+include::{snippets}/case/termsummary/response-fields.adoc[]
+
+.response body
+include::{snippets}/case/termsummary/response-body.adoc[]
+
 == Dockets
 Dockets represent cases that have made their way up through the lower courts with a petition to be reviewed by the Supreme Court.
 Each docket is assigned a number based on the SCOTUS term. A SCOTUS case may combine multiple dockets and rule on all of them at the same time.
@@ -110,7 +132,7 @@ include::{snippets}/docket/all/response-body.adoc[]
 
 === Get Unassigned Dockets
 Gets a list of dockets that have not been assigned a SCOTUS case.
-These will be dockets related to certiorari petitions that SCOTUS has not yet granted.
+These will be dockets related to certiorari petitions that SCOTUS has not yet granted or denied.
 
 .curl request
 include::{snippets}/docket/unassigned/curl-request.adoc[]
@@ -125,7 +147,7 @@ include::{snippets}/docket/unassigned/response-fields.adoc[]
 include::{snippets}/docket/unassigned/response-body.adoc[]
 
 === Search Dockets
-Gets all dockets associated with a given Case
+Searches all dockets by the text of the title
 
 .curl request
 include::{snippets}/docket/title/curl-request.adoc[]

@@ -35,6 +35,15 @@ class JusticeControllerTest {
   @MockBean
   private lateinit var service: JusticeService
 
+  companion object {
+    val justiceFields = arrayOf(fieldWithPath("id").description("Unique Id for the justice"),
+        fieldWithPath("name").description("The name of the Justice"),
+        fieldWithPath("dateConfirmed").description("The date the justice was confirmed to the Supreme Court (yyyy-MM-dd)"),
+        fieldWithPath("birthday").description("The date the justice was born (yyyy-MM-dd)"),
+        fieldWithPath("dateRetired").optional().type(JsonFieldType.STRING).description("The date the justice retired (can be null) (yyyy-MM-dd)"))
+
+  }
+
   private val activeJustices = arrayOf(
       Justice(1, "John Roberts", LocalDate.of(2005, 11, 29), LocalDate.of(1954, 10, 1), null),
       Justice(2, "Clarence Thomas", LocalDate.of(1991, 10, 23), LocalDate.of(1948, 8, 1), null),
@@ -52,12 +61,6 @@ class JusticeControllerTest {
       Justice(11, "Warren E. Burger", LocalDate.of(1969, 6, 9), LocalDate.of(1907, 10, 1), LocalDate.of(1986, 9, 26)),
       Justice(12, "Earl Warren", LocalDate.of(1954, 3, 1), LocalDate.of(1891, 10, 1), LocalDate.of(1969, 6, 23))
   )
-
-  private val justiceFields = arrayOf(fieldWithPath("id").description("Unique Id for the justice"),
-      fieldWithPath("name").description("The name of the Justice"),
-      fieldWithPath("dateConfirmed").description("The date the justice was confirmed to the Supreme Court (yyyy-MM-dd)"),
-      fieldWithPath("birthday").description("The date the justice was born (yyyy-MM-dd)"),
-      fieldWithPath("dateRetired").optional().type(JsonFieldType.STRING).description("The date the justice retired (can be null) (yyyy-MM-dd)"))
 
   @Test
   fun testGetAll() {

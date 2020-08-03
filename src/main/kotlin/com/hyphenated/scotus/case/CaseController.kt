@@ -41,6 +41,9 @@ class CaseController(private val caseService: CaseService) {
     return caseService.createTerm(request.name, request.otName)
   }
 
+  @GetMapping("term/{termId}/summary")
+  fun termSummary(@PathVariable termId: Long) = caseService.getTermSummary(termId)
+
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   fun createCase(@Valid @RequestBody request: CreateCaseRequest): CaseResponse {

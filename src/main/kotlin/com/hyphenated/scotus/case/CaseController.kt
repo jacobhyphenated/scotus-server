@@ -1,18 +1,13 @@
 package com.hyphenated.scotus.case
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.hyphenated.scotus.case.term.Term
-import com.hyphenated.scotus.docket.Docket
-import com.hyphenated.scotus.opinion.Opinion
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
-import javax.persistence.*
 import javax.validation.Valid
 import javax.validation.constraints.Min
 import javax.validation.constraints.NotEmpty
-import javax.websocket.server.PathParam
 
 @RestController
 @RequestMapping("cases")

@@ -7,7 +7,7 @@ import java.time.LocalDate
 
 class TermSummaryResponse (
     val termId: Long,
-    val termEndDate: LocalDate,
+    val termEndDate: LocalDate?,
     val justiceSummary: List<TermJusticeSummary>,
     val courtSummary: List<TermCourtSummary>
 )

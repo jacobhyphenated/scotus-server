@@ -42,10 +42,10 @@ class CaseService(private val caseRepo: CaseRepo,
     }
     val justiceSummary = mutableListOf<TermJusticeSummary>()
     val courtSummary = mutableListOf<TermCourtSummary>()
-    var lastCaseDate = LocalDate.MIN
+    var lastCaseDate: LocalDate? = null
     val casesWithOpinions = termCases.filter { it.opinions.isNotEmpty() }
     casesWithOpinions.forEach {
-      if (it.decisionDate?.isAfter(lastCaseDate) == true) {
+      if (it.decisionDate?.isAfter(lastCaseDate ?: LocalDate.MIN) == true) {
         lastCaseDate = it.decisionDate
       }
       this.evaluateOpinionAuthorSummary(it, justiceSummary)

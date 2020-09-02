@@ -176,9 +176,9 @@ class CaseControllerTest {
         .andExpect(jsonPath("$[0].result", `is`("5-4")))
         .andDo(document("case/title",
             preprocessResponse(prettyPrint()),
-            pathParameters(parameterWithName("title").description("Title of the case to search for, case insensitive, must match some part of the title")),
+            pathParameters(parameterWithName("title").description("Title of the case to search for, case insensitive, must match some part of the title. The search text may match the case title, or the title of any docket linked to the case.")),
             responseFields(
-                fieldWithPath("[]").description("A list of cases that match the search title")
+                fieldWithPath("[]").description("A list of cases where the case title or docket title match the search title")
             ).andWithPrefix("[].", *caseFields)
         ))
   }

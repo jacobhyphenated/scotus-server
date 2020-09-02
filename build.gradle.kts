@@ -6,9 +6,9 @@ plugins {
   id("org.springframework.boot") version "2.3.3.RELEASE"
   id("io.spring.dependency-management") version "1.0.10.RELEASE"
   id("org.asciidoctor.convert") version "1.5.9.2"
-  kotlin("jvm") version "1.3.72"
-  kotlin("plugin.spring") version "1.3.72"
-  kotlin("plugin.jpa") version "1.3.72"
+  kotlin("jvm") version "1.4.0"
+  kotlin("plugin.spring") version "1.4.0"
+  kotlin("plugin.jpa") version "1.4.0"
 }
 
 group = "com.hyphenated"
@@ -27,6 +27,7 @@ idea {
 }
 
 val snippetsDir = file("build/generated-snippets")
+var coroutinesVersion = "1.3.9"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -38,6 +39,9 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-reflect")
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
   implementation("org.apache.commons:commons-lang3")
+
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutinesVersion}")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:${coroutinesVersion}")
 
   developmentOnly("org.springframework.boot:spring-boot-devtools")
 

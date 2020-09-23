@@ -71,7 +71,7 @@ class CaseService(private val caseRepo: CaseRepo,
 
   @Transactional
   fun getCase(id: Long): CaseResponse? {
-    log.info("get case called with $id")
+    log.debug("get case called with $id")
     return caseRepo.findByIdOrNull(id)?.toResponse()
   }
 
@@ -83,6 +83,7 @@ class CaseService(private val caseRepo: CaseRepo,
   @Transactional
   @PreAuthorize("hasRole('ADMIN')")
   fun createCase(request: CreateCaseRequest): CaseResponse {
+    log.debug("create case called for ${request.case}")
     val dockets = docketRepo.findAllById(request.docketIds)
     val term = termRepo.findByIdOrNull(request.termId) ?: throw NoTermIdException(request.termId)
 

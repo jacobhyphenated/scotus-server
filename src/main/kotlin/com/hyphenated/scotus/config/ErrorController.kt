@@ -1,14 +1,12 @@
 package com.hyphenated.scotus.config
 
+import org.springframework.boot.web.error.ErrorAttributeOptions
 import org.springframework.boot.web.servlet.error.ErrorAttributes
 import org.springframework.boot.web.servlet.error.ErrorController
 import org.springframework.core.env.Environment
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.context.request.RequestAttributes
-import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.context.request.ServletWebRequest
-import org.springframework.web.context.request.WebRequest
 import javax.servlet.http.HttpServletRequest
 
 
@@ -32,12 +30,14 @@ class ErrorController(private val errorAttributes: ErrorAttributes,
   }
 
   private fun isLocal(): Boolean {
-    return env.activeProfiles.contains("local")
+    return env.activeProfiles.contains("local") || env.activeProfiles.contains(("dev"))
   }
 
   private fun getErrorAttributes(request: HttpServletRequest, includeStackTrace: Boolean): Map<String, Any?> {
     val webRequest = ServletWebRequest(request)
-    return errorAttributes.getErrorAttributes(webRequest, includeStackTrace)
+    return errorAttributes.getErrorAttributes(webRequest,
+        if (includeStackTrace) ErrorAttributeOptions.of(ErrorAttributeOptions.Include.STACK_TRACE)
+        else ErrorAttributeOptions.defaults())
   }
 
 }

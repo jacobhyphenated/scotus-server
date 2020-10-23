@@ -4,8 +4,10 @@ import com.hyphenated.scotus.case.Case
 import com.hyphenated.scotus.case.CaseControllerTest
 import com.hyphenated.scotus.case.term.Term
 import com.hyphenated.scotus.court.Court
+import com.hyphenated.scotus.search.SearchService
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.eq
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.Test
@@ -37,6 +39,9 @@ class DocketControllerTests {
 
   @MockBean
   private lateinit var docketService: DocketService
+
+  @MockBean
+  private lateinit var searchService: SearchService
 
   private val docketResponseFields = arrayOf(
       fieldWithPath("caseId").optional().description("Unique Id for the case the docket is tied to (can be null)"),
@@ -256,6 +261,7 @@ class DocketControllerTests {
                 fieldWithPath("status").optional().type(JsonFieldType.STRING).description("(optional) Current status of this docket")),
             docketFullSnippet
         ))
+    verify(searchService).indexCase(14)
   }
 
 }

@@ -1,6 +1,7 @@
 package com.hyphenated.scotus.case
 
 import com.hyphenated.scotus.case.term.Term
+import com.hyphenated.scotus.search.SearchService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -11,7 +12,8 @@ import javax.validation.constraints.NotEmpty
 
 @RestController
 @RequestMapping("cases")
-class CaseController(private val caseService: CaseService) {
+class CaseController(private val caseService: CaseService,
+                     private val searchService: SearchService) {
 
   @GetMapping
   fun getAllCases() = caseService.getAllCases()
@@ -28,7 +30,7 @@ class CaseController(private val caseService: CaseService) {
   fun getTerms() = caseService.getAllTerms()
 
   @GetMapping("title/{title}")
-  fun searchByCaseTitle(@PathVariable title: String) = caseService.searchByCaseTitle(title)
+  fun searchByCaseTitle(@PathVariable title: String) = searchService.searchCases(title)
 
   @PostMapping("term")
   @ResponseStatus(HttpStatus.CREATED)
@@ -42,25 +44,43 @@ class CaseController(private val caseService: CaseService) {
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   fun createCase(@Valid @RequestBody request: CreateCaseRequest): CaseResponse {
-    return caseService.createCase(request)
+    val newCase =  caseService.createCase(request)
+    searchService.indexCase(newCase.id)
+    return newCase
   }
 
   @PatchMapping("{id}")
   fun editCase(@PathVariable id: Long, @Valid @RequestBody request: PatchCaseRequest): ResponseEntity<CaseResponse> {
     return caseService.editCase(id, request)
-        ?.let { ResponseEntity.ok(it) }
+        ?.let {
+          searchService.indexCase(it.id)
+          ResponseEntity.ok(it)
+        }
         ?: ResponseEntity.notFound().build()
+  }
+
+  @PutMapping("{id}/index")
+  fun indexCase(@PathVariable id: Long) {
+    searchService.indexCase(id)
+  }
+
+  @PutMapping("indexAll")
+  fun indexAll() {
+    searchService.indexAllCases()
   }
 
   @PutMapping("{caseId}/dockets/{docketId}")
   fun addDocket(@PathVariable caseId: Long, @PathVariable docketId: Long): CaseResponse {
-    return caseService.assignDocket(caseId, docketId)
+    val response = caseService.assignDocket(caseId, docketId)
+    searchService.indexCase(caseId)
+    return response
   }
 
   @DeleteMapping("{caseId}/dockets/{docketId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   fun removeDocket(@PathVariable caseId: Long, @PathVariable docketId: Long) {
     caseService.removeDocket(caseId, docketId)
+    searchService.indexCase(caseId)
   }
 }
 

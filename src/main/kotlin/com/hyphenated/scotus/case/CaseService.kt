@@ -8,8 +8,6 @@ import com.hyphenated.scotus.docket.NoDocketIdException
 import com.hyphenated.scotus.docket.NoTermIdException
 import com.hyphenated.scotus.justice.Justice
 import com.hyphenated.scotus.opinion.OpinionType
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.prepost.PreAuthorize
@@ -28,21 +26,6 @@ class CaseService(private val caseRepo: CaseRepo,
 
   fun getTermCases(termId: Long): List<Case> {
     return caseRepo.findByTermId(termId)
-  }
-
-  @Transactional
-  fun searchByCaseTitle(caseTitle: String): List<Case> = runBlocking {
-    val caseSearchResults =  async {
-      caseRepo.findByCaseIgnoreCaseContaining(caseTitle)
-    }
-    val docketSearchResults = async {
-      docketRepo.findByTitleIgnoreCaseContaining(caseTitle).mapNotNull { it.case }
-    }
-    val results = caseSearchResults.await().toMutableList()
-    results.addAll(docketSearchResults.await())
-    results.map { it.id }
-        .toSet()
-        .map { results.first { c -> c.id == it } }
   }
 
   fun getAllTerms(): List<Term> {

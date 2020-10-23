@@ -14,6 +14,7 @@ import com.hyphenated.scotus.opinion.Opinion
 import com.hyphenated.scotus.opinion.OpinionJusticeResponse
 import com.hyphenated.scotus.opinion.OpinionResponse
 import com.hyphenated.scotus.opinion.OpinionType
+import com.hyphenated.scotus.search.SearchService
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.verify
@@ -50,6 +51,9 @@ class CaseControllerTest {
 
   @MockBean
   private lateinit var service: CaseService
+
+  @MockBean
+  private lateinit var searchService: SearchService
 
   companion object{
     val caseFields = arrayOf(fieldWithPath("id").type(JsonFieldType.NUMBER).description("unique id for the case"),
@@ -168,7 +172,7 @@ class CaseControllerTest {
         "It was a close one, a lot of back and forth", Term(50, "2019-2020", "OT2019"), false, emptyList(), emptyList())
     val cases = listOf(case1)
 
-    whenever(service.searchByCaseTitle("spy")).thenReturn(cases)
+    whenever(searchService.searchCases("spy")).thenReturn(cases)
 
     this.mockMvc.perform(RestDocumentationRequestBuilders.get("/cases/title/{title}", "spy"))
         .andExpect(status().isOk)
@@ -285,6 +289,7 @@ class CaseControllerTest {
             ),
             caseResponseFull
         ))
+    verify(searchService).indexCase(100)
   }
 
   @Test
@@ -321,6 +326,7 @@ class CaseControllerTest {
             ),
             caseResponseFull
         ))
+    verify(searchService).indexCase(100)
   }
 
   @Test
@@ -346,6 +352,7 @@ class CaseControllerTest {
             ),
             caseResponseFull
         ))
+    verify(searchService).indexCase(100)
   }
 
   @Test
@@ -360,6 +367,7 @@ class CaseControllerTest {
             )
         ))
     verify(service).removeDocket(100, 18)
+    verify(searchService).indexCase(100)
   }
 
   @Test

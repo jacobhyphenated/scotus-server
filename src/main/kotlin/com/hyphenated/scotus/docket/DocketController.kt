@@ -1,5 +1,6 @@
 package com.hyphenated.scotus.docket
 
+import com.hyphenated.scotus.search.SearchService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -8,7 +9,8 @@ import javax.validation.constraints.NotEmpty
 
 @RestController
 @RequestMapping("dockets")
-class DocketController(private val docketService: DocketService) {
+class DocketController(private val docketService: DocketService,
+                       private val searchService: SearchService) {
 
   @GetMapping("")
   fun getAllDockets(): List<DocketResponse> {
@@ -45,7 +47,11 @@ class DocketController(private val docketService: DocketService) {
 
   @PatchMapping("{docketId}")
   fun update(@PathVariable docketId: Long, @RequestBody request: EditDocketRequest): Docket {
-    return docketService.editDocket(docketId, request)
+    val response =  docketService.editDocket(docketId, request)
+    if (request.caseId != null) {
+      searchService.indexCase(request.caseId)
+    }
+    return response
   }
 
 }

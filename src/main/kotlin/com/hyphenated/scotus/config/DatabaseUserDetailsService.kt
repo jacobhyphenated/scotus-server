@@ -3,8 +3,6 @@ package com.hyphenated.scotus.config
 import com.hyphenated.scotus.user.UserRepo
 import com.hyphenated.scotus.user.toUserDetails
 import org.springframework.context.annotation.Profile
-import org.springframework.data.repository.findByIdOrNull
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException

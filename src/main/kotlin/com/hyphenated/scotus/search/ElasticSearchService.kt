@@ -32,6 +32,8 @@ class ElasticSearchService(private val searchRepository: SearchRepository,
             .field("docketTitles")
             .fuzziness(Fuzziness.TWO)
             .operator(Operator.AND))
+        .should(termQuery("docketNumbers", searchTerm)
+            .boost(2.0f))
         .should(multiMatchQuery(searchTerm)
             .field("shortSummary")
             .field("decision")
@@ -46,8 +48,12 @@ class ElasticSearchService(private val searchRepository: SearchRepository,
     if (searchResult.isEmpty) {
       return emptyList()
     }
-    val ids = searchResult.sortedByDescending { it.score }
-        .subList(0, 10.coerceAtMost(searchResult.totalHits.toInt()))
+    // Remove 0.0 or other very small scores that sometimes get returned
+    val scoreResults = searchResult.filter { it.score > 0.1 }
+
+    val ids = scoreResults
+        .sortedByDescending { it.score }
+        .subList(0, 10.coerceAtMost(scoreResults.count()))
         .mapNotNull {
           log.debug("${it.id} - ${it.score}")
           it.id?.toLong()
@@ -82,7 +88,8 @@ fun Case.toDocument(): CaseSearchDocument {
       decision = this.decisionSummary,
       docketTitles = this.dockets.map { it.title },
       docketSummaries = this.dockets.map { it.lowerCourtRuling },
-      opinions = this.opinions.map { it.summary }
+      opinions = this.opinions.map { it.summary },
+      docketNumbers = this.dockets.map { it.docketNumber }
   )
 }
 

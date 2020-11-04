@@ -30,7 +30,11 @@ class CaseController(private val caseService: CaseService,
   fun getTerms() = caseService.getAllTerms()
 
   @GetMapping("title/{title}")
+  @Deprecated(message="Search no longer works by only looking at case titles, use searchCases instead")
   fun searchByCaseTitle(@PathVariable title: String) = searchService.searchCases(title)
+
+  @GetMapping("search/{searchTerm}")
+  fun searchCases(@PathVariable searchTerm: String) = searchService.searchCases(searchTerm)
 
   @PostMapping("term")
   @ResponseStatus(HttpStatus.CREATED)

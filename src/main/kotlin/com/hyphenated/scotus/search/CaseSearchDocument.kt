@@ -25,6 +25,9 @@ class CaseSearchDocument (
     @Field(type = FieldType.Text)
     val opinions: List<String>,
 
-    @Field(type = FieldType.Text, )
-    val docketSummaries: List<String>
+    @Field(type = FieldType.Text)
+    val docketSummaries: List<String>,
+
+    @Field(type = FieldType.Keyword)
+    val docketNumbers: List<String>
 )

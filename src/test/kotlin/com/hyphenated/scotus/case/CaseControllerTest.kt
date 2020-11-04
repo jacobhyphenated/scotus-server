@@ -188,6 +188,28 @@ class CaseControllerTest {
   }
 
   @Test
+  fun testSearchCases() {
+    val case1 = Case(100, "Spy v Spy", "SNL makes it to the supreme court", "RESOLVED",
+        LocalDate.of(2019, 11,25), LocalDate.of(2020,1,10), "5-4",
+        "It was a close one, a lot of back and forth", Term(50, "2019-2020", "OT2019"), false, emptyList(), emptyList())
+    val cases = listOf(case1)
+
+    whenever(searchService.searchCases("spy")).thenReturn(cases)
+
+    this.mockMvc.perform(RestDocumentationRequestBuilders.get("/cases/search/{searchTerm}", "spy"))
+        .andExpect(status().isOk)
+        .andExpect(jsonPath("$", hasSize<Any>(1)))
+        .andExpect(jsonPath("$[0].result", `is`("5-4")))
+        .andDo(document("case/search",
+            preprocessResponse(prettyPrint()),
+            pathParameters(parameterWithName("searchTerm").description("Searches the case title, description, related dockets, and opinions")),
+            responseFields(
+                fieldWithPath("[]").description("A list of cases where there is a full or close match to the search term or phrase")
+            ).andWithPrefix("[].", *caseFields)
+        ))
+  }
+
+  @Test
   fun testGetCaseById() {
     val majority = OpinionResponse(500, 200, OpinionType.MAJORITY, "Democracy and legislation are important. But individuals who are harmed should not have to wait" +
         " for legislative action. A ruling against same sex couples would leave long lasting injuries unjustified under the 14th Amendment. Same sex couples may now exercise the " +

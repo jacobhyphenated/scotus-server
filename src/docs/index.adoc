@@ -43,22 +43,26 @@ include::{snippets}/case/term/response-fields.adoc[]
 include::{snippets}/case/term/response-body.adoc[]
 
 === Search for Cases
-Search for cases by the case title
+Search for cases. The search term will attempt to match the case title, short summary, and decision summary as well as searching all opinion summaries and docket titles and lower court rulings.
+
+The match criteria for opinion summaries and lower court rulings is a more strict phrase matching than used with the case and docket titles. There are some allowances for partial matches and spelling errors.
+
+Results are ordered by how well they match the search term, with the best match as the first result.
 
 .curl request
-include::{snippets}/case/title/curl-request.adoc[]
+include::{snippets}/case/search/curl-request.adoc[]
 
 .request
-include::{snippets}/case/title/http-request.adoc[]
+include::{snippets}/case/search/http-request.adoc[]
 
 .path parameters
-include::{snippets}/case/title/path-parameters.adoc[]
+include::{snippets}/case/search/path-parameters.adoc[]
 
 .response fields
-include::{snippets}/case/title/response-fields.adoc[]
+include::{snippets}/case/search/response-fields.adoc[]
 
 .response body
-include::{snippets}/case/title/response-body.adoc[]
+include::{snippets}/case/search/response-body.adoc[]
 
 === Get all Terms
 Gets a list of every SCOTUS term.

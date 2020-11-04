@@ -53,6 +53,7 @@ class SecurityConfig(private val userDetailsService: UserDetailsService) : WebSe
         .authorizeRequests()
           // Add path specific authorizations to restrict
           .mvcMatchers("/docs/admin.html").hasRole("ADMIN")
+          .mvcMatchers("/actuator/health").permitAll()
           .mvcMatchers("/actuator", "/actuator/**").hasRole("ADMIN")
           .antMatchers("/h2-console", "/h2-console/**").hasRole("ADMIN")
           .anyRequest().permitAll()
@@ -66,7 +67,9 @@ class SecurityConfig(private val userDetailsService: UserDetailsService) : WebSe
         // CSRF protection is not necessary because this service does not depend on session cookies.
         // Authenticated requests require a header or other user input that cannot be faked via CSRF.
         .csrf().disable()
-        .headers().frameOptions().sameOrigin().and()
+        .headers()
+          .frameOptions().sameOrigin()
+          .and()
         .sessionManagement()
           .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
           .and()

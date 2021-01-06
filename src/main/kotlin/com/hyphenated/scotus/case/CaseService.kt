@@ -100,6 +100,14 @@ class CaseService(private val caseRepo: CaseRepo,
 
   @Transactional
   @PreAuthorize("hasRole('ADMIN')")
+  fun removeArgumentDate(id: Long): CaseResponse? {
+    val case = caseRepo.findByIdOrNull(id) ?: return null
+    val updatedCase = case.copy(argumentDate = null)
+    return caseRepo.save(updatedCase).toResponse()
+  }
+
+  @Transactional
+  @PreAuthorize("hasRole('ADMIN')")
   fun assignDocket(caseId: Long, docketId: Long): CaseResponse {
     val case = caseRepo.findByIdOrNull(caseId) ?: throw CaseNotFoundException(caseId)
     if (case.dockets.map { it.id }.contains(docketId)) return case.toResponse()

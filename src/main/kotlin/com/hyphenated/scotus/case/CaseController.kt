@@ -63,6 +63,13 @@ class CaseController(private val caseService: CaseService,
         ?: ResponseEntity.notFound().build()
   }
 
+  @DeleteMapping("{id}/argumentDate")
+  fun removeArgumentDate(@PathVariable id: Long):  ResponseEntity<CaseResponse> {
+    return caseService.removeArgumentDate(id)?.let {
+      ResponseEntity.ok(it)
+    } ?: ResponseEntity.notFound().build()
+  }
+
   @PutMapping("{id}/index")
   fun indexCase(@PathVariable id: Long) {
     searchService.indexCase(id)

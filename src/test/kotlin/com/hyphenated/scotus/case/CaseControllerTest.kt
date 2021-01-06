@@ -35,8 +35,7 @@ import org.springframework.restdocs.payload.PayloadDocumentation.*
 import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
 import org.springframework.restdocs.request.RequestDocumentation.pathParameters
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -349,6 +348,35 @@ class CaseControllerTest {
             caseResponseFull
         ))
     verify(searchService).indexCase(100)
+  }
+
+  @Test
+  fun testRemoveArgumentDate() {
+    val dockets = listOf(
+      DocketCaseResponse(18,  "19-225", "Bostock v. Clayton County, Georgia", Court(5, "CA11", "11th Circuit"), null),
+      DocketCaseResponse(22, "19-228", "R.G Funeral Holmes v. EEOC", Court(2, "CA02", "2nd Circuit"), null))
+    val caseResponse = CaseResponse(100, "Bostock v. Clayton County, Georgia", "Civil rights act Title VII prohibits discrimination based on sex.",
+      "ARGUMENT_SCHEDULED", null, null, null, null,
+      Term(33, "2019-2020", "OT2019"), true, emptyList(), dockets)
+
+    whenever(service.removeArgumentDate(100)).thenReturn(caseResponse)
+
+    this.mockMvc.perform(RestDocumentationRequestBuilders.delete("/cases/{caseId}/argumentDate", 100))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("id").value(100))
+      .andExpect(jsonPath("argumentDate").isEmpty)
+      .andDo(document("case/admin/removeArgumentDate",
+        preprocessResponse(prettyPrint()),
+        pathParameters(parameterWithName("caseId").description("Id of the case to modify")),
+        caseResponseFull
+      ))
+  }
+
+  @Test
+  fun testRemoveArgumentDateNotFound() {
+    whenever(service.removeArgumentDate(500)).thenReturn(null)
+    this.mockMvc.perform(delete("/cases/500/argumentDate"))
+      .andExpect(status().`is`(404))
   }
 
   @Test

@@ -207,6 +207,28 @@ include::{snippets}/case/admin/edit/response-fields.adoc[]
 .response body
 include::{snippets}/case/admin/edit/response-body.adoc[]
 
+=== Remove Argument Date
+Deletes the argument date field from an existing case.
+There are some circumstances where the court will schedule arguments, then later remove the case from the calendar,
+usually at the request of both parties to the case.
+The normal <<Edit Case>> endpoint does not cover sending null values for a field; use this endpoint instead.
+
+.curl request
+include::{snippets}/case/admin/removeArgumentDate/curl-request.adoc[]
+
+.request
+include::{snippets}/case/admin/removeArgumentDate/http-request.adoc[]
+
+.path parameters
+include::{snippets}/case/admin/removeArgumentDate/path-parameters.adoc[]
+
+.response fields
+include::{snippets}/case/admin/removeArgumentDate/response-fields.adoc[]
+
+.response body
+include::{snippets}/case/admin/removeArgumentDate/response-body.adoc[]
+
+
 === Add Docket
 This adds a docket to an existing case. This is a helper endpoint,
 the same thing can be accomplished by the <<Edit Docket>> endpoint.

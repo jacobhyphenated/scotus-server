@@ -351,6 +351,18 @@ class CaseControllerTest {
   }
 
   @Test
+  fun testEditCaseNotFound() {
+    val request = "{\"status\":\"GRANTED\"}"
+    whenever(service.editCase(any(), any())).thenReturn(null)
+    this.mockMvc.perform(patch("/cases/500")
+      .contentType(MediaType.APPLICATION_JSON)
+      .content(request))
+      .andExpect(status().`is`(404))
+
+    verify(service).editCase(eq(500), any())
+  }
+
+  @Test
   fun testRemoveArgumentDate() {
     val dockets = listOf(
       DocketCaseResponse(18,  "19-225", "Bostock v. Clayton County, Georgia", Court(5, "CA11", "11th Circuit"), null),
@@ -510,5 +522,19 @@ class CaseControllerTest {
                 fieldWithPath("reversedRemanded").description("The number of cases that SCOTUS overturned, either by reversing or by remanding for further orders")
             ).andWithPrefix("courtSummary[].court.", *CourtControllerTests.commonCourtFields)
         ))
+  }
+
+  @Test
+  fun testIndexCase() {
+    this.mockMvc.perform(put("/cases/100/index"))
+      .andExpect(status().isOk)
+    verify(searchService).indexCase(100)
+  }
+
+  @Test
+  fun testIndexAll() {
+    this.mockMvc.perform(put("/cases/indexAll"))
+      .andExpect(status().isOk)
+    verify(searchService).indexAllCases()
   }
 }

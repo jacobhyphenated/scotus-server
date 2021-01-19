@@ -1,14 +1,13 @@
 package com.hyphenated.scotus.justice
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import org.hamcrest.Matchers.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
@@ -19,8 +18,7 @@ import org.springframework.restdocs.payload.PayloadDocumentation.*
 import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
 import org.springframework.restdocs.request.RequestDocumentation.pathParameters
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
@@ -191,5 +189,16 @@ class JusticeControllerTest {
             requestFields(fieldWithPath("retireDate").description("Date the justice's retirement will take effect")),
             responseFields(*justiceFields)
         ))
+  }
+
+  @Test
+  fun testRetireJusticeNotFound() {
+    whenever(service.retireJustice(any(), any())).thenReturn(null)
+    this.mockMvc.perform(put("/justices/222/retire")
+      .contentType(MediaType.APPLICATION_JSON)
+      .content("{\"retireDate\":\"2021-02-21\"}"))
+      .andExpect(status().`is`(404))
+
+    verify(service).retireJustice(222, LocalDate.of(2021, 2,21))
   }
 }

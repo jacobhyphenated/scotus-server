@@ -74,6 +74,9 @@ tasks.withType<KotlinCompile> {
 tasks.test {
   outputs.dir(snippetsDir)
   finalizedBy(tasks.jacocoTestReport)
+  testLogging {
+    events("passed", "skipped", "failed", "standardError")
+  }
 }
 
 tasks.jacocoTestReport {

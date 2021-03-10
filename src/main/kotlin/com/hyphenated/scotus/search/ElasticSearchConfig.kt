@@ -35,9 +35,4 @@ class ElasticSearchConfig : AbstractElasticsearchConfiguration() {
         .build()
     return RestClients.create(clientConfig).rest()
   }
-
-  @Bean
-  fun elasticsearchTemplate(): ElasticsearchRestTemplate {
-    return ElasticsearchRestTemplate(elasticsearchClient())
-  }
 }

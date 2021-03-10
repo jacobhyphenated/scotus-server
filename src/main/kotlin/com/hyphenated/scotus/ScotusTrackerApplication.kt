@@ -44,7 +44,7 @@ class ScotusTrackerApplication {
 
     val t1 = termRepo.save(Term(null, "2019-2020", "OT2019"))
 
-    val case = caseRepo.save(Case(null, "People vs Other People", "Some people sue some other people", "DECIDED",
+    val case = caseRepo.save(Case(null, "People vs Other People", listOf(), "Some people sue some other people", "DECIDED",
         LocalDate.of(2019, 11, 11), LocalDate.of(2020, 1, 15), "2-0",
         "Judges decided to rule for people", t1, true, emptyList(), emptyList()))
     val decisionJustices = mutableListOf<OpinionJustice>()
@@ -54,7 +54,7 @@ class ScotusTrackerApplication {
 
     opinionRepo.save(decision)
 
-    val case2 = caseRepo.save(Case(null, "texas v bacerra", "CA and TX showdown", "GRANTED", null, null,
+    val case2 = caseRepo.save(Case(null, "texas v bacerra", listOf(), "CA and TX showdown", "GRANTED", null, null,
         null, null, t1, false, emptyList(), emptyList()))
 
     docketRepo.save(Docket(null, case, "People v Other People","165464",  ca09, "Other People win this round", true, "REMANDED"))

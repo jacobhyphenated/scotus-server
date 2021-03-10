@@ -24,7 +24,11 @@ class DBSearchService(private val caseRepo: CaseRepo,
     val docketSearchResults = async {
       docketRepo.findByTitleIgnoreCaseContaining(searchTerm).mapNotNull { it.case }
     }
+    val alternateTitleSearchResults = async {
+      caseRepo.findByAlternateTitles_titleIgnoreCaseContaining(searchTerm)
+    }
     val results = caseSearchResults.await().toMutableList()
+    results.addAll(alternateTitleSearchResults.await())
     results.addAll(docketSearchResults.await())
     results.map { it.id }
         .toSet()

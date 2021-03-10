@@ -9,4 +9,6 @@ interface CaseRepo: JpaRepository<Case, Long> {
   fun findByCaseIgnoreCaseContaining(title: String): List<Case>
 
   fun findByIdIn(ids: List<Long>): List<Case>
+
+  fun findByAlternateTitles_titleIgnoreCaseContaining(title: String): List<Case>
 }

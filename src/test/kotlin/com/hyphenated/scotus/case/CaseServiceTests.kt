@@ -37,17 +37,17 @@ class CaseServiceTests {
   private val terms = listOf(Term(1, "2019", "OT2019"), Term(2, "2020", "OT2020"))
 
   private val cases = listOf(
-    Case(1, "Trump v. Vance", "Can you criminally subpoena a sitting president?",
+    Case(1, "Trump v. Vance", listOf(), "Can you criminally subpoena a sitting president?",
       "AFFIRMED", LocalDate.of(2019, 10, 1), LocalDate.of(2020, 6, 30),
       "7-2","No heightened standard for subpoenas exist for the president", terms[0], true,
       listOf(), listOf()
     ),
-    Case(2, "McGirt v. Oklahoma", "Is the area of eastern OK near Tulsa tribal land?", "REVERSED",
+    Case(2, "McGirt v. Oklahoma", listOf(), "Is the area of eastern OK near Tulsa tribal land?", "REVERSED",
       LocalDate.of(2019, 11, 2), LocalDate.of(2020, 6, 7), "5-4",
       "The area is tribal land for the purposes of the major crimes act", terms[0], true,
       listOf(), listOf()
     ),
-    Case(3, "PennEast Pipeline Co. v. New Jersey", "Can private gas companies use eminent domain on state lands?",
+    Case(3, "PennEast Pipeline Co. v. New Jersey", listOf(), "Can private gas companies use eminent domain on state lands?",
       "GRANTED", null, null, null, null, terms[1], false,
       listOf(), listOf()
     )
@@ -100,6 +100,8 @@ class CaseServiceTests {
     assertThat(result.opinions[1].justices[0].isAuthor).isTrue
     assertThat(result.dockets).hasSize(1)
     assertThat(result.dockets[0].docketNumber).isEqualTo("te-st")
+    assertThat(result.alternateTitles).hasSize(1)
+    assertThat(result.alternateTitles[0]).isEqualTo("Trump v. DA Vance")
   }
 
   @Test
@@ -160,7 +162,7 @@ class CaseServiceTests {
   @Test
   fun testEditCase_noId() {
     whenever(caseRepo.findById(any())).thenReturn(Optional.empty())
-    val request = PatchCaseRequest(null, null, null, null, null, null, null, null, null)
+    val request = PatchCaseRequest(null, null, null, null, null, null, null, null, null, null)
     val result = caseService.editCase(10, request)
     assertThat(result).isNull()
   }
@@ -170,7 +172,7 @@ class CaseServiceTests {
     whenever(caseRepo.findById(1)).thenReturn(Optional.of(cases[0]))
     whenever(caseRepo.save<Case>(any())).thenAnswer { it.arguments[0] }
     val request = PatchCaseRequest("Trump v. Vaaance", "Criminal subpoena power",
-      null, null, null, null, null, null, null
+      null, null, null, null, null, null, null, null
     )
     val result = caseService.editCase(1, request)
     assertThat(result).isNotNull
@@ -184,6 +186,7 @@ class CaseServiceTests {
     assertThat(result?.decisionSummary).isEqualTo("No heightened standard for subpoenas exist for the president")
     assertThat(result?.term?.id).isEqualTo(1)
     assertThat(result?.important).isTrue
+    assertThat(result?.alternateTitles).hasSize(0)
   }
 
   @Test
@@ -191,8 +194,8 @@ class CaseServiceTests {
     whenever(caseRepo.findById(1)).thenReturn(Optional.of(cases[0]))
     whenever(termRepo.findById(2)).thenReturn(Optional.of(terms[1]))
     whenever(caseRepo.save<Case>(any())).thenAnswer { it.arguments[0] }
-    val request = PatchCaseRequest(null, null, "REMANDED",
-      LocalDate.of(2019, 11, 30), null, "6-3", null, 2, null
+    val request = PatchCaseRequest(null, null, "REMANDED", LocalDate.of(2019, 11, 30),
+      null, "6-3", null, 2, null, null
     )
     val result = caseService.editCase(1, request)
     assertThat(result).isNotNull
@@ -206,6 +209,7 @@ class CaseServiceTests {
     assertThat(result?.decisionSummary).isEqualTo("No heightened standard for subpoenas exist for the president")
     assertThat(result?.term?.id).isEqualTo(2)
     assertThat(result?.important).isTrue
+    assertThat(result?.alternateTitles).hasSize(0)
   }
 
   @Test
@@ -213,7 +217,8 @@ class CaseServiceTests {
     whenever(caseRepo.findById(1)).thenReturn(Optional.of(cases[0]))
     whenever(caseRepo.save<Case>(any())).thenAnswer { it.arguments[0] }
     val request = PatchCaseRequest(null, null, null, null,
-      LocalDate.of(2020, 7, 10), null, "Not above the law", null, false
+      LocalDate.of(2020, 7, 10), null, "Not above the law", null, false,
+      listOf("Trump v. DA Vance")
     )
     val result = caseService.editCase(1, request)
     assertThat(result).isNotNull
@@ -227,6 +232,8 @@ class CaseServiceTests {
     assertThat(result?.decisionSummary).isEqualTo("Not above the law")
     assertThat(result?.term?.id).isEqualTo(1)
     assertThat(result?.important).isFalse
+    assertThat(result?.alternateTitles).hasSize(1)
+    assertThat(result?.alternateTitles!![0]).isEqualTo("Trump v. DA Vance")
   }
 
   @Test
@@ -422,7 +429,9 @@ class CaseServiceTests {
       c1, "No special privileges", false, "DONE"
     ))
 
-    val testCase1 = cases[0].copy(opinions = listOf(o1, o2), dockets = dockets)
+    val alternateTitles = listOf(AlternateCaseTitle(100, cases[0], "Trump v. DA Vance"))
+
+    val testCase1 = cases[0].copy(opinions = listOf(o1, o2), dockets = dockets, alternateTitles = alternateTitles)
 
     val oj3 = mutableListOf<OpinionJustice>()
     val o3 = Opinion(102, cases[1], OpinionType.MAJORITY, oj3, "This part of Oklahoma is part of the Creek nation")

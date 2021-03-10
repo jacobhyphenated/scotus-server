@@ -8,6 +8,7 @@ import com.hyphenated.scotus.docket.NoJusticeIdException
 import com.hyphenated.scotus.docket.OpinionNotFoundException
 import com.hyphenated.scotus.justice.Justice
 import com.hyphenated.scotus.justice.JusticeRepo
+import com.hyphenated.scotus.search.SearchService
 import com.nhaarman.mockitokotlin2.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -31,10 +32,13 @@ class OpinionServiceTests {
   @Mock
   private lateinit var justiceRepo: JusticeRepo
 
+  @Mock
+  private lateinit var searchService: SearchService
+
   @InjectMocks
   private lateinit var opinionService: OpinionService
 
-  private val case = Case(100, "Apples v. Oranges", "Judicial review of comparison techniques",
+  private val case = Case(100, "Apples v. Oranges", listOf(), "Judicial review of comparison techniques",
     "AFFIRMED", LocalDate.of(2020, 2,2), LocalDate.of(2020, 6, 1),
     "7-2", "Apples cannot be successfully compared to oranges", Term(1, "2020", "ot2020"),
     false, listOf(), listOf())
@@ -121,6 +125,8 @@ class OpinionServiceTests {
     assertThat(result.id).isEqualTo(3)
     assertThat(result.opinionType).isEqualTo(OpinionType.DISSENT)
     assertThat(result.summary).isEqualTo("this is a dissent")
+
+    verify(searchService).indexCase(100)
   }
 
   @Test
@@ -190,5 +196,7 @@ class OpinionServiceTests {
     assertThat(result.justices[0].justiceId).isEqualTo(1)
     assertThat(result.justices[0].isAuthor).isTrue
     assertThat(result.justices[1].isAuthor).isFalse
+
+    verify(searchService).indexCase(100)
   }
 }

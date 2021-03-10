@@ -10,6 +10,7 @@ import java.time.LocalDate
 class CaseResponse(
     val id: Long,
     val case: String,
+    val alternateTitles: List<String>,
     val shortSummary: String,
     val status: String,
     val argumentDate: LocalDate?,
@@ -23,6 +24,6 @@ class CaseResponse(
 )
 
 fun Case.toResponse(): CaseResponse {
-  return CaseResponse(id!!, case, shortSummary, status, argumentDate, decisionDate, result, decisionSummary, term,
-      important, opinions.map { it.toResponse() }, dockets.map { it.toCaseResponse() })
+  return CaseResponse(id!!, case, alternateTitles.map { it.title }, shortSummary, status, argumentDate, decisionDate,
+      result, decisionSummary, term, important, opinions.map { it.toResponse() }, dockets.map { it.toCaseResponse() })
 }

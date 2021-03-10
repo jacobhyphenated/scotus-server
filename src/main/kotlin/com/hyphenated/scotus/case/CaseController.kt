@@ -110,7 +110,9 @@ data class CreateCaseRequest(
 
     val important: Boolean,
 
-    val docketIds: List<Long>
+    val docketIds: List<Long>,
+
+    val alternateTitles: List<String> = listOf()
 )
 
 data class PatchCaseRequest (
@@ -122,7 +124,8 @@ data class PatchCaseRequest (
   val result: String?,
   val decisionSummary: String?,
   val termId: Long?,
-  val important: Boolean?
+  val important: Boolean?,
+  val alternateTitles: List<String>?
 )
 
 data class CreateTermRequest(

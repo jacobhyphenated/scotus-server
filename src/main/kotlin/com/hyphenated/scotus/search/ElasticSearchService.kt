@@ -2,7 +2,6 @@ package com.hyphenated.scotus.search
 
 import com.hyphenated.scotus.case.Case
 import com.hyphenated.scotus.case.CaseRepo
-import com.hyphenated.scotus.case.CaseService
 import com.hyphenated.scotus.docket.CaseNotFoundException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
@@ -30,6 +29,7 @@ class ElasticSearchService(private val searchRepository: SearchRepository,
         .should(multiMatchQuery(searchTerm)
             .field("title")
             .field("docketTitles")
+            .field("alternateTitles")
             .fuzziness(Fuzziness.TWO)
             .operator(Operator.AND))
         .should(termQuery("docketNumbers", searchTerm)
@@ -84,6 +84,7 @@ fun Case.toDocument(): CaseSearchDocument {
   return CaseSearchDocument(
       id = this.id!!,
       title = this.case,
+      alternateTitles = this.alternateTitles.map { it.title },
       shortSummary = this.shortSummary,
       decision = this.decisionSummary,
       docketTitles = this.dockets.map { it.title },

@@ -14,6 +14,9 @@ class CaseSearchDocument (
     val title: String,
 
     @Field(type = FieldType.Text)
+    val alternateTitles: List<String>,
+
+    @Field(type = FieldType.Text)
     val shortSummary: String,
 
     @Field(type = FieldType.Text)

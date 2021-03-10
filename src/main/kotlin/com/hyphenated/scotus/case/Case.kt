@@ -17,6 +17,10 @@ data class Case (
     @Column(name = "case_title")
     val case: String,
 
+    @get:JsonIgnore
+    @OneToMany(mappedBy = "case", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val alternateTitles: List<AlternateCaseTitle>,
+
     @Column(name = "short_summary")
     val shortSummary: String,
 

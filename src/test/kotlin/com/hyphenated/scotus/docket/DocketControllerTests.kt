@@ -159,7 +159,7 @@ class DocketControllerTests {
 
   @Test
   fun testGetDocketById() {
-    val case = Case(43, "Obergefell v. Hodges", "A state marriage license for a same sex couple should be recognized in all states",
+    val case = Case(43, "Obergefell v. Hodges", listOf(),"A state marriage license for a same sex couple should be recognized in all states",
         "RESOLVED", LocalDate.of(2015,4,28), LocalDate.of(2015,6,26), "5-4",
         "Right to marry is a fundamental right guaranteed by the Fourteenth Amendment. State laws prohibiting same sex marriage are invalidated",
         Term(30,"2014-2015", "OT2014"), false, emptyList(), emptyList())
@@ -235,7 +235,7 @@ class DocketControllerTests {
     val request = "{\"status\":\"ARGUMENT_SCHEDULED\",\"caseId\":14}"
 
     whenever(docketService.editDocket(eq(19), any())).thenReturn(
-        Docket(19, Case(14, "Moore vs Moar", "Defining the Moore Doctrine", "ARGUMENT_SCHEDULED",
+        Docket(19, Case(14, "Moore vs Moar", listOf(), "Defining the Moore Doctrine", "ARGUMENT_SCHEDULED",
             null, null, null, null, Term(20, "2019-2020", "OT2019"), false, emptyList(), emptyList()),
             "Moore v. Moar", "20-661", Court(1, "CA09", "Ninth Circuit"),
             "More's the pity when we want moar from moore", null,"ARGUMENT_SCHEDULED")

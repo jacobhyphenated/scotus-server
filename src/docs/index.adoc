@@ -1,4 +1,4 @@
-= Documentation for the REST API
+= Documentation for the SCOTUS Tracker API
 :toc: left
 
 *Note:* All response values in this documentation are examples only and do not represent actual data that will be returned from the API.

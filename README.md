@@ -29,15 +29,14 @@ Use the `local` profile. This mode uses an in memory database with a small amoun
 
 This mode is good for testing changes to the admin section where you may need to create a lot of junk data. This mode is not good for data entry where you want to keep the results.
 
-You need no other external depenencies to run the API in `local` mode.
+You need no other external dependencies to run the API in `local` mode.
 ### Dev
 Use the `dev` profile. This still runs in your local environment, but is designed to be more stable. You will need PostgreSQL installed on your device running on port 5423 (the default configuration). Create a database named `scotus` and a user with full access. The username and password should be provided as environment variables named: `SCOTUS_DB_USER` and `SCOTUS_DB_PASS`
 
 To get a head start on creating the database, you can choose to import an outdated set of data from the production environment:
-* Create a database named `scotus` and a user named `scotus_local`
-  * Grant all privileges to `scotus_local` for the `scotus` database
-  * store the username and password as environment variables `SCOTUS_DB_USER` and `SCOTUS_DB_PASS`
-* Import the provided sql script `script/db.sql` into the `scotus` database
+* Create a database user named `scotus_local`
+* store the username and password for `scotus_local` as environment variables `SCOTUS_DB_USER` and `SCOTUS_DB_PASS`
+* Import and run the provided sql script `script/db.sql`
 * Note: The provided data includes an admin user with the username `admin` and the password `password`
 
 ### Search

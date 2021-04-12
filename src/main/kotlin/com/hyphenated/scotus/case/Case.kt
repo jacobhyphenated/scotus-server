@@ -33,6 +33,10 @@ data class Case (
     @Column(name = "decision_date", nullable = true)
     val decisionDate: LocalDate?,
 
+    @get:JsonIgnore
+    @Column(name = "decision_link", nullable = true)
+    val decisionLink: String?,
+
     @Column(nullable = true)
     val result: String?,
 

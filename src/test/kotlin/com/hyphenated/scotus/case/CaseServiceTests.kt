@@ -39,16 +39,16 @@ class CaseServiceTests {
   private val cases = listOf(
     Case(1, "Trump v. Vance", listOf(), "Can you criminally subpoena a sitting president?",
       "AFFIRMED", LocalDate.of(2019, 10, 1), LocalDate.of(2020, 6, 30),
-      "7-2","No heightened standard for subpoenas exist for the president", terms[0], true,
+      "link.url", "7-2","No heightened standard for subpoenas exist for the president", terms[0], true,
       listOf(), listOf()
     ),
     Case(2, "McGirt v. Oklahoma", listOf(), "Is the area of eastern OK near Tulsa tribal land?", "REVERSED",
-      LocalDate.of(2019, 11, 2), LocalDate.of(2020, 6, 7), "5-4",
-      "The area is tribal land for the purposes of the major crimes act", terms[0], true,
+      LocalDate.of(2019, 11, 2), LocalDate.of(2020, 6, 7), "url.com", "5-4",
+      "The area is tribal land for the purposes of the major crimes act",  terms[0], true,
       listOf(), listOf()
     ),
     Case(3, "PennEast Pipeline Co. v. New Jersey", listOf(), "Can private gas companies use eminent domain on state lands?",
-      "GRANTED", null, null, null, null, terms[1], false,
+      "GRANTED", null, null, null, null,null, terms[1], false,
       listOf(), listOf()
     )
   )
@@ -162,7 +162,7 @@ class CaseServiceTests {
   @Test
   fun testEditCase_noId() {
     whenever(caseRepo.findById(any())).thenReturn(Optional.empty())
-    val request = PatchCaseRequest(null, null, null, null, null, null, null, null, null, null)
+    val request = PatchCaseRequest(null, null, null, null, null, null, null, null, null, null, null)
     val result = caseService.editCase(10, request)
     assertThat(result).isNull()
   }
@@ -172,7 +172,7 @@ class CaseServiceTests {
     whenever(caseRepo.findById(1)).thenReturn(Optional.of(cases[0]))
     whenever(caseRepo.save<Case>(any())).thenAnswer { it.arguments[0] }
     val request = PatchCaseRequest("Trump v. Vaaance", "Criminal subpoena power",
-      null, null, null, null, null, null, null, null
+      null, null, null, null, null, null, null,  null, null
     )
     val result = caseService.editCase(1, request)
     assertThat(result).isNotNull
@@ -182,6 +182,7 @@ class CaseServiceTests {
     assertThat(result?.status).isEqualTo("AFFIRMED")
     assertThat(result?.argumentDate).isEqualTo(LocalDate.of(2019, 10, 1))
     assertThat(result?.decisionDate).isEqualTo(LocalDate.of(2020, 6, 30))
+    assertThat(result?.decisionLink).isEqualTo("link.url")
     assertThat(result?.result).isEqualTo("7-2")
     assertThat(result?.decisionSummary).isEqualTo("No heightened standard for subpoenas exist for the president")
     assertThat(result?.term?.id).isEqualTo(1)
@@ -195,7 +196,7 @@ class CaseServiceTests {
     whenever(termRepo.findById(2)).thenReturn(Optional.of(terms[1]))
     whenever(caseRepo.save<Case>(any())).thenAnswer { it.arguments[0] }
     val request = PatchCaseRequest(null, null, "REMANDED", LocalDate.of(2019, 11, 30),
-      null, "6-3", null, 2, null, null
+      null, "6-3", null, "updated.link",2, null, null
     )
     val result = caseService.editCase(1, request)
     assertThat(result).isNotNull
@@ -205,6 +206,7 @@ class CaseServiceTests {
     assertThat(result?.status).isEqualTo("REMANDED")
     assertThat(result?.argumentDate).isEqualTo(LocalDate.of(2019, 11, 30))
     assertThat(result?.decisionDate).isEqualTo(LocalDate.of(2020, 6, 30))
+    assertThat(result?.decisionLink).isEqualTo("updated.link")
     assertThat(result?.result).isEqualTo("6-3")
     assertThat(result?.decisionSummary).isEqualTo("No heightened standard for subpoenas exist for the president")
     assertThat(result?.term?.id).isEqualTo(2)
@@ -217,8 +219,8 @@ class CaseServiceTests {
     whenever(caseRepo.findById(1)).thenReturn(Optional.of(cases[0]))
     whenever(caseRepo.save<Case>(any())).thenAnswer { it.arguments[0] }
     val request = PatchCaseRequest(null, null, null, null,
-      LocalDate.of(2020, 7, 10), null, "Not above the law", null, false,
-      listOf("Trump v. DA Vance")
+      LocalDate.of(2020, 7, 10), null, "Not above the law", null,
+      null, false, listOf("Trump v. DA Vance")
     )
     val result = caseService.editCase(1, request)
     assertThat(result).isNotNull
@@ -230,6 +232,7 @@ class CaseServiceTests {
     assertThat(result?.decisionDate).isEqualTo(LocalDate.of(2020, 7, 10))
     assertThat(result?.result).isEqualTo("7-2")
     assertThat(result?.decisionSummary).isEqualTo("Not above the law")
+    assertThat(result?.decisionLink).isEqualTo("link.url")
     assertThat(result?.term?.id).isEqualTo(1)
     assertThat(result?.important).isFalse
     assertThat(result?.alternateTitles).hasSize(1)

@@ -123,6 +123,7 @@ data class PatchCaseRequest (
   val decisionDate: LocalDate?,
   val result: String?,
   val decisionSummary: String?,
+  val decisionLink: String?,
   val termId: Long?,
   val important: Boolean?,
   val alternateTitles: List<String>?

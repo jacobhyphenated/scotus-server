@@ -17,33 +17,62 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.lang.Exception
 
 @Service
 @Profile("search")
 class ElasticSearchService(private val searchRepository: SearchRepository,
+                           private val caseTitleSearchService: CaseTitleSearchService,
                            private val caseRepo: CaseRepo,
                            private val client: ElasticsearchRestTemplate): SearchService {
+
   override fun searchCases(searchTerm: String): List<Case> {
     log.debug("Elastic Search: $searchTerm")
+    return try {
+      elasticSearchLookup(searchTerm)
+    } catch (e: Exception) {
+      log.error("elasticsearch lookup error", e)
+      caseTitleSearchService.searchCases(searchTerm)
+    }
+  }
+
+  @Transactional
+  @PreAuthorize("hasRole('ADMIN')")
+  override fun indexCase(caseId: Long) {
+    val case = caseRepo.findByIdOrNull(caseId) ?: throw CaseNotFoundException(caseId)
+    try {
+      searchRepository.save(case.toDocument())
+    } catch (e: Exception) {
+      log.error("elasticsearch index error", e)
+    }
+  }
+
+  @Transactional
+  @PreAuthorize("hasRole('ADMIN')")
+  override fun indexAllCases() {
+    caseRepo.findAll().forEachParallel { indexCase(it.id!!) }
+  }
+
+  private fun elasticSearchLookup(searchTerm: String): List<Case> {
     val query = NativeSearchQueryBuilder().withQuery(boolQuery()
-        .should(multiMatchQuery(searchTerm)
-            .field("title")
-            .field("docketTitles")
-            .field("alternateTitles")
-            .fuzziness(Fuzziness.TWO)
-            .operator(Operator.AND))
-        .should(termQuery("docketNumbers", searchTerm)
-            .boost(2.0f))
-        .should(multiMatchQuery(searchTerm)
-            .field("shortSummary")
-            .field("decision")
-            .fuzziness(Fuzziness.ONE)
-            .operator(Operator.AND))
-        .should(matchPhraseQuery("opinions", searchTerm)
-            .slop(1))
-        .should(matchPhraseQuery("docketSummaries", searchTerm)
-            .slop(1)))
-        .build()
+      .should(multiMatchQuery(searchTerm)
+        .field("title")
+        .field("docketTitles")
+        .field("alternateTitles")
+        .fuzziness(Fuzziness.TWO)
+        .operator(Operator.AND))
+      .should(termQuery("docketNumbers", searchTerm)
+        .boost(2.0f))
+      .should(multiMatchQuery(searchTerm)
+        .field("shortSummary")
+        .field("decision")
+        .fuzziness(Fuzziness.ONE)
+        .operator(Operator.AND))
+      .should(matchPhraseQuery("opinions", searchTerm)
+        .slop(1))
+      .should(matchPhraseQuery("docketSummaries", searchTerm)
+        .slop(1)))
+      .build()
     val searchResult = client.search(query, CaseSearchDocument::class.java, IndexCoordinates.of("scotus_case"))
     if (searchResult.isEmpty) {
       return emptyList()
@@ -52,27 +81,14 @@ class ElasticSearchService(private val searchRepository: SearchRepository,
     val scoreResults = searchResult.filter { it.score > 0.1 }
 
     val ids = scoreResults
-        .sortedByDescending { it.score }
-        .subList(0, 10.coerceAtMost(scoreResults.count()))
-        .mapNotNull {
-          log.debug("${it.id} - ${it.score}")
-          it.id?.toLong()
-        }
+      .sortedByDescending { it.score }
+      .subList(0, 10.coerceAtMost(scoreResults.count()))
+      .mapNotNull {
+        log.debug("${it.id} - ${it.score}")
+        it.id?.toLong()
+      }
     val cases = caseRepo.findByIdIn(ids)
     return ids.mapNotNull { cases.find { c -> c.id == it } }
-  }
-
-  @Transactional
-  @PreAuthorize("hasRole('ADMIN')")
-  override fun indexCase(caseId: Long) {
-    val case = caseRepo.findByIdOrNull(caseId) ?: throw CaseNotFoundException(caseId)
-    searchRepository.save(case.toDocument())
-  }
-
-  @Transactional
-  @PreAuthorize("hasRole('ADMIN')")
-  override fun indexAllCases() {
-    caseRepo.findAll().forEachParallel { indexCase(it.id!!) }
   }
 
   companion object {

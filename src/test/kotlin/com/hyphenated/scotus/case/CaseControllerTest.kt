@@ -67,7 +67,8 @@ class CaseControllerTest {
         fieldWithPath("term").type(JsonFieldType.OBJECT).description("The SCOTUS term the case where was granted"),
         fieldWithPath("term.id").type(JsonFieldType.NUMBER).description("Id of the term"),
         fieldWithPath("term.name").type(JsonFieldType.STRING).description("Term defined as a year range ex) 2014-2015"),
-        fieldWithPath("term.otName").type(JsonFieldType.STRING).description("SCOTUS terms start in October and last until June. The \"OT\" term is the year of the October sitting ex) OT2014"))
+        fieldWithPath("term.otName").type(JsonFieldType.STRING).description("SCOTUS terms start in October and last until June. The \"OT\" term is the year of the October sitting ex) OT2014"),
+        fieldWithPath("term.inactive").type(JsonFieldType.BOOLEAN).description("Inactive terms do not contain all cases from that term"))
   }
 
   private val caseResponseFull = responseFields(*caseFields,
@@ -100,7 +101,8 @@ class CaseControllerTest {
   private val termFields = arrayOf(
       fieldWithPath("id").description("Id of the term"),
       fieldWithPath("name").description("Term defined as a year range"),
-      fieldWithPath("otName").description("October term (\"OT\") notation")
+      fieldWithPath("otName").description("October term (\"OT\") notation"),
+      fieldWithPath("inactive").description("Inactive terms are only partial terms. They do not contain all cases from that term")
   )
 
   @Test
@@ -465,10 +467,10 @@ class CaseControllerTest {
 
   @Test
   fun testCreateTerm() {
-    whenever(service.createTerm("2020-2021", "OT2020"))
-        .thenReturn(Term(5, "2020-2021", "OT2020"))
+    whenever(service.createTerm("2020-2021", "OT2020", true))
+        .thenReturn(Term(5, "2020-2021", "OT2020", true))
 
-    val request = "{\"name\":\"2020-2021\",\"otName\":\"OT2020\"}"
+    val request = "{\"name\":\"2020-2021\",\"otName\":\"OT2020\", \"inactive\":true}"
 
     this.mockMvc.perform(post("/cases/term")
         .contentType(MediaType.APPLICATION_JSON)
@@ -483,6 +485,30 @@ class CaseControllerTest {
             ),
             responseFields(*termFields)
         ))
+  }
+
+  @Test
+  fun testEditTerm() {
+    whenever(service.editTerm(eq(2), any()))
+      .thenReturn(Term(2, "2021-2022", "OT2021", false))
+    val request = "{\"otName\": \"OT2021\"}"
+
+    this.mockMvc.perform(RestDocumentationRequestBuilders.patch("/cases/term/{termId}", 2)
+      .contentType(MediaType.APPLICATION_JSON)
+      .content(request))
+      .andExpect(status().isOk)
+      .andExpect(jsonPath("otName").value("OT2021"))
+      .andDo(document("case/admin/editTerm",
+        preprocessRequest(prettyPrint()),
+        preprocessResponse(prettyPrint()),
+        pathParameters(parameterWithName("termId").description("Id of the term to modify")),
+        requestFields(
+          fieldWithPath("name").type(JsonFieldType.STRING).optional().description("(optional) Term defined as a year range"),
+          fieldWithPath("otName").type(JsonFieldType.STRING).optional().description("(optional) October term (\"OT\") notation"),
+          fieldWithPath("inactive").type(JsonFieldType.BOOLEAN).optional().description("(optional) mark term as inactive")
+        ),
+        responseFields(*termFields)
+      ))
   }
 
   @Test

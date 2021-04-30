@@ -167,24 +167,6 @@ include::{snippets}/case/admin/create/response-fields.adoc[]
 .response body
 include::{snippets}/case/admin/create/response-body.adoc[]
 
-=== Create Term
-Create a new term
-
-.curl request
-include::{snippets}/case/admin/term/curl-request.adoc[]
-
-.request
-include::{snippets}/case/admin/term/http-request.adoc[]
-
-.request fields
-include::{snippets}/case/admin/term/request-fields.adoc[]
-
-.response fields
-include::{snippets}/case/admin/term/response-fields.adoc[]
-
-.response body
-include::{snippets}/case/admin/term/response-body.adoc[]
-
 === Edit Case
 Edit an existing Case. This is an idempotent PATCH endpoint.
 All request fields are optional and only non-null values will be modified.
@@ -206,6 +188,46 @@ include::{snippets}/case/admin/edit/response-fields.adoc[]
 
 .response body
 include::{snippets}/case/admin/edit/response-body.adoc[]
+
+=== Create Term
+Create a new term
+
+.curl request
+include::{snippets}/case/admin/term/curl-request.adoc[]
+
+.request
+include::{snippets}/case/admin/term/http-request.adoc[]
+
+.request fields
+include::{snippets}/case/admin/term/request-fields.adoc[]
+
+.response fields
+include::{snippets}/case/admin/term/response-fields.adoc[]
+
+.response body
+include::{snippets}/case/admin/term/response-body.adoc[]
+
+=== Edit Term
+Edit an existing Term. This is an idempotent PATCH endpoint.
+All request fields are optional and only non-null values will be modified.
+
+.curl request
+include::{snippets}/case/admin/editTerm/curl-request.adoc[]
+
+.request
+include::{snippets}/case/admin/editTerm/http-request.adoc[]
+
+.path parameters
+include::{snippets}/case/admin/editTerm/path-parameters.adoc[]
+
+.request fields
+include::{snippets}/case/admin/editTerm/request-fields.adoc[]
+
+.response fields
+include::{snippets}/case/admin/editTerm/response-fields.adoc[]
+
+.response body
+include::{snippets}/case/admin/editTerm/response-body.adoc[]
 
 === Remove Argument Date
 Deletes the argument date field from an existing case.

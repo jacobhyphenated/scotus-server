@@ -39,7 +39,14 @@ class CaseController(private val caseService: CaseService,
   @PostMapping("term")
   @ResponseStatus(HttpStatus.CREATED)
   fun createTerm(@Valid @RequestBody request: CreateTermRequest): Term {
-    return caseService.createTerm(request.name, request.otName)
+    return caseService.createTerm(request.name, request.otName, request.inactive)
+  }
+
+  @PatchMapping("term/{termId}")
+  fun editTerm(@PathVariable termId: Long, @RequestBody request: EditTermRequest): ResponseEntity<Term> {
+    return caseService.editTerm(termId, request)
+      ?.let { ResponseEntity.ok(it) }
+      ?: ResponseEntity.notFound().build()
   }
 
   @GetMapping("term/{termId}/summary")
@@ -133,5 +140,12 @@ data class CreateTermRequest(
     @get:NotEmpty
     val name: String,
     @get:NotEmpty
-    val otName: String
+    val otName: String,
+    val inactive: Boolean = false
+)
+
+data class EditTermRequest(
+  val name: String?,
+  val otName: String?,
+  val inactive: Boolean?
 )

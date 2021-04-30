@@ -8,6 +8,7 @@ import javax.persistence.Id
 @Document(indexName = "scotus_case")
 class CaseSearchDocument (
     @Id
+    @org.springframework.data.annotation.Id
     val id: Long,
 
     @Field(type = FieldType.Text)

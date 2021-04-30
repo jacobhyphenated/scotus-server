@@ -59,8 +59,18 @@ class CaseService(private val caseRepo: CaseRepo,
   }
 
   @PreAuthorize("hasRole('ADMIN')")
-  fun createTerm(name: String, otName: String): Term {
-    return termRepo.save(Term(null, name, otName))
+  fun createTerm(name: String, otName: String, inactive: Boolean): Term {
+    return termRepo.save(Term(null, name, otName, inactive))
+  }
+
+  @PreAuthorize("hasRole('ADMIN')")
+  fun editTerm(termId: Long, editTermRequest: EditTermRequest): Term? {
+    val term = termRepo.findByIdOrNull(termId) ?: return null
+    return termRepo.save(term.copy(
+      name = editTermRequest.name ?: term.name,
+      otName = editTermRequest.otName ?: term.otName,
+      inactive = editTermRequest.inactive ?: term.inactive
+    ))
   }
 
   @Transactional

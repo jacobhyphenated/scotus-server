@@ -117,10 +117,40 @@ class CaseServiceTests {
       val term = it.arguments[0] as Term
       term.copy(id = 10)
     }
-    val result = caseService.createTerm("2019", "ot2019")
+    val result = caseService.createTerm("2019", "ot2019", false)
     assertThat(result.id).isEqualTo(10)
     assertThat(result.name).isEqualTo("2019")
     assertThat(result.otName).isEqualTo("ot2019")
+    assertThat(result.inactive).isEqualTo(false)
+  }
+
+  @Test
+  fun testEditTerm_noTerm() {
+    whenever(termRepo.findById(any())).thenReturn(Optional.empty())
+    val result = caseService.editTerm(5, EditTermRequest(null, null, null))
+    assertThat(result).isNull()
+  }
+
+  @Test
+  fun testEditTerm_name() {
+    whenever(termRepo.findById(2)).thenReturn(Optional.of(Term(2, "2010-2011", "OT2010", true)))
+    whenever(termRepo.save<Term>(any())).thenAnswer { it.arguments[0] }
+    val result = caseService.editTerm(2, EditTermRequest("2011-2012", "OT2011", null))
+    assertThat(result?.id).isEqualTo(2)
+    assertThat(result?.name).isEqualTo("2011-2012")
+    assertThat(result?.otName).isEqualTo("OT2011")
+    assertThat(result?.inactive).isEqualTo(true)
+  }
+
+  @Test
+  fun testEditTerm_inactive() {
+    whenever(termRepo.findById(2)).thenReturn(Optional.of(Term(2, "2010-2011", "OT2010", true)))
+    whenever(termRepo.save<Term>(any())).thenAnswer { it.arguments[0] }
+    val result = caseService.editTerm(2, EditTermRequest(null, null, false))
+    assertThat(result?.id).isEqualTo(2)
+    assertThat(result?.name).isEqualTo("2010-2011")
+    assertThat(result?.otName).isEqualTo("OT2010")
+    assertThat(result?.inactive).isEqualTo(false)
   }
 
   @Test

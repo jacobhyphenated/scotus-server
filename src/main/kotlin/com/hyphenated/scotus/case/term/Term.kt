@@ -14,5 +14,8 @@ data class Term (
     val name: String,
 
     @Column(name = "ot_name")
-    val otName: String
+    val otName: String,
+
+    @Column
+    val inactive: Boolean = false
 )

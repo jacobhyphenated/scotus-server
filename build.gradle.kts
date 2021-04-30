@@ -4,7 +4,7 @@ plugins {
   java
   idea
   jacoco
-  id("org.springframework.boot") version "2.4.2"
+  id("org.springframework.boot") version "2.4.5"
   id("io.spring.dependency-management") version "1.0.10.RELEASE"
   id("org.asciidoctor.convert") version "1.5.9.2"
   kotlin("jvm") version "1.4.30"
@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "com.hyphenated"
-version = "0.4.3"
+version = "0.5.0"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
@@ -28,7 +28,7 @@ idea {
 }
 
 val snippetsDir = file("build/generated-snippets")
-var coroutinesVersion = "1.4.2"
+var coroutinesVersion = "1.4.3"
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter-actuator")

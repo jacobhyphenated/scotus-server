@@ -34,7 +34,7 @@ class CaseService(private val caseRepo: CaseRepo,
 
   @Transactional
   fun getTermSummary(termId: Long): TermSummaryResponse {
-    val termCases = getTermCases(termId)
+    val termCases = caseRepo.findByTermId(termId)
     if (termCases.isEmpty()) {
       throw NoTermIdException(termId)
     }

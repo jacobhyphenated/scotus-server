@@ -40,17 +40,21 @@ class ElasticSearchService(private val searchRepository: SearchRepository,
   @PreAuthorize("hasRole('ADMIN')")
   override fun indexCase(caseId: Long) {
     val case = caseRepo.findByIdOrNull(caseId) ?: throw CaseNotFoundException(caseId)
-    try {
-      searchRepository.save(case.toDocument())
-    } catch (e: Exception) {
-      log.error("elasticsearch index error", e)
-    }
+    updateCaseIndex(case)
   }
 
   @Transactional
   @PreAuthorize("hasRole('ADMIN')")
   override fun indexAllCases() {
-    caseRepo.findAll().forEachParallel { indexCase(it.id!!) }
+    caseRepo.findAll().forEachParallel { updateCaseIndex(it) }
+  }
+
+  private fun updateCaseIndex(case: Case) {
+    try {
+      searchRepository.save(case.toDocument())
+    } catch (e: Exception) {
+      log.error("elasticsearch index error", e)
+    }
   }
 
   private fun elasticSearchLookup(searchTerm: String): List<Case> {

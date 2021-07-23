@@ -39,7 +39,7 @@ class OpinionServiceTests {
   private lateinit var opinionService: OpinionService
 
   private val case = Case(100, "Apples v. Oranges", listOf(), "Judicial review of comparison techniques",
-    "AFFIRMED", LocalDate.of(2020, 2,2), LocalDate.of(2020, 6, 1), null,
+    "AFFIRMED", LocalDate.of(2020, 2,2), "February", LocalDate.of(2020, 6, 1), null,
     "7-2", "Apples cannot be successfully compared to oranges", Term(1, "2020", "ot2020"),
     false, listOf(), listOf())
   private val justices = listOf(

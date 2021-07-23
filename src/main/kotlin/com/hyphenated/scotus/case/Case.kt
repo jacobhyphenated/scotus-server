@@ -30,6 +30,9 @@ data class Case (
     @Column(name = "argument_date", nullable = true)
     val argumentDate: LocalDate?,
 
+    @Column(name = "sitting", nullable = true)
+    val sitting: String?,
+
     @Column(name = "decision_date", nullable = true)
     val decisionDate: LocalDate?,
 

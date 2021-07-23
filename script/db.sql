@@ -228,7 +228,8 @@ CREATE TABLE public.scotus_case (
     status character varying(255),
     term_id bigint,
     important boolean DEFAULT false NOT NULL,
-    decision_link character varying(255)
+    decision_link character varying(255),
+    sitting character varying(31)
 );
 
 

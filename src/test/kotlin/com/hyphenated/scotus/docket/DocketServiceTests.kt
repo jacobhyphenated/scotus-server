@@ -34,7 +34,7 @@ class DocketServiceTests {
 
   private val lowerCourt = Court(1, "te01", "test court 1")
   private val case = Case(100, "New York v. California", listOf(), "East coast vs west coast showdown",
-    "REMANDED", LocalDate.of(2019, 10, 1), LocalDate.of(2020, 1, 5),
+    "REMANDED", LocalDate.of(2019, 10, 1), "October", LocalDate.of(2020, 1, 5),
     null, "7-2", "Remanded for further arguments on what constitutes the definition of pizza",
     Term(50, "2019-2020", "OT2019"), true, listOf(), listOf()
   )
@@ -173,7 +173,7 @@ class DocketServiceTests {
   @Test
   fun testEditDocket_changeCase() {
     val case = Case(2, "California Pizza Kitchen v. Sbarros", listOf(),  "pizza showdown", "GRANTED",
-      null, null, null, null, null, Term(50, "2019-2020", "OT2019"),
+      null, null, null, null, null, null, Term(50, "2019-2020", "OT2019"),
       true, listOf(), listOf()
     )
     whenever(docketRepo.findById(3)).thenReturn(Optional.of(dockets[2]))

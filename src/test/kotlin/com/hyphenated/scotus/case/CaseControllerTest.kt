@@ -59,6 +59,7 @@ class CaseControllerTest {
         fieldWithPath("case").type(JsonFieldType.STRING).description("the case title"),
         fieldWithPath("shortSummary").type(JsonFieldType.STRING).description("A short description of the case"),
         fieldWithPath("argumentDate").type(JsonFieldType.STRING).optional().description("The date the case was argued (yyyy-MM-dd)"),
+        fieldWithPath("sitting").type(JsonFieldType.STRING).optional().description("Scotus argument sitting. SCOTUS hears many cases at a time, broken up into sittings (October, November, etc.)"),
         fieldWithPath("decisionDate").type(JsonFieldType.STRING).optional().description("The date the Supreme Court ruled on the case (yyyy-MM-dd)"),
         fieldWithPath("result").type(JsonFieldType.STRING).optional().description("The high level result of the case. ex) 9-0"),
         fieldWithPath("decisionSummary").type(JsonFieldType.STRING).optional().description("At a very high level, what this ruling means"),
@@ -108,14 +109,14 @@ class CaseControllerTest {
   @Test
   fun testGetAll() {
     val case1 = Case(100, "Spy v Spy", listOf(), "SNL makes it to the supreme court", "RESOLVED",
-        LocalDate.of(2019, 11,25), LocalDate.of(2020,1,10),
+        LocalDate.of(2019, 11,25), "November", LocalDate.of(2020,1,10),
         "http://example.com/opinion.pdf", "5-4","It was a close one, a lot of back and forth",
         Term(2, "2019-2020", "OT2019"), false, emptyList(), emptyList())
 
     val decisionCase2 = mutableListOf<Opinion>()
     val docketCase2 = mutableListOf<Docket>()
     val case2 =  Case(102, "People v Mr. Peanut", listOf(),"Mr peanut was murdered and the court needs to decide why",
-        "RESOLVED", LocalDate.of(2020,2,2), LocalDate.of(2020, 2,3),
+        "RESOLVED", LocalDate.of(2020,2,2), "February", LocalDate.of(2020, 2,3),
         "http://example.com/opinion.pdf","9-0", "Not justiciable",
         Term(1, "2020-2021", "OT2020"), true, decisionCase2, docketCase2)
     decisionCase2.add(Opinion(5, case2, OpinionType.PER_CURIUM, emptyList(), "DIG"))
@@ -123,7 +124,7 @@ class CaseControllerTest {
         "Ruled for peanut", true, "REMANDED"))
 
     val case3 = Case(55, "Helicopter v Kobe", listOf(), "Wrongful death estate claim", "ARGUED",
-        LocalDate.of(2020,10,11), null, null, null, null,
+        LocalDate.of(2020,10,11), "October", null, null, null, null,
         Term(1, "2020-2021", "OT2020"), false, emptyList(), emptyList())
     val cases = listOf(case1, case2, case3)
 
@@ -151,7 +152,7 @@ class CaseControllerTest {
   @Test
   fun testGetCaseByTerm() {
     val case1 = Case(100, "Spy v Spy", listOf(), "SNL makes it to the supreme court", "RESOLVED",
-        LocalDate.of(2019, 11,25), LocalDate.of(2020,1,10), null, "5-4",
+        LocalDate.of(2019, 11,25), "November", LocalDate.of(2020,1,10), null, "5-4",
         "It was a close one, a lot of back and forth", Term(50, "2019-2020", "OT2019"), false, emptyList(), emptyList())
     val cases = listOf(case1)
 
@@ -173,7 +174,7 @@ class CaseControllerTest {
   @Test
   fun testSearchCasesByTitle() {
     val case1 = Case(100, "Spy v Spy", listOf(), "SNL makes it to the supreme court", "RESOLVED",
-        LocalDate.of(2019, 11,25), LocalDate.of(2020,1,10), null, "5-4",
+        LocalDate.of(2019, 11,25), "November", LocalDate.of(2020,1,10), null, "5-4",
         "It was a close one, a lot of back and forth", Term(50, "2019-2020", "OT2019"), false, emptyList(), emptyList())
     val cases = listOf(case1)
 
@@ -195,7 +196,7 @@ class CaseControllerTest {
   @Test
   fun testSearchCases() {
     val case1 = Case(100, "Spy v Spy", listOf(),"SNL makes it to the supreme court", "RESOLVED",
-        LocalDate.of(2019, 11,25), LocalDate.of(2020,1,10), null, "5-4",
+        LocalDate.of(2019, 11,25), "November", LocalDate.of(2020,1,10), null, "5-4",
         "It was a close one, a lot of back and forth", Term(50, "2019-2020", "OT2019"), false, emptyList(), emptyList())
     val cases = listOf(case1)
 
@@ -255,7 +256,7 @@ class CaseControllerTest {
     val altTitles = listOf("Obergfell v. Hodges", "Bourke v. Beshear")
 
     val case = CaseResponse(200, "Obergefell v Hodges", altTitles, "A state marriage license for a same sex couple should be recognized in all states",
-        "RESOLVED", LocalDate.of(2015,4,28), LocalDate.of(2015,6,26),
+        "RESOLVED", LocalDate.of(2015,4,28), "April", LocalDate.of(2015,6,26),
         "5-4", "Right to marry is a fundamental right guaranteed by the Fourteenth Amendment. State laws prohibiting same sex marriage are invalidated",
         "https://www.supremecourt.gov/opinions/14pdf/14-556_3204.pdf", Term(33, "2014-2015", "OT2014"),
         true, listOf(majority, dissent1, dissent2, dissent3, dissent4), listOf(docket1, docket2, docket3, docket4))
@@ -297,7 +298,7 @@ class CaseControllerTest {
       val mockDockets = listOf(
           DocketCaseResponse(18,  "19-225", "Bostock v. Clayton County, Georgia", Court(5, "CA11", "11th Circuit"), null),
           DocketCaseResponse(22, "19-228", "R.G Funeral Holmes v. EEOC", Court(2, "CA02", "2nd Circuit"), null))
-      CaseResponse(100, arg.case, listOf("Bostock v. Clayton County, GA"), arg.shortSummary, arg.status, null, null, null, null,
+      CaseResponse(100, arg.case, listOf("Bostock v. Clayton County, GA"), arg.shortSummary, arg.status, null, null, null, null, null,
           null, Term(arg.termId, "2019-2020", "OT2019"), arg.important, emptyList(), mockDockets)
     }
 
@@ -333,7 +334,7 @@ class CaseControllerTest {
         DocketCaseResponse(18,  "19-225", "Bostock v. Clayton County, Georgia", Court(5, "CA11", "11th Circuit"), null),
         DocketCaseResponse(22, "19-228", "R.G Funeral Holmes v. EEOC", Court(2, "CA02", "2nd Circuit"), null))
     val caseResponse = CaseResponse(100, "Bostock v. Clayton County, Georgia", listOf(), "Civil rights act Title VII prohibits discrimination based on sex.",
-        "ARGUMENT_SCHEDULED", LocalDate.of(2020,3,28), null, null, null,
+        "ARGUMENT_SCHEDULED", LocalDate.of(2020,3,28), "April", null, null, null,
         null, Term(33, "2019-2020", "OT2019"), true, emptyList(), dockets)
 
     whenever(service.editCase(eq(100), any())).thenReturn(caseResponse)
@@ -351,6 +352,7 @@ class CaseControllerTest {
                 fieldWithPath("case").type(JsonFieldType.STRING).optional().description("(optional) the case title"),
                 fieldWithPath("shortSummary").type(JsonFieldType.STRING).optional().description("(optional) A short description of the case"),
                 fieldWithPath("argumentDate").type(JsonFieldType.STRING).optional().description("(optional) The date the case was argued (yyyy-MM-dd)"),
+                fieldWithPath("sitting").type(JsonFieldType.STRING).optional().description("(optional) Group of cases argued before the court in the same time period (November, March, etc.)"),
                 fieldWithPath("decisionDate").type(JsonFieldType.STRING).optional().description("(optional) The date the Supreme Court ruled on the case (yyyy-MM-dd)"),
                 fieldWithPath("result").type(JsonFieldType.STRING).optional().description("(optional) The high level result of the case. ex) 9-0"),
                 fieldWithPath("decisionSummary").type(JsonFieldType.STRING).optional().description("(optional) At a very high level, what this ruling means"),
@@ -381,7 +383,7 @@ class CaseControllerTest {
       DocketCaseResponse(18,  "19-225", "Bostock v. Clayton County, Georgia", Court(5, "CA11", "11th Circuit"), null),
       DocketCaseResponse(22, "19-228", "R.G Funeral Holmes v. EEOC", Court(2, "CA02", "2nd Circuit"), null))
     val caseResponse = CaseResponse(100, "Bostock v. Clayton County, Georgia", listOf(), "Civil rights act Title VII prohibits discrimination based on sex.",
-      "ARGUMENT_SCHEDULED", null, null, null, null,
+      "ARGUMENT_SCHEDULED", null, null,  null, null, null,
       null, Term(33, "2019-2020", "OT2019"), true, emptyList(), dockets)
 
     whenever(service.removeArgumentDate(100)).thenReturn(caseResponse)
@@ -411,7 +413,7 @@ class CaseControllerTest {
         DocketCaseResponse(18,  "19-225","Bostock v. Clayton County, Georgia",  Court(5, "CA11", "11th Circuit"), null),
         DocketCaseResponse(22, "19-228", "R.G Funeral Holmes v. EEOC", Court(2, "CA02", "2nd Circuit"), null))
     val caseResponse = CaseResponse(100, "Bostock v. Clayton County, Georgia", listOf(), "Civil rights act Title VII prohibits discrimination based on sex.",
-        "ARGUMENT_SCHEDULED", LocalDate.of(2020,3,28), null, null, null,
+        "ARGUMENT_SCHEDULED", LocalDate.of(2020,3,28), "April", null, null, null,
         null, Term(33, "2019-2020", "OT2019"), true, emptyList(), dockets)
 
     whenever(service.assignDocket(eq(100), eq(22))).thenReturn(caseResponse)

@@ -127,6 +127,7 @@ data class PatchCaseRequest (
   val shortSummary: String?,
   val status: String?,
   val argumentDate: LocalDate?,
+  val sitting: String?,
   val decisionDate: LocalDate?,
   val result: String?,
   val decisionSummary: String?,

@@ -80,8 +80,8 @@ class CaseService(private val caseRepo: CaseRepo,
     val dockets = docketRepo.findAllById(request.docketIds)
     val term = termRepo.findByIdOrNull(request.termId) ?: throw NoTermIdException(request.termId)
 
-    var newCase = caseRepo.save(Case(null, request.case, listOf(), request.shortSummary, request.status, null, null, null,
-        null, null, term, request.important, emptyList(), dockets))
+    var newCase = caseRepo.save(Case(null, request.case, listOf(), request.shortSummary, request.status, null,
+      null, null, null, null, null, term, request.important, emptyList(), dockets))
     if (request.alternateTitles.isNotEmpty()) {
       val alternativeTitles = request.alternateTitles.map {
         AlternateCaseTitle(null, newCase, it)
@@ -104,6 +104,7 @@ class CaseService(private val caseRepo: CaseRepo,
         request.shortSummary ?: case.shortSummary,
         request.status ?: case.status,
         request.argumentDate ?: case.argumentDate,
+        request.sitting ?: case.sitting,
         request.decisionDate ?: case.decisionDate,
         request.decisionLink ?: case.decisionLink,
         request.result ?: case.result,

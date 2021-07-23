@@ -4,16 +4,16 @@ plugins {
   java
   idea
   jacoco
-  id("org.springframework.boot") version "2.4.5"
-  id("io.spring.dependency-management") version "1.0.10.RELEASE"
-  id("org.asciidoctor.convert") version "1.5.9.2"
-  kotlin("jvm") version "1.4.30"
-  kotlin("plugin.spring") version "1.4.0"
-  kotlin("plugin.jpa") version "1.4.0"
+  id("org.springframework.boot") version "2.5.3"
+  id("io.spring.dependency-management") version "1.0.11.RELEASE"
+  id("org.asciidoctor.jvm.convert") version "3.3.2"
+  kotlin("jvm") version "1.5.21"
+  kotlin("plugin.spring") version "1.5.21"
+  kotlin("plugin.jpa") version "1.5.21"
 }
 
 group = "com.hyphenated"
-version = "0.5.1"
+version = "0.6.0"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
@@ -28,7 +28,13 @@ idea {
 }
 
 val snippetsDir = file("build/generated-snippets")
-var coroutinesVersion = "1.4.3"
+val coroutinesVersion = "1.4.3"
+
+// define "asciidoctor" as a custom dependency configuration
+// The latest asciidoctor converter plugin no longer defines this in a global scope
+configurations {
+  create("asciidoctor")
+}
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -57,7 +63,7 @@ dependencies {
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
 
-  asciidoctor("org.springframework.restdocs:spring-restdocs-asciidoctor")
+  "asciidoctor"("org.springframework.restdocs:spring-restdocs-asciidoctor")
 }
 
 tasks.withType<Test> {
@@ -95,16 +101,17 @@ tasks.jacocoTestCoverageVerification {
 }
 
 tasks.asciidoctor {
+  configurations("asciidoctor") // invoke custom dependency scope for this task
   inputs.dir(snippetsDir)
   sourceDir(file("src/docs"))
-  outputDir(file("build/generated-docs"))
+  setOutputDir(file("build/generated-docs"))
   dependsOn(tasks.test)
 }
 
 tasks.bootJar {
   dependsOn(tasks.jacocoTestCoverageVerification)
   dependsOn(tasks.asciidoctor)
-  from ("${tasks.asciidoctor.get().outputDir.path}/html5") {
+  from (tasks.asciidoctor.get().outputDir.path) {
     into("static/docs")
   }
 }

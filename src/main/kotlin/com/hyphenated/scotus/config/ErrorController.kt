@@ -7,6 +7,7 @@ import org.springframework.core.env.Environment
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.context.request.ServletWebRequest
+import java.util.*
 import javax.servlet.http.HttpServletRequest
 
 
@@ -15,15 +16,11 @@ import javax.servlet.http.HttpServletRequest
 class ErrorController(private val errorAttributes: ErrorAttributes,
                       private val env: Environment): ErrorController {
 
-  override fun getErrorPath(): String {
-    return "/error"
-  }
-
   @RequestMapping
   fun error(request: HttpServletRequest): ErrorResponse{
     val err = getErrorAttributes(request, isLocal())
     return ErrorResponse(
-        err["error"]?.toString()?.toUpperCase() ?: "UNKNOWN_ERROR",
+        err["error"]?.toString()?.uppercase(Locale.getDefault()) ?: "UNKNOWN_ERROR",
         err["message"]?.toString(),
         err["trace"]?.toString()
     )

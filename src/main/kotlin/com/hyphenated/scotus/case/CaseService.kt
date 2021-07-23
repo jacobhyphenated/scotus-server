@@ -121,7 +121,7 @@ class CaseService(private val caseRepo: CaseRepo,
   @PreAuthorize("hasRole('ADMIN')")
   fun removeArgumentDate(id: Long): CaseResponse? {
     val case = caseRepo.findByIdOrNull(id) ?: return null
-    val updatedCase = case.copy(argumentDate = null)
+    val updatedCase = case.copy(argumentDate = null, sitting = null)
     return caseRepo.save(updatedCase).toResponse()
   }
 

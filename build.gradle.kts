@@ -28,7 +28,7 @@ idea {
 }
 
 val snippetsDir = file("build/generated-snippets")
-val coroutinesVersion = "1.4.3"
+val coroutinesVersion = "1.5.1"
 
 // define "asciidoctor" as a custom dependency configuration
 // The latest asciidoctor converter plugin no longer defines this in a global scope

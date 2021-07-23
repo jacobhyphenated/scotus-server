@@ -280,6 +280,7 @@ class CaseServiceTests {
     assertThat(result).isNotNull
     assertThat(result?.id).isEqualTo(2)
     assertThat(result?.argumentDate).isNull()
+    assertThat(result?.sitting).isNull()
   }
 
   @Test

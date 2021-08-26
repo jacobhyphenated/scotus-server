@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "com.hyphenated"
-version = "0.6.0"
+version = "0.6.1"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
@@ -64,6 +64,11 @@ dependencies {
   testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
 
   "asciidoctor"("org.springframework.restdocs:spring-restdocs-asciidoctor")
+}
+
+// Removes plain jar from build files
+tasks.getByName<Jar>("jar") {
+  enabled = false
 }
 
 tasks.withType<Test> {

@@ -32,7 +32,7 @@ jobs:
         run: ./gradlew clean build
 
       - name: Upload to S3
-        run: aws s3 cp ./build/libs/ s3://scotus-api-deploys/ --recursive
+        run: aws s3 cp ./build/libs/ s3://scotus-api-deploys-21/ --recursive
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

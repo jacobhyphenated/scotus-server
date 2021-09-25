@@ -80,7 +80,7 @@ class CaseService(private val caseRepo: CaseRepo,
     val dockets = docketRepo.findAllById(request.docketIds)
     val term = termRepo.findByIdOrNull(request.termId) ?: throw NoTermIdException(request.termId)
 
-    var newCase = caseRepo.save(Case(null, request.case, listOf(), request.shortSummary, request.status, null,
+    var newCase = caseRepo.save(Case(null, request.case, listOf(), request.shortSummary, null, null,
       null, null, null, null, null, term, request.important, emptyList(), dockets))
     if (request.alternateTitles.isNotEmpty()) {
       val alternativeTitles = request.alternateTitles.map {
@@ -102,7 +102,7 @@ class CaseService(private val caseRepo: CaseRepo,
         request.case ?: case.case,
         request.alternateTitles?.map { AlternateCaseTitle(null, case, it) } ?: case.alternateTitles,
         request.shortSummary ?: case.shortSummary,
-        request.status ?: case.status,
+        request.resultStatus ?: case.resultStatus,
         request.argumentDate ?: case.argumentDate,
         request.sitting ?: case.sitting,
         request.decisionDate ?: case.decisionDate,
@@ -177,7 +177,7 @@ class CaseService(private val caseRepo: CaseRepo,
 
   private fun evaluateCourtSummary(case: Case, courtSummary: MutableList<TermCourtSummary>) {
      case.dockets.filter { it.lowerCourtOverruled != null }
-         .map { CourtOverturned(it.lowerCourt, it.lowerCourtOverruled!!) }
+        .map { CourtOverturned(it.lowerCourt, it.lowerCourtOverruled!!) }
         .toSet()
         .forEach {
           var summary = courtSummary.find { cs -> cs.court.id === it.court.id }

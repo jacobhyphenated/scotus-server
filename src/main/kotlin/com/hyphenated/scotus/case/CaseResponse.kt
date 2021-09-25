@@ -13,6 +13,7 @@ class CaseResponse(
     val alternateTitles: List<String>,
     val shortSummary: String,
     val status: String,
+    val resultStatus: String?,
     val argumentDate: LocalDate?,
     val sitting: String?,
     val decisionDate: LocalDate?,
@@ -26,6 +27,6 @@ class CaseResponse(
 )
 
 fun Case.toResponse(): CaseResponse {
-  return CaseResponse(id!!, case, alternateTitles.map { it.title }, shortSummary, status, argumentDate, sitting, decisionDate,
+  return CaseResponse(id!!, case, alternateTitles.map { it.title }, shortSummary, status, resultStatus, argumentDate, sitting, decisionDate,
       result, decisionSummary, decisionLink, term, important, opinions.map { it.toResponse() }, dockets.map { it.toCaseResponse() })
 }

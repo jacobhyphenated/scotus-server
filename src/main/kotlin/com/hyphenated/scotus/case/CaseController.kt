@@ -109,9 +109,6 @@ data class CreateCaseRequest(
     @get:NotEmpty
     val shortSummary: String,
 
-    @get:NotEmpty
-    val status: String,
-
     @get:Min(1)
     val termId: Long,
 
@@ -125,7 +122,7 @@ data class CreateCaseRequest(
 data class PatchCaseRequest (
   val case: String?,
   val shortSummary: String?,
-  val status: String?,
+  val resultStatus: String?,
   val argumentDate: LocalDate?,
   val sitting: String?,
   val decisionDate: LocalDate?,

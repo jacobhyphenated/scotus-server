@@ -24,8 +24,9 @@ data class Case (
     @Column(name = "short_summary")
     val shortSummary: String,
 
-    @Column
-    val status: String,
+    @get:JsonIgnore
+    @Column(name = "status", nullable = true)
+    val resultStatus: String?,
 
     @Column(name = "argument_date", nullable = true)
     val argumentDate: LocalDate?,
@@ -60,4 +61,14 @@ data class Case (
     @get:JsonIgnore
     @OneToMany(mappedBy = "case", fetch = FetchType.LAZY)
     val dockets: List<Docket>
-)
+) {
+    val status: String
+        get() = resultStatus ?:
+            if (argumentDate == null) {
+                "GRANTED"
+            } else if (argumentDate.isAfter(LocalDate.now())) {
+                "ARGUMENT_SCHEDULED"
+            } else {
+                "ARGUED"
+            }
+}

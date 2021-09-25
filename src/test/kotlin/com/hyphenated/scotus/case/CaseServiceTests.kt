@@ -48,7 +48,7 @@ class CaseServiceTests {
       listOf(), listOf()
     ),
     Case(3, "PennEast Pipeline Co. v. New Jersey", listOf(), "Can private gas companies use eminent domain on state lands?",
-      "GRANTED", null, null, null, null, null,null, terms[1], false,
+      null, null, null, null, null, null,null, terms[1], false,
       listOf(), listOf()
     )
   )
@@ -157,7 +157,7 @@ class CaseServiceTests {
   fun testCreateCase_noTerm() {
     whenever(docketRepo.findAllById(any())).thenReturn(listOf())
     whenever(termRepo.findById(any())).thenReturn(Optional.empty())
-    val request = CreateCaseRequest("Carr v. Saul", "SSA Appointments reviewable by judge", "GRANTED",
+    val request = CreateCaseRequest("Carr v. Saul", "SSA Appointments reviewable by judge",
       10, false, listOf(50)
     )
     assertThrows<NoTermIdException> { caseService.createCase(request) }
@@ -174,7 +174,7 @@ class CaseServiceTests {
       val c = it.arguments[0] as Case
       c.copy(id = 200)
     }
-    val request = CreateCaseRequest("Carr v. Saul", "SSA Appointments reviewable by judge", "GRANTED",
+    val request = CreateCaseRequest("Carr v. Saul", "SSA Appointments reviewable by judge",
       2, false, listOf(50)
     )
 

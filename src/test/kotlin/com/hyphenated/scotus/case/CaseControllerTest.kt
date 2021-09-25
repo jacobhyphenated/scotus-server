@@ -74,6 +74,7 @@ class CaseControllerTest {
 
   private val caseResponseFull = responseFields(*caseFields,
       fieldWithPath("decisionLink").type(JsonFieldType.STRING).optional().description("A link to the official court opinion"),
+      fieldWithPath("resultStatus").type(JsonFieldType.STRING).optional().description("Subset of case status that defines the result of the case (can be null)"),
       fieldWithPath("alternateTitles[]").type(JsonFieldType.ARRAY).description("A list of other titles this case can sometimes refer to this case."),
       fieldWithPath("opinions[]").description("A list of each opinion in the case. Any case may have " +
           "multiple opinions with dissents and concurrences"))
@@ -123,7 +124,7 @@ class CaseControllerTest {
     docketCase2.add(Docket(15, case2, "People v Mr. Peanut", "16-513", Court(1, "CA11", "11th circuit"),
         "Ruled for peanut", true, "REMANDED"))
 
-    val case3 = Case(55, "Helicopter v Kobe", listOf(), "Wrongful death estate claim", "ARGUED",
+    val case3 = Case(55, "Helicopter v Kobe", listOf(), "Wrongful death estate claim", null,
         LocalDate.of(2020,10,11), "October", null, null, null, null,
         Term(1, "2020-2021", "OT2020"), false, emptyList(), emptyList())
     val cases = listOf(case1, case2, case3)
@@ -256,7 +257,7 @@ class CaseControllerTest {
     val altTitles = listOf("Obergfell v. Hodges", "Bourke v. Beshear")
 
     val case = CaseResponse(200, "Obergefell v Hodges", altTitles, "A state marriage license for a same sex couple should be recognized in all states",
-        "RESOLVED", LocalDate.of(2015,4,28), "April", LocalDate.of(2015,6,26),
+        "REVERSED", "REVERSED", LocalDate.of(2015,4,28), "April", LocalDate.of(2015,6,26),
         "5-4", "Right to marry is a fundamental right guaranteed by the Fourteenth Amendment. State laws prohibiting same sex marriage are invalidated",
         "https://www.supremecourt.gov/opinions/14pdf/14-556_3204.pdf", Term(33, "2014-2015", "OT2014"),
         true, listOf(majority, dissent1, dissent2, dissent3, dissent4), listOf(docket1, docket2, docket3, docket4))
@@ -291,14 +292,14 @@ class CaseControllerTest {
   @Test
   fun testCreateCase() {
     val request = "{\"case\":\"Bostock v. Clayton County, Georgia\",\"shortSummary\":\"Civil rights act Title VII prohibits discrimination based on sex. " +
-        "The question is: does this cover sexual orientation. \",\"status\":\"PENDING\",\"termId\":50,\"important\":false,\"docketIds\":[18,22], \"alternateTitles\":[\"Bostock v. Clayton County, GA\"]}"
+        "The question is: does this cover sexual orientation. \",\"termId\":50,\"important\":false,\"docketIds\":[18,22], \"alternateTitles\":[\"Bostock v. Clayton County, GA\"]}"
 
     whenever(service.createCase(any())).thenAnswer {
       val arg = it.arguments[0] as CreateCaseRequest
       val mockDockets = listOf(
           DocketCaseResponse(18,  "19-225", "Bostock v. Clayton County, Georgia", Court(5, "CA11", "11th Circuit"), null),
           DocketCaseResponse(22, "19-228", "R.G Funeral Holmes v. EEOC", Court(2, "CA02", "2nd Circuit"), null))
-      CaseResponse(100, arg.case, listOf("Bostock v. Clayton County, GA"), arg.shortSummary, arg.status, null, null, null, null, null,
+      CaseResponse(100, arg.case, listOf("Bostock v. Clayton County, GA"), arg.shortSummary, "GRANTED", null, null, null, null, null, null,
           null, Term(arg.termId, "2019-2020", "OT2019"), arg.important, emptyList(), mockDockets)
     }
 
@@ -315,7 +316,6 @@ class CaseControllerTest {
             requestFields(
                 fieldWithPath("case").description("the case title"),
                 fieldWithPath("shortSummary").description("A short description of the case"),
-                fieldWithPath("status").description("Current status of the case"),
                 fieldWithPath("termId").description("The Id of the SCOTUS term the case where was granted"),
                 fieldWithPath("important").description("True if this is an important case to watch"),
                 fieldWithPath("docketIds").description("Array of Id's referencing dockets this case comes from"),
@@ -328,13 +328,13 @@ class CaseControllerTest {
 
   @Test
   fun testEditCase() {
-    val request = "{\"status\":\"ARGUMENT_SCHEDULED\",\"argumentDate\":\"2020-03-28\"}"
+    val request = "{\"argumentDate\":\"2020-03-28\"}"
 
     val dockets = listOf(
         DocketCaseResponse(18,  "19-225", "Bostock v. Clayton County, Georgia", Court(5, "CA11", "11th Circuit"), null),
         DocketCaseResponse(22, "19-228", "R.G Funeral Holmes v. EEOC", Court(2, "CA02", "2nd Circuit"), null))
     val caseResponse = CaseResponse(100, "Bostock v. Clayton County, Georgia", listOf(), "Civil rights act Title VII prohibits discrimination based on sex.",
-        "ARGUMENT_SCHEDULED", LocalDate.of(2020,3,28), "April", null, null, null,
+        "ARGUMENT_SCHEDULED", null, LocalDate.of(2020,3,28), "April", null, null, null,
         null, Term(33, "2019-2020", "OT2019"), true, emptyList(), dockets)
 
     whenever(service.editCase(eq(100), any())).thenReturn(caseResponse)
@@ -356,7 +356,7 @@ class CaseControllerTest {
                 fieldWithPath("decisionDate").type(JsonFieldType.STRING).optional().description("(optional) The date the Supreme Court ruled on the case (yyyy-MM-dd)"),
                 fieldWithPath("result").type(JsonFieldType.STRING).optional().description("(optional) The high level result of the case. ex) 9-0"),
                 fieldWithPath("decisionSummary").type(JsonFieldType.STRING).optional().description("(optional) At a very high level, what this ruling means"),
-                fieldWithPath("status").type(JsonFieldType.STRING).optional().description("(optional) Current status of the case"),
+                fieldWithPath("resultStatus").type(JsonFieldType.STRING).optional().description("(optional) Describes the result of the case"),
                 fieldWithPath("termId").type(JsonFieldType.NUMBER).optional().description("(optional) The Id of the SCOTUS term the case where was granted"),
                 fieldWithPath("alternateTitles").type(JsonFieldType.ARRAY).optional().description("(optional) Array of alternate case titles that can refer to this case. If this argument is present, including an empty list, it will override the current value")
             ),
@@ -367,7 +367,7 @@ class CaseControllerTest {
 
   @Test
   fun testEditCaseNotFound() {
-    val request = "{\"status\":\"GRANTED\"}"
+    val request = "{\"resultStatus\":\"REMANDED\"}"
     whenever(service.editCase(any(), any())).thenReturn(null)
     this.mockMvc.perform(patch("/cases/500")
       .contentType(MediaType.APPLICATION_JSON)
@@ -383,7 +383,7 @@ class CaseControllerTest {
       DocketCaseResponse(18,  "19-225", "Bostock v. Clayton County, Georgia", Court(5, "CA11", "11th Circuit"), null),
       DocketCaseResponse(22, "19-228", "R.G Funeral Holmes v. EEOC", Court(2, "CA02", "2nd Circuit"), null))
     val caseResponse = CaseResponse(100, "Bostock v. Clayton County, Georgia", listOf(), "Civil rights act Title VII prohibits discrimination based on sex.",
-      "ARGUMENT_SCHEDULED", null, null,  null, null, null,
+      "GRANTED", null, null, null,  null, null, null,
       null, Term(33, "2019-2020", "OT2019"), true, emptyList(), dockets)
 
     whenever(service.removeArgumentDate(100)).thenReturn(caseResponse)
@@ -413,7 +413,7 @@ class CaseControllerTest {
         DocketCaseResponse(18,  "19-225","Bostock v. Clayton County, Georgia",  Court(5, "CA11", "11th Circuit"), null),
         DocketCaseResponse(22, "19-228", "R.G Funeral Holmes v. EEOC", Court(2, "CA02", "2nd Circuit"), null))
     val caseResponse = CaseResponse(100, "Bostock v. Clayton County, Georgia", listOf(), "Civil rights act Title VII prohibits discrimination based on sex.",
-        "ARGUMENT_SCHEDULED", LocalDate.of(2020,3,28), "April", null, null, null,
+        "ARGUMENT_SCHEDULED", null, LocalDate.of(2020,3,28), "April", null, null, null,
         null, Term(33, "2019-2020", "OT2019"), true, emptyList(), dockets)
 
     whenever(service.assignDocket(eq(100), eq(22))).thenReturn(caseResponse)

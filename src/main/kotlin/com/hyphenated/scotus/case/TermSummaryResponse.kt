@@ -1,4 +1,4 @@
-package com.hyphenated.scotus.case.term
+package com.hyphenated.scotus.case
 
 import com.hyphenated.scotus.court.Court
 import com.hyphenated.scotus.justice.Justice

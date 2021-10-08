@@ -1,6 +1,6 @@
 package com.hyphenated.scotus.case
 
-import com.hyphenated.scotus.case.term.Term
+import com.hyphenated.scotus.term.Term
 import com.hyphenated.scotus.docket.DocketCaseResponse
 import com.hyphenated.scotus.docket.toCaseResponse
 import com.hyphenated.scotus.opinion.OpinionResponse

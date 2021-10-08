@@ -1,6 +1,5 @@
 package com.hyphenated.scotus.case
 
-import com.hyphenated.scotus.case.term.*
 import com.hyphenated.scotus.court.Court
 import com.hyphenated.scotus.docket.CaseNotFoundException
 import com.hyphenated.scotus.docket.DocketRepo
@@ -8,6 +7,7 @@ import com.hyphenated.scotus.docket.NoDocketIdException
 import com.hyphenated.scotus.docket.NoTermIdException
 import com.hyphenated.scotus.justice.Justice
 import com.hyphenated.scotus.opinion.OpinionType
+import com.hyphenated.scotus.term.TermRepo
 import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.prepost.PreAuthorize
@@ -26,10 +26,6 @@ class CaseService(private val caseRepo: CaseRepo,
 
   fun getTermCases(termId: Long): List<Case> {
     return caseRepo.findByTermId(termId)
-  }
-
-  fun getAllTerms(): List<Term> {
-    return termRepo.findAll()
   }
 
   @Transactional
@@ -56,21 +52,6 @@ class CaseService(private val caseRepo: CaseRepo,
   fun getCase(id: Long): CaseResponse? {
     log.debug("get case called with $id")
     return caseRepo.findByIdOrNull(id)?.toResponse()
-  }
-
-  @PreAuthorize("hasRole('ADMIN')")
-  fun createTerm(name: String, otName: String, inactive: Boolean): Term {
-    return termRepo.save(Term(null, name, otName, inactive))
-  }
-
-  @PreAuthorize("hasRole('ADMIN')")
-  fun editTerm(termId: Long, editTermRequest: EditTermRequest): Term? {
-    val term = termRepo.findByIdOrNull(termId) ?: return null
-    return termRepo.save(term.copy(
-      name = editTermRequest.name ?: term.name,
-      otName = editTermRequest.otName ?: term.otName,
-      inactive = editTermRequest.inactive ?: term.inactive
-    ))
   }
 
   @Transactional

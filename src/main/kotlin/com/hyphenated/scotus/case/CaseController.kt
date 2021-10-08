@@ -1,6 +1,5 @@
 package com.hyphenated.scotus.case
 
-import com.hyphenated.scotus.case.term.Term
 import com.hyphenated.scotus.search.SearchService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -26,28 +25,12 @@ class CaseController(private val caseService: CaseService,
     return caseService.getCase(id)?.let { ResponseEntity.ok(it) } ?: ResponseEntity.notFound().build()
   }
 
-  @GetMapping("term")
-  fun getTerms() = caseService.getAllTerms()
-
   @GetMapping("title/{title}")
   @Deprecated(message="Search no longer works by only looking at case titles, use searchCases instead")
   fun searchByCaseTitle(@PathVariable title: String) = searchService.searchCases(title)
 
   @GetMapping("search/{searchTerm}")
   fun searchCases(@PathVariable searchTerm: String) = searchService.searchCases(searchTerm)
-
-  @PostMapping("term")
-  @ResponseStatus(HttpStatus.CREATED)
-  fun createTerm(@Valid @RequestBody request: CreateTermRequest): Term {
-    return caseService.createTerm(request.name, request.otName, request.inactive)
-  }
-
-  @PatchMapping("term/{termId}")
-  fun editTerm(@PathVariable termId: Long, @RequestBody request: EditTermRequest): ResponseEntity<Term> {
-    return caseService.editTerm(termId, request)
-      ?.let { ResponseEntity.ok(it) }
-      ?: ResponseEntity.notFound().build()
-  }
 
   @GetMapping("term/{termId}/summary")
   fun termSummary(@PathVariable termId: Long) = caseService.getTermSummary(termId)
@@ -132,18 +115,4 @@ data class PatchCaseRequest (
   val termId: Long?,
   val important: Boolean?,
   val alternateTitles: List<String>?
-)
-
-data class CreateTermRequest(
-    @get:NotEmpty
-    val name: String,
-    @get:NotEmpty
-    val otName: String,
-    val inactive: Boolean = false
-)
-
-data class EditTermRequest(
-  val name: String?,
-  val otName: String?,
-  val inactive: Boolean?
 )

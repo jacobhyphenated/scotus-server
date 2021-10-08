@@ -2,7 +2,7 @@ package com.hyphenated.scotus.docket
 
 import com.hyphenated.scotus.case.Case
 import com.hyphenated.scotus.case.CaseControllerTest
-import com.hyphenated.scotus.case.term.Term
+import com.hyphenated.scotus.term.Term
 import com.hyphenated.scotus.court.Court
 import com.hyphenated.scotus.search.SearchService
 import com.nhaarman.mockitokotlin2.any

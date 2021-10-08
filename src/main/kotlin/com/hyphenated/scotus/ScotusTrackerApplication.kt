@@ -2,8 +2,8 @@ package com.hyphenated.scotus
 
 import com.hyphenated.scotus.case.Case
 import com.hyphenated.scotus.case.CaseRepo
-import com.hyphenated.scotus.case.term.Term
-import com.hyphenated.scotus.case.term.TermRepo
+import com.hyphenated.scotus.term.Term
+import com.hyphenated.scotus.term.TermRepo
 import com.hyphenated.scotus.court.Court
 import com.hyphenated.scotus.court.CourtRepo
 import com.hyphenated.scotus.docket.Docket
@@ -44,8 +44,8 @@ class ScotusTrackerApplication {
 
     val t1 = termRepo.save(Term(null, "2019-2020", "OT2019"))
 
-    val case = caseRepo.save(Case(null, "People vs Other People", listOf(), "Some people sue some other people", "AFFIRMED",
-        LocalDate.of(2019, 11, 11), "November", LocalDate.of(2020, 1, 15), "2-0",
+    val case = caseRepo.save(Case(null, "People v Other People", listOf(), "Some people sue some other people", "AFFIRMED",
+        LocalDate.of(2019, 11, 11), "November", LocalDate.of(2020, 1, 15), null,
         "Judges decided to rule for people", null, t1, true, emptyList(), emptyList()))
     val decisionJustices = mutableListOf<OpinionJustice>()
     val decision = Opinion(null, case, OpinionType.MAJORITY, decisionJustices, "Important ruling on the issue")

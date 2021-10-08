@@ -2,7 +2,7 @@ package com.hyphenated.scotus.opinion
 
 import com.hyphenated.scotus.case.Case
 import com.hyphenated.scotus.case.CaseRepo
-import com.hyphenated.scotus.case.term.Term
+import com.hyphenated.scotus.term.Term
 import com.hyphenated.scotus.docket.NoCaseIdException
 import com.hyphenated.scotus.docket.NoJusticeIdException
 import com.hyphenated.scotus.docket.OpinionNotFoundException

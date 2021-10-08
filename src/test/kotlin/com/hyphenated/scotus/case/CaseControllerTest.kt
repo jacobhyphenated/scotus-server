@@ -1,9 +1,6 @@
 package com.hyphenated.scotus.case
 
-import com.hyphenated.scotus.case.term.Term
-import com.hyphenated.scotus.case.term.TermCourtSummary
-import com.hyphenated.scotus.case.term.TermJusticeSummary
-import com.hyphenated.scotus.case.term.TermSummaryResponse
+import com.hyphenated.scotus.term.Term
 import com.hyphenated.scotus.court.Court
 import com.hyphenated.scotus.court.CourtControllerTests
 import com.hyphenated.scotus.docket.Docket
@@ -99,13 +96,6 @@ class CaseControllerTest {
           fieldWithPath("id").description("Unique Id for the lower court"),
           fieldWithPath("shortName").description("Short hand way of referring to the court"),
           fieldWithPath("name").description("Long form name of the appeals court"))
-
-  private val termFields = arrayOf(
-      fieldWithPath("id").description("Id of the term"),
-      fieldWithPath("name").description("Term defined as a year range"),
-      fieldWithPath("otName").description("October term (\"OT\") notation"),
-      fieldWithPath("inactive").description("Inactive terms are only partial terms. They do not contain all cases from that term")
-  )
 
   @Test
   fun testGetAll() {
@@ -445,72 +435,6 @@ class CaseControllerTest {
         ))
     verify(service).removeDocket(100, 18)
     verify(searchService).indexCase(100)
-  }
-
-  @Test
-  fun testGetAllTerms() {
-    val terms = listOf(
-        Term(1, "2014-2015", "OT2014"),
-        Term(2, "2015-2016", "OT2015"),
-        Term(3, "2016-2017", "OT2016")
-    )
-    whenever(service.getAllTerms()).thenReturn(terms)
-
-    this.mockMvc.perform(get("/cases/term"))
-        .andExpect(jsonPath("$").value(hasSize<Any>(3)))
-        .andExpect(jsonPath("[0].otName").value("OT2014"))
-        .andDo(document("case/allterm",
-            preprocessResponse(prettyPrint()),
-            responseFields(
-                fieldWithPath("[]").description("List of terms")
-            ).andWithPrefix("[].", *termFields)
-        ))
-  }
-
-  @Test
-  fun testCreateTerm() {
-    whenever(service.createTerm("2020-2021", "OT2020", true))
-        .thenReturn(Term(5, "2020-2021", "OT2020", true))
-
-    val request = "{\"name\":\"2020-2021\",\"otName\":\"OT2020\", \"inactive\":true}"
-
-    this.mockMvc.perform(post("/cases/term")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(request))
-        .andExpect(status().isCreated)
-        .andExpect(jsonPath("otName").value("OT2020"))
-        .andDo(document("case/admin/term",
-            preprocessRequest(prettyPrint()),
-            preprocessResponse(prettyPrint()),
-            requestFields(
-                *termFields.copyOfRange(1, termFields.size)
-            ),
-            responseFields(*termFields)
-        ))
-  }
-
-  @Test
-  fun testEditTerm() {
-    whenever(service.editTerm(eq(2), any()))
-      .thenReturn(Term(2, "2021-2022", "OT2021", false))
-    val request = "{\"otName\": \"OT2021\"}"
-
-    this.mockMvc.perform(RestDocumentationRequestBuilders.patch("/cases/term/{termId}", 2)
-      .contentType(MediaType.APPLICATION_JSON)
-      .content(request))
-      .andExpect(status().isOk)
-      .andExpect(jsonPath("otName").value("OT2021"))
-      .andDo(document("case/admin/editTerm",
-        preprocessRequest(prettyPrint()),
-        preprocessResponse(prettyPrint()),
-        pathParameters(parameterWithName("termId").description("Id of the term to modify")),
-        requestFields(
-          fieldWithPath("name").type(JsonFieldType.STRING).optional().description("(optional) Term defined as a year range"),
-          fieldWithPath("otName").type(JsonFieldType.STRING).optional().description("(optional) October term (\"OT\") notation"),
-          fieldWithPath("inactive").type(JsonFieldType.BOOLEAN).optional().description("(optional) mark term as inactive")
-        ),
-        responseFields(*termFields)
-      ))
   }
 
   @Test

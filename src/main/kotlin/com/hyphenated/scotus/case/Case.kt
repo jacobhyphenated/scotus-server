@@ -1,7 +1,7 @@
 package com.hyphenated.scotus.case
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.hyphenated.scotus.case.term.Term
+import com.hyphenated.scotus.term.Term
 import com.hyphenated.scotus.docket.Docket
 import com.hyphenated.scotus.opinion.Opinion
 import java.time.LocalDate

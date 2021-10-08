@@ -3,19 +3,15 @@ package com.hyphenated.scotus.search
 import com.hyphenated.scotus.case.AlternateCaseTitle
 import com.hyphenated.scotus.case.Case
 import com.hyphenated.scotus.case.CaseRepo
-import com.hyphenated.scotus.case.term.Term
+import com.hyphenated.scotus.term.Term
 import com.hyphenated.scotus.court.Court
 import com.hyphenated.scotus.docket.Docket
 import com.hyphenated.scotus.justice.Justice
 import com.hyphenated.scotus.opinion.Opinion
 import com.hyphenated.scotus.opinion.OpinionJustice
 import com.hyphenated.scotus.opinion.OpinionType
-import com.hyphenated.scotus.user.UserEntity
 import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -23,7 +19,6 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate
-import org.springframework.data.elasticsearch.core.SearchHit
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery
 import java.time.LocalDate
 

@@ -1,4 +1,4 @@
-package com.hyphenated.scotus.case.term
+package com.hyphenated.scotus.term
 
 import org.springframework.data.jpa.repository.JpaRepository
 

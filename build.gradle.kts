@@ -4,7 +4,7 @@ plugins {
   java
   idea
   jacoco
-  id("org.springframework.boot") version "2.5.3"
+  id("org.springframework.boot") version "2.5.5"
   id("io.spring.dependency-management") version "1.0.11.RELEASE"
   id("org.asciidoctor.jvm.convert") version "3.3.2"
   kotlin("jvm") version "1.5.21"

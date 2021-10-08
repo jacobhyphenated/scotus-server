@@ -64,21 +64,6 @@ include::{snippets}/case/search/response-fields.adoc[]
 .response body
 include::{snippets}/case/search/response-body.adoc[]
 
-=== Get all Terms
-Gets a list of every SCOTUS term.
-
-.curl request
-include::{snippets}/case/allterm/curl-request.adoc[]
-
-.request
-include::{snippets}/case/allterm/http-request.adoc[]
-
-.response fields
-include::{snippets}/case/allterm/response-fields.adoc[]
-
-.response body
-include::{snippets}/case/allterm/response-body.adoc[]
-
 === Get Case By Id
 Look up info on a specific case based on the case id. This will get you more detailed information than searching for lists of cases.
 
@@ -114,6 +99,24 @@ include::{snippets}/case/termsummary/response-fields.adoc[]
 
 .response body
 include::{snippets}/case/termsummary/response-body.adoc[]
+
+== Terms
+Terms represent groups of cases SCOTUS hears at a given time. Terms generally run from October to June and can be noted by the years they cover or by the October start date (OT2020 for the term starting in October 2020)
+
+=== Get all Terms
+Gets a list of every SCOTUS term.
+
+.curl request
+include::{snippets}/term/allterm/curl-request.adoc[]
+
+.request
+include::{snippets}/term/allterm/http-request.adoc[]
+
+.response fields
+include::{snippets}/term/allterm/response-fields.adoc[]
+
+.response body
+include::{snippets}/term/allterm/response-body.adoc[]
 
 == Dockets
 Dockets represent cases that have made their way up through the lower courts with a petition to be reviewed by the Supreme Court.

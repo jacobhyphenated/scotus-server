@@ -4,7 +4,7 @@ plugins {
   java
   idea
   jacoco
-  id("org.springframework.boot") version "2.6.0"
+  id("org.springframework.boot") version "2.5.6"
   id("io.spring.dependency-management") version "1.0.11.RELEASE"
   id("org.asciidoctor.jvm.convert") version "3.3.2"
   kotlin("jvm") version "1.5.21"
@@ -43,7 +43,6 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-web")
   implementation("org.springframework.boot:spring-boot-starter-validation")
   implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
-  implementation("org.springframework.data:spring-data-elasticsearch:4.2.0")
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
   implementation("org.jetbrains.kotlin:kotlin-reflect")
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")

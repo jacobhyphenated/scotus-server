@@ -4,7 +4,7 @@ plugins {
   java
   idea
   jacoco
-  id("org.springframework.boot") version "2.5.5"
+  id("org.springframework.boot") version "2.6.0"
   id("io.spring.dependency-management") version "1.0.11.RELEASE"
   id("org.asciidoctor.jvm.convert") version "3.3.2"
   kotlin("jvm") version "1.5.21"
@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "com.hyphenated"
-version = "0.8.0"
+version = "0.8.1"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {

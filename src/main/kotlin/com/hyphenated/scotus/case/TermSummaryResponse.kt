@@ -26,7 +26,6 @@ class TermJusticeSummary (
   val percentInMajority: Float
     get() = casesInMajority.toFloat() / casesWithOpinion
 
-  @Suppress("NON_EXHAUSTIVE_WHEN")
   fun incrementType(opinionType: OpinionType) {
     when(opinionType) {
       OpinionType.MAJORITY -> majorityAuthor++
@@ -35,6 +34,7 @@ class TermJusticeSummary (
       OpinionType.DISSENT -> dissentAuthor++
       OpinionType.DISSENT_JUDGEMENT -> dissentJudgementAuthor++
       // Per Curium Opinions don't have official authors, so are not counted
+      OpinionType.PER_CURIUM -> {}
     }
   }
 }

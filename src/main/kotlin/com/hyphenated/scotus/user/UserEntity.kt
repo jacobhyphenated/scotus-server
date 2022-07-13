@@ -41,7 +41,7 @@ class UserDetailsImpl(private val user: UserEntity): UserDetails {
   }
 
   override fun isEnabled(): Boolean {
-    return true;
+    return true
   }
 
   override fun getUsername(): String {

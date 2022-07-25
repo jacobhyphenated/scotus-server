@@ -7,6 +7,7 @@ import com.nhaarman.mockitokotlin2.*
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
@@ -21,6 +22,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 
 @WebMvcTest(OpinionController::class)
 @AutoConfigureRestDocs
+@AutoConfigureMockMvc(addFilters = false)
 class OpinionControllerTests {
 
   @MockBean

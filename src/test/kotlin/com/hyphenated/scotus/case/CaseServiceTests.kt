@@ -138,6 +138,34 @@ class CaseServiceTests {
     assertThat(result.dockets).hasSize(1)
     assertThat(result.dockets[0].docketNumber).isEqualTo("19-001")
     assertThat(result.result).isNull()
+    assertThat(result.alternateTitles).hasSize(0)
+  }
+
+  @Test
+  fun testCreateCase_alternateTitle() {
+    val docket = Docket(56, null, "United States v. Texas", "19-001", Court(5, "te05", "test court 5"),
+            "Not justiciable", null, "PENDING"
+    )
+    whenever(docketRepo.findAllById(listOf(56))).thenReturn(listOf(docket))
+    whenever(termRepo.findById(2)).thenReturn(Optional.of(terms[1]))
+    whenever(caseRepo.save<Case>(any())).thenAnswer {
+      val c = it.arguments[0] as Case
+      c.copy(id = 200)
+    }
+    val request = CreateCaseRequest("United States v. Texas", "Can the Biden administration end MPP without violating APA?",
+            2, false, listOf(56), listOf("US v. Texas")
+    )
+    val result = caseService.createCase(request)
+    assertThat(result.id).isEqualTo(200)
+    assertThat(result.term.id).isEqualTo(2)
+    assertThat(result.status).isEqualTo("GRANTED")
+    assertThat(result.case).isEqualTo("United States v. Texas")
+    assertThat(result.opinions).hasSize(0)
+    assertThat(result.dockets).hasSize(1)
+    assertThat(result.dockets[0].docketNumber).isEqualTo("19-001")
+    assertThat(result.result).isNull()
+    assertThat(result.alternateTitles).hasSize(1)
+    assertThat(result.alternateTitles[0]).isEqualTo("US v. Texas")
   }
 
   @Test

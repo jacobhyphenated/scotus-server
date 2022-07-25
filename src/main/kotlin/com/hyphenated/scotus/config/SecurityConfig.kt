@@ -5,11 +5,10 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.AuthenticationException
-import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.web.AuthenticationEntryPoint
+import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.access.channel.ChannelProcessingFilter
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -22,14 +21,14 @@ import javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-class SecurityConfig(private val userDetailsService: UserDetailsService) : WebSecurityConfigurerAdapter() {
+class SecurityConfig() {
 
   @Bean
   fun unauthorizedEntryPoint(): AuthenticationEntryPoint = AuthenticationEntryPoint {
-    _: HttpServletRequest?, response: HttpServletResponse, _: AuthenticationException? ->
-      //use this header to prompt browser dialog
-      response.addHeader("WWW-Authenticate", "Basic realm=SCOTUS Application")
-      response.sendError(SC_UNAUTHORIZED)
+      _: HttpServletRequest?, response: HttpServletResponse, _: AuthenticationException? ->
+    //use this header to prompt browser dialog
+    response.addHeader("WWW-Authenticate", "Basic realm=SCOTUS Application")
+    response.sendError(SC_UNAUTHORIZED)
   }
 
   @Bean(name = ["corsFilterBean"])
@@ -44,11 +43,8 @@ class SecurityConfig(private val userDetailsService: UserDetailsService) : WebSe
     return CorsFilter(source)
   }
 
-  override fun userDetailsService(): UserDetailsService {
-    return userDetailsService
-  }
-
-  override fun configure(http: HttpSecurity) {
+  @Bean
+  fun configureSecurityChain(http: HttpSecurity): SecurityFilterChain {
     http
         .authorizeRequests()
           // Add path specific authorizations to restrict
@@ -74,6 +70,7 @@ class SecurityConfig(private val userDetailsService: UserDetailsService) : WebSe
           .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
           .and()
         .anonymous()
+    return http.build()
   }
 
 }

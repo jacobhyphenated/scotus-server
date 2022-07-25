@@ -4,7 +4,7 @@ plugins {
   java
   idea
   jacoco
-  id("org.springframework.boot") version "2.5.6"
+  id("org.springframework.boot") version "2.7.2"
   id("io.spring.dependency-management") version "1.0.11.RELEASE"
   id("org.asciidoctor.jvm.convert") version "3.3.2"
   kotlin("jvm") version "1.7.10"
@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "com.hyphenated"
-version = "0.8.2"
+version = "0.9.0"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
@@ -29,6 +29,7 @@ idea {
 
 val snippetsDir = file("build/generated-snippets")
 val coroutinesVersion = "1.6.2"
+val elasticsearchVersion = "7.12.1"
 
 // define "asciidoctor" as a custom dependency configuration
 // The latest asciidoctor converter plugin no longer defines this in a global scope
@@ -42,11 +43,21 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-security")
   implementation("org.springframework.boot:spring-boot-starter-web")
   implementation("org.springframework.boot:spring-boot-starter-validation")
-  implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
   implementation("org.jetbrains.kotlin:kotlin-reflect")
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
   implementation("org.apache.commons:commons-lang3")
+
+  /*AWS Open Search is incompatible with the version of elasticsearch provided by spring boot
+    Downgrade and use explicit versions for spring-data-elasticsearch */
+  //  implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
+  implementation("org.springframework.data:spring-data-elasticsearch:4.2.6")
+  implementation("org.elasticsearch:elasticsearch:$elasticsearchVersion")
+  implementation("org.elasticsearch:elasticsearch-core:$elasticsearchVersion")
+  implementation("org.elasticsearch.client:elasticsearch-rest-client:$elasticsearchVersion")
+  implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:$elasticsearchVersion")
+  implementation("org.elasticsearch.client:transport:$elasticsearchVersion")
+  implementation("org.elasticsearch.plugin:transport-netty4-client:$elasticsearchVersion")
 
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutinesVersion}")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:${coroutinesVersion}")

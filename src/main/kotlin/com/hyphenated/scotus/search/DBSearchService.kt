@@ -1,15 +1,10 @@
 package com.hyphenated.scotus.search
 
 import com.hyphenated.scotus.case.Case
-import com.hyphenated.scotus.case.CaseRepo
-import com.hyphenated.scotus.docket.DocketRepo
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Profile
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
-import javax.transaction.Transactional
 
 @Service
 @Profile("!search")

@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "com.hyphenated"
-version = "0.9.0"
+version = "0.9.1"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {

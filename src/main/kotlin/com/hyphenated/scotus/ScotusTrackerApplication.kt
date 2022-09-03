@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Profile
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.web.filter.CommonsRequestLoggingFilter
 import java.security.SecureRandom
 import java.time.LocalDate
 
@@ -66,6 +67,13 @@ class ScotusTrackerApplication {
   @Bean
   fun passwordEncoder(): PasswordEncoder {
     return BCryptPasswordEncoder(10, SecureRandom())
+  }
+
+  @Bean
+  fun loggingFilter(): CommonsRequestLoggingFilter {
+    return CommonsRequestLoggingFilter().apply {
+      setIncludeQueryString(true)
+    }
   }
 }
 

@@ -38,9 +38,9 @@ class CaseController(private val caseService: CaseService,
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   fun createCase(@Valid @RequestBody request: CreateCaseRequest): CaseResponse {
-    val newCase =  caseService.createCase(request)
-    searchService.indexCase(newCase.id)
-    return newCase
+    return caseService.createCase(request).also {
+      searchService.indexCase(it.id)
+    }
   }
 
   @PatchMapping("{id}")
@@ -72,9 +72,9 @@ class CaseController(private val caseService: CaseService,
 
   @PutMapping("{caseId}/dockets/{docketId}")
   fun addDocket(@PathVariable caseId: Long, @PathVariable docketId: Long): CaseResponse {
-    val response = caseService.assignDocket(caseId, docketId)
-    searchService.indexCase(caseId)
-    return response
+    return caseService.assignDocket(caseId, docketId).also {
+      searchService.indexCase(caseId)
+    }
   }
 
   @DeleteMapping("{caseId}/dockets/{docketId}")

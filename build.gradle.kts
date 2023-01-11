@@ -4,8 +4,8 @@ plugins {
   java
   idea
   jacoco
-  id("org.springframework.boot") version "2.7.2"
-  id("io.spring.dependency-management") version "1.0.11.RELEASE"
+  id("org.springframework.boot") version "2.7.7"
+  id("io.spring.dependency-management") version "1.0.15.RELEASE"
   id("org.asciidoctor.jvm.convert") version "3.3.2"
   kotlin("jvm") version "1.7.10"
   kotlin("plugin.spring") version "1.7.10"
@@ -13,8 +13,8 @@ plugins {
 }
 
 group = "com.hyphenated"
-version = "0.9.2"
-java.sourceCompatibility = JavaVersion.VERSION_11
+version = "0.9.3"
+java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
   mavenCentral()
@@ -28,7 +28,7 @@ idea {
 }
 
 val snippetsDir = file("build/generated-snippets")
-val coroutinesVersion = "1.6.2"
+val coroutinesVersion = "1.6.4"
 val elasticsearchVersion = "7.12.1"
 
 // define "asciidoctor" as a custom dependency configuration
@@ -89,7 +89,7 @@ tasks.withType<Test> {
 tasks.withType<KotlinCompile> {
   kotlinOptions {
     freeCompilerArgs = listOf("-Xjsr305=strict")
-    jvmTarget = "11"
+    jvmTarget = "17"
   }
 }
 

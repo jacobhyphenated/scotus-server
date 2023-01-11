@@ -4,6 +4,7 @@ import com.hyphenated.scotus.case.Case
 import com.hyphenated.scotus.case.CaseRepo
 import com.hyphenated.scotus.docket.CaseNotFoundException
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
 import org.elasticsearch.common.unit.Fuzziness
 import org.elasticsearch.index.query.Operator
@@ -45,7 +46,7 @@ class ElasticSearchService(private val searchRepository: SearchRepository,
 
   @Transactional
   @PreAuthorize("hasRole('ADMIN')")
-  override fun indexAllCases() {
+  override fun indexAllCases() = runBlocking {
     caseRepo.findAll().forEachParallel { updateCaseIndex(it) }
   }
 
@@ -114,6 +115,6 @@ fun Case.toDocument(): CaseSearchDocument {
   )
 }
 
-fun <A>Collection<A>.forEachParallel(f: suspend (A) -> Unit): Unit = runBlocking {
+suspend fun <T>Collection<T>.forEachParallel(f: suspend (T) -> Unit): Unit = coroutineScope {
   map { async { f(it) } }.forEach { it.await() }
 }

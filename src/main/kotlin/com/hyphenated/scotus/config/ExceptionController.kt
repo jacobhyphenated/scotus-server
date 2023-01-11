@@ -50,21 +50,23 @@ class ExceptionController(private val env: Environment) {
   @ExceptionHandler(HttpMessageNotReadableException::class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   fun missingKotlinParameterHandler(e: HttpMessageNotReadableException): ErrorResponse {
-    val causedBy = e.cause
-    return if (causedBy is MissingKotlinParameterException) {
-      ErrorResponse("MISSING_PARAMETER",
-          "Required parameter: ${causedBy.parameter.name} (${causedBy.parameter.type}) is missing or null",
-          null)
-    } else if (causedBy is InvalidFormatException) {
-
-      ErrorResponse("INVALID_FORMAT",
+    return when (val causedBy = e.cause) {
+        is MissingKotlinParameterException -> {
+          ErrorResponse("MISSING_PARAMETER",
+            "Required parameter: ${causedBy.parameter.name} (${causedBy.parameter.type}) is missing or null",
+            null)
+        }
+      is InvalidFormatException -> {
+        ErrorResponse("INVALID_FORMAT",
           causedBy.localizedMessage,
           null)
-    } else {
-      log.error("Unhandled HttpMessageNotReadableException", e)
-      ErrorResponse("INVALID_REQUEST",
+      }
+      else -> {
+        log.error("Unhandled HttpMessageNotReadableException", e)
+        ErrorResponse("INVALID_REQUEST",
           "Could not parse the request",
           if (isLocal()) ExceptionUtils.getStackTrace(e) else null)
+      }
     }
   }
 

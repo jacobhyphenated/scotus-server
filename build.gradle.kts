@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "com.hyphenated"
-version = "0.10.0"
+version = "0.10.1"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
@@ -77,15 +77,6 @@ dependencies {
   "asciidoctor"("org.springframework.restdocs:spring-restdocs-asciidoctor")
 }
 
-// Removes plain jar from build files
-tasks.getByName<Jar>("jar") {
-  enabled = false
-}
-
-tasks.withType<Test> {
-  useJUnitPlatform()
-}
-
 tasks.withType<KotlinCompile> {
   kotlinOptions {
     freeCompilerArgs = listOf("-Xjsr305=strict")
@@ -93,7 +84,13 @@ tasks.withType<KotlinCompile> {
   }
 }
 
+// Removes plain jar from build files
+tasks.jar {
+  enabled = false
+}
+
 tasks.test {
+  useJUnitPlatform()
   outputs.dir(snippetsDir)
   finalizedBy(tasks.jacocoTestReport)
   testLogging {

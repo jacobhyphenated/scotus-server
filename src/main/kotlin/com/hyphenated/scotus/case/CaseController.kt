@@ -25,10 +25,6 @@ class CaseController(private val caseService: CaseService,
     return caseService.getCase(id)?.let { ResponseEntity.ok(it) } ?: ResponseEntity.notFound().build()
   }
 
-  @GetMapping("title/{title}")
-  @Deprecated(message="Search no longer works by only looking at case titles, use searchCases instead")
-  fun searchByCaseTitle(@PathVariable title: String) = searchService.searchCases(title)
-
   @GetMapping("search/{searchTerm}")
   fun searchCases(@PathVariable searchTerm: String) = searchService.searchCases(searchTerm)
 

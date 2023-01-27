@@ -11,11 +11,6 @@ import javax.validation.constraints.NotEmpty
 @RequestMapping("opinions")
 class OpinionController(private val opinionService: OpinionService) {
 
-  @GetMapping
-  fun getAllOpinions(): List<OpinionResponse> {
-    return opinionService.getAll()
-  }
-
   @GetMapping("case/{caseId}")
   fun getByCase(@PathVariable caseId: Long): List<OpinionResponse> {
     return opinionService.getByCaseId(caseId)

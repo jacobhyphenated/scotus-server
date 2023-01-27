@@ -66,13 +66,6 @@ class OpinionServiceTests {
   }
 
   @Test
-  fun testGetAll() {
-    whenever(opinionRepo.findAll()).thenReturn(opinions)
-    val result = opinionService.getAll()
-    assertThat(result).hasSize(3)
-  }
-
-  @Test
   fun testGetByCaseId() {
     whenever(opinionRepo.findByCaseId(100)).thenReturn(opinions)
     val result = opinionService.getByCaseId(100)

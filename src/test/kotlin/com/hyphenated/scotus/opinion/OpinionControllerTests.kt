@@ -75,41 +75,6 @@ class OpinionControllerTests {
               OpinionJusticeResponse(56, false, "Anton Scalia"))))
 
   @Test
-  fun testGetAllOpinions() {
-    val nantOpinion = OpinionResponse(600, 20, OpinionType.MAJORITY, "The cost of salaries of legal personnel are not recoverable as part of attorney's fees",
-        listOf(OpinionJusticeResponse(60, false, "Brett Kavanaugh"),
-            OpinionJusticeResponse(51, false, "Ruth Bader Ginsburg"),
-            OpinionJusticeResponse(52, false, "Elena Kagan"),
-            OpinionJusticeResponse(53, true, "Sonya Sotomayor"),
-            OpinionJusticeResponse(54, false, "Steven Breyer"),
-            OpinionJusticeResponse(55, false, "John Roberts"),
-            OpinionJusticeResponse(59, false, "Niel Gorsuch"),
-            OpinionJusticeResponse(57, false, "Clerence Thomas"),
-            OpinionJusticeResponse(58, false, "Samuel Alito")
-        ))
-    val shularOpinion = OpinionResponse(601, 25, OpinionType.MAJORITY, "State level offense only has to match the description of criminality under ACCA.",
-        listOf(OpinionJusticeResponse(60, false, "Brett Kavanaugh"),
-            OpinionJusticeResponse(51, true, "Ruth Bader Ginsburg"),
-            OpinionJusticeResponse(52, false, "Elena Kagan"),
-            OpinionJusticeResponse(53, false, "Sonya Sotomayor"),
-            OpinionJusticeResponse(54, false, "Steven Breyer"),
-            OpinionJusticeResponse(55, false, "John Roberts"),
-            OpinionJusticeResponse(59, false, "Niel Gorsuch"),
-            OpinionJusticeResponse(57, false, "Clerence Thomas"),
-            OpinionJusticeResponse(58, false, "Samuel Alito")))
-    whenever(service.getAll()).thenReturn(listOf(*obergefellOpinions, nantOpinion, shularOpinion))
-
-    this.mockMvc.perform(get("/opinions"))
-        .andExpect(status().isOk)
-        .andExpect(jsonPath("$").value(hasSize<Any>(7)))
-        .andExpect(jsonPath("[0].id").value(500))
-        .andExpect(jsonPath("[0].justices").value(hasSize<Any>(5)))
-        .andDo(document("opinion/all", responseFields(
-            fieldWithPath("[]").description("An array with all of the opinions")
-        ).andWithPrefix("[].", *opinionResponseFields)))
-  }
-
-  @Test
   fun testGetOpinionsByCase() {
     whenever(service.getByCaseId(10)).thenReturn(obergefellOpinions.toList())
     this.mockMvc.perform(RestDocumentationRequestBuilders.get("/opinions/case/{caseId}", 10))

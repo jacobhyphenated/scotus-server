@@ -319,21 +319,6 @@ include::{snippets}/court/id/response-body.adoc[]
 Every case that SCOTUS rules on has opinions. These are legal justifications of the ruling.
 There can be multiple opinions in a single case as justices sometimes disagree, or agree for different reasons.
 
-=== Get All Opinions (Deprecated)
-Gets a list of every opinion delivered by the court. This is unlikely to be used.
-
-.curl request
-include::{snippets}/opinion/all/curl-request.adoc[]
-
-.request
-include::{snippets}/opinion/all/http-request.adoc[]
-
-.response fields
-include::{snippets}/opinion/all/response-fields.adoc[]
-
-.response body
-include::{snippets}/opinion/all/response-body.adoc[]
-
 === Get Opinions by Case Id
 This gets all opinions associated with a specific case
 

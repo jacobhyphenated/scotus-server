@@ -19,11 +19,6 @@ class OpinionService(private val opinionRepo: OpinionRepo,
 ) {
 
   @Transactional
-  fun getAll(): List<OpinionResponse> {
-    return opinionRepo.findAll().map { it.toResponse() }
-  }
-
-  @Transactional
   fun getByCaseId(caseId: Long): List<OpinionResponse> {
     return opinionRepo.findByCaseId(caseId).map { it.toResponse() }
   }

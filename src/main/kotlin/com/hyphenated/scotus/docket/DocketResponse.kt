@@ -2,7 +2,7 @@ package com.hyphenated.scotus.docket
 
 import com.hyphenated.scotus.case.Case
 import com.hyphenated.scotus.court.Court
-import javax.persistence.*
+import jakarta.persistence.*
 
 class DocketCaseResponse (
     val docketId: Long,

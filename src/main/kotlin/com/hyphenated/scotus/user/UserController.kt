@@ -1,9 +1,9 @@
 package com.hyphenated.scotus.user
 
 import org.springframework.web.bind.annotation.*
-import javax.transaction.Transactional
-import javax.validation.Valid
-import javax.validation.constraints.NotEmpty
+import jakarta.transaction.Transactional
+import jakarta.validation.Valid
+import jakarta.validation.constraints.NotEmpty
 
 @RestController
 @RequestMapping("user")

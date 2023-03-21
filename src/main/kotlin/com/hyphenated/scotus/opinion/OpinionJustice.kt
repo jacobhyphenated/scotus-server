@@ -1,7 +1,7 @@
 package com.hyphenated.scotus.opinion
 
 import com.hyphenated.scotus.justice.Justice
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "decision_justice")

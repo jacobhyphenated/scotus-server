@@ -6,7 +6,7 @@ import com.hyphenated.scotus.docket.DocketRepo
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Service
-import javax.transaction.Transactional
+import jakarta.transaction.Transactional
 
 @Service
 class CaseTitleSearchService(private val caseRepo: CaseRepo,

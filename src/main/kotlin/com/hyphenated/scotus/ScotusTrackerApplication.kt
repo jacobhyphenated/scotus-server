@@ -47,7 +47,7 @@ class ScotusTrackerApplication {
 
     val case = caseRepo.save(Case(null, "People v Other People", listOf(), "Some people sue some other people", "AFFIRMED",
         LocalDate.of(2019, 11, 11), "November", LocalDate.of(2020, 1, 15), null,
-        "Judges decided to rule for people", null, t1, true, emptyList(), emptyList()))
+        "9-0","Judges decided to rule for people", t1, true, emptyList(), emptyList()))
     val decisionJustices = mutableListOf<OpinionJustice>()
     val decision = Opinion(null, case, OpinionType.MAJORITY, decisionJustices, "Important ruling on the issue")
     decisionJustices.add(OpinionJustice(null, true, decision, j1))

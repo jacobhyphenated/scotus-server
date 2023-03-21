@@ -6,14 +6,14 @@ import com.hyphenated.scotus.docket.CaseNotFoundException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
-import org.elasticsearch.common.unit.Fuzziness
-import org.elasticsearch.index.query.Operator
-import org.elasticsearch.index.query.QueryBuilders.*
+import org.opensearch.common.unit.Fuzziness
+import org.opensearch.data.client.orhlc.NativeSearchQueryBuilder
+import org.opensearch.index.query.Operator
+import org.opensearch.index.query.QueryBuilders.*
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Profile
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
@@ -25,7 +25,8 @@ import java.lang.Exception
 class ElasticSearchService(private val searchRepository: SearchRepository,
                            private val caseTitleSearchService: CaseTitleSearchService,
                            private val caseRepo: CaseRepo,
-                           private val client: ElasticsearchRestTemplate): SearchService {
+                           private val client: ElasticsearchOperations
+): SearchService {
 
   override fun searchCases(searchTerm: String): List<Case> {
     log.debug("Elastic Search: $searchTerm")

@@ -1,6 +1,6 @@
 package com.hyphenated.scotus.case
 
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "case_title")

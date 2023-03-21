@@ -5,7 +5,7 @@ import com.hyphenated.scotus.term.Term
 import com.hyphenated.scotus.docket.Docket
 import com.hyphenated.scotus.opinion.Opinion
 import java.time.LocalDate
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "scotus_case")

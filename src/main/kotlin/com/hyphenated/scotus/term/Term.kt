@@ -1,6 +1,6 @@
 package com.hyphenated.scotus.term
 
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 @Table

@@ -3,7 +3,7 @@ package com.hyphenated.scotus.search
 import org.springframework.data.elasticsearch.annotations.Document
 import org.springframework.data.elasticsearch.annotations.Field
 import org.springframework.data.elasticsearch.annotations.FieldType
-import javax.persistence.Id
+import jakarta.persistence.Id
 
 @Document(indexName = "scotus_case")
 class CaseSearchDocument (

@@ -16,7 +16,7 @@ Why does this even exist? I read Supreme Court opinions for fun. I used to keep 
 * **Kotlin** - One reason for doing this project was so that I could write something 100% in Kotlin. Includes **Kotlin Coroutines**.
 * **Spring Boot** - This is a REST API using Spring as a framework
 * **Spring Data JPA** - To handle the Database of SCOTUS cases
-* **Spring Data ElasticSearch** - Text based search
+* **Spring Data OpenSearch** - Text based search
 * **Spring RestDocs** - Auto generated API Documentation based on unit tests. If the endpoint gets out of sync with the documentation, the unit tests will fail.
 
 [API Documentation](https://scotus-api.jacobhyphenated.com/docs/index.html)
@@ -31,7 +31,7 @@ This mode is good for testing changes to the admin section where you may need to
 
 You need no other external dependencies to run the API in `local` mode.
 ### Dev
-Use the `dev` profile. This still runs in your local environment, but is designed to be more stable. You will need PostgreSQL installed on your device running on port 5432 (the default configuration). Create a database named `scotus` and a user with full access. The username and password should be provided as environment variables named: `SCOTUS_DB_USER` and `SCOTUS_DB_PASS`
+Use the `dev` profile. This still runs in your local environment, but is designed for stability and data persistence. You will need PostgreSQL installed on your device running on port 5432 (the default configuration). Create a database named `scotus` and a user with full access. The username and password should be provided as environment variables named: `SCOTUS_DB_USER` and `SCOTUS_DB_PASS`
 
 This project includes a SQL script to (optionally) create the databsae and populate it with an outdated set of production-like data. To run this database setup:
 * Create a database user named `scotus_local`
@@ -42,12 +42,13 @@ This project includes a SQL script to (optionally) create the databsae and popul
 ### Search
 Use of an ElasticSearch environment is controlled by the profile `search`.
 
-ElasticSearch is not necessary to run this application in your local environment, the app will fallback to a wildcard text database lookup if you run without the `search` profile.
+Because AWS forked ElasticSearch into OpenSearch, version differences in Spring Boot require different libraries to support each fork. Since this project was developed in AWS, it uses `spring-data-opensearch-starter` and the OpenSearch specific client.
 
-You must provide the following environment variables: `ELASTICSEARCH_USER`, `ELASTICSEARCH_PASS`, and `ELASTICSEARCH_URL`. Your ES environment must support SSL and basic authentication.
+ElasticSearch/OpenSearch is not necessary to run this application in your local environment, the app will fallback to a wildcard text database lookup if you run without the `search` profile.
 
+You must provide the following environment variables: `ELASTICSEARCH_USER`, `ELASTICSEARCH_PASS`, and `ELASTICSEARCH_URL`. Your OpenSearch server must support SSL and basic authentication.
 
-Note that you can provide multiple active profiles such as `dev,search`
+Note that you can provide multiple active profiles such as: `dev,search`
 
 ## License
 Copyright 2023 Jacob Kanipe-Illig

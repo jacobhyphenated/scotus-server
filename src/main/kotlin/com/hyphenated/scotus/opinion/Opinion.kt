@@ -1,7 +1,7 @@
 package com.hyphenated.scotus.opinion
 
 import com.hyphenated.scotus.case.Case
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Table
 @Entity

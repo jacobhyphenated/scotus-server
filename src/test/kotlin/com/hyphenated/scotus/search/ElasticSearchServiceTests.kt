@@ -18,8 +18,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery
+import org.opensearch.data.client.orhlc.NativeSearchQuery
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations
 import java.time.LocalDate
 
 @ExtendWith(MockitoExtension::class)
@@ -35,7 +35,7 @@ class ElasticSearchServiceTests {
   private lateinit var caseRepo: CaseRepo
 
   @Mock
-  private lateinit var client: ElasticsearchRestTemplate
+  private lateinit var client: ElasticsearchOperations
 
   @InjectMocks
   private lateinit var service: ElasticSearchService

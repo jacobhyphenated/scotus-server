@@ -5,7 +5,7 @@ import com.hyphenated.scotus.court.CourtRepo
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
-import javax.transaction.Transactional
+import jakarta.transaction.Transactional
 
 @Service
 class DocketService(private val docketRepo: DocketRepo,

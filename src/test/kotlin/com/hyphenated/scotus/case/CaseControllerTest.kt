@@ -165,28 +165,6 @@ class CaseControllerTest {
   }
 
   @Test
-  fun testSearchCasesByTitle() {
-    val case1 = Case(100, "Spy v Spy", listOf(), "SNL makes it to the supreme court", "RESOLVED",
-        LocalDate.of(2019, 11,25), "November", LocalDate.of(2020,1,10), null, "5-4",
-        "It was a close one, a lot of back and forth", Term(50, "2019-2020", "OT2019"), false, emptyList(), emptyList())
-    val cases = listOf(case1)
-
-    whenever(searchService.searchCases("spy")).thenReturn(cases)
-
-    this.mockMvc.perform(RestDocumentationRequestBuilders.get("/cases/title/{title}", "spy"))
-        .andExpect(status().isOk)
-        .andExpect(jsonPath("$", hasSize<Any>(1)))
-        .andExpect(jsonPath("$[0].result", `is`("5-4")))
-        .andDo(document("case/title",
-            preprocessResponse(prettyPrint()),
-            pathParameters(parameterWithName("title").description("Title of the case to search for, case insensitive, must match some part of the title. The search text may match the case title, or the title of any docket linked to the case.")),
-            responseFields(
-                fieldWithPath("[]").description("A list of cases where the case title or docket title match the search title")
-            ).andWithPrefix("[].", *caseFields)
-        ))
-  }
-
-  @Test
   fun testSearchCases() {
     val case1 = Case(100, "Spy v Spy", listOf(),"SNL makes it to the supreme court", "RESOLVED",
         LocalDate.of(2019, 11,25), "November", LocalDate.of(2020,1,10), null, "5-4",

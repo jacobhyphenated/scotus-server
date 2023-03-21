@@ -5,8 +5,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
-import javax.transaction.Transactional
-import javax.validation.Valid
+import jakarta.transaction.Transactional
+import jakarta.validation.Valid
 
 @RestController
 @RequestMapping("justices")

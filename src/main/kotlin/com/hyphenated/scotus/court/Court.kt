@@ -1,7 +1,7 @@
 package com.hyphenated.scotus.court
 
-import javax.persistence.*
-import javax.validation.constraints.NotEmpty
+import jakarta.persistence.*
+import jakarta.validation.constraints.NotEmpty
 
 @Entity
 @Table

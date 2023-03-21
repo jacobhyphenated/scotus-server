@@ -2,7 +2,6 @@ package com.hyphenated.scotus.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -13,14 +12,15 @@ import org.springframework.security.web.access.channel.ChannelProcessingFilter
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.filter.CorsFilter
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
-import javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true)
 class SecurityConfig() {
 
   @Bean
@@ -46,12 +46,12 @@ class SecurityConfig() {
   @Bean
   fun configureSecurityChain(http: HttpSecurity): SecurityFilterChain {
     http
-        .authorizeRequests()
+        .authorizeHttpRequests()
           // Add path specific authorizations to restrict
-          .mvcMatchers("/docs/admin.html").hasRole("ADMIN")
-          .mvcMatchers("/actuator/health").permitAll()
-          .mvcMatchers("/actuator", "/actuator/**").hasRole("ADMIN")
-          .antMatchers("/h2-console", "/h2-console/**").hasRole("ADMIN")
+          .requestMatchers("/docs/admin.html").hasRole("ADMIN")
+          .requestMatchers("/actuator/health").permitAll()
+          .requestMatchers("/actuator", "/actuator/**").hasRole("ADMIN")
+          .requestMatchers("/h2-console", "/h2-console/**").hasRole("ADMIN")
           .anyRequest().permitAll()
           .and()
         .httpBasic()

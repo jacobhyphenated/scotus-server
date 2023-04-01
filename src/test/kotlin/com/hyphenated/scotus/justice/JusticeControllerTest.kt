@@ -40,26 +40,28 @@ class JusticeControllerTest {
         fieldWithPath("name").description("The name of the Justice"),
         fieldWithPath("dateConfirmed").description("The date the justice was confirmed to the Supreme Court (yyyy-MM-dd)"),
         fieldWithPath("birthday").description("The date the justice was born (yyyy-MM-dd)"),
-        fieldWithPath("dateRetired").optional().type(JsonFieldType.STRING).description("The date the justice retired (can be null) (yyyy-MM-dd)"))
+        fieldWithPath("dateRetired").optional().type(JsonFieldType.STRING).description("The date the justice retired (can be null) (yyyy-MM-dd)"),
+        fieldWithPath("party").description("The party in power who appointed the justice")
+    )
 
   }
 
   private val activeJustices = arrayOf(
-      Justice(1, "John Roberts", LocalDate.of(2005, 11, 29), LocalDate.of(1954, 10, 1), null),
-      Justice(2, "Clarence Thomas", LocalDate.of(1991, 10, 23), LocalDate.of(1948, 8, 1), null),
-      Justice(3, "Stephen Breyer", LocalDate.of(1994, 8, 3), LocalDate.of(1938, 4, 1), null),
-      Justice(4, "Ruth Bader Ginsburg", LocalDate.of(1993, 8, 10), LocalDate.of(1943, 2, 1), null),
-      Justice(5, "Sonya Sotomayor", LocalDate.of(2009, 8, 8), LocalDate.of(1954, 1, 1), null),
-      Justice(6, "Elena Kagan", LocalDate.of(2010, 8, 7), LocalDate.of(1960, 5, 1), null),
-      Justice(7, "Samuel Alito", LocalDate.of(2006, 1, 31), LocalDate.of(1950, 10, 1), null),
-      Justice(8, "Neil Gorsuch", LocalDate.of(2017, 10, 10), LocalDate.of(1967, 12, 1), null),
-      Justice(9, "Brett Kavanaugh", LocalDate.of(2018, 10, 6), LocalDate.of(1965, 11, 1), null)
+      Justice(1, "John Roberts", LocalDate.of(2005, 11, 29), LocalDate.of(1954, 10, 1), null, "R"),
+      Justice(2, "Clarence Thomas", LocalDate.of(1991, 10, 23), LocalDate.of(1948, 8, 1), null, "R"),
+      Justice(3, "Stephen Breyer", LocalDate.of(1994, 8, 3), LocalDate.of(1938, 4, 1), null, "D"),
+      Justice(4, "Ruth Bader Ginsburg", LocalDate.of(1993, 8, 10), LocalDate.of(1943, 2, 1), null, "D"),
+      Justice(5, "Sonya Sotomayor", LocalDate.of(2009, 8, 8), LocalDate.of(1954, 1, 1), null, "D"),
+      Justice(6, "Elena Kagan", LocalDate.of(2010, 8, 7), LocalDate.of(1960, 5, 1), null, "D"),
+      Justice(7, "Samuel Alito", LocalDate.of(2006, 1, 31), LocalDate.of(1950, 10, 1), null, "R"),
+      Justice(8, "Neil Gorsuch", LocalDate.of(2017, 10, 10), LocalDate.of(1967, 12, 1), null, "R"),
+      Justice(9, "Brett Kavanaugh", LocalDate.of(2018, 10, 6), LocalDate.of(1965, 11, 1), null, "R")
   )
 
   private val otherJustices = arrayOf(
-      Justice(10, "William Rehnquist", LocalDate.of(1986, 9, 17), LocalDate.of(1924, 10, 1), LocalDate.of(2005, 9, 3)),
-      Justice(11, "Warren E. Burger", LocalDate.of(1969, 6, 9), LocalDate.of(1907, 10, 1), LocalDate.of(1986, 9, 26)),
-      Justice(12, "Earl Warren", LocalDate.of(1954, 3, 1), LocalDate.of(1891, 10, 1), LocalDate.of(1969, 6, 23))
+      Justice(10, "William Rehnquist", LocalDate.of(1986, 9, 17), LocalDate.of(1924, 10, 1), LocalDate.of(2005, 9, 3), "R"),
+      Justice(11, "Warren E. Burger", LocalDate.of(1969, 6, 9), LocalDate.of(1907, 10, 1), LocalDate.of(1986, 9, 26), "R"),
+      Justice(12, "Earl Warren", LocalDate.of(1954, 3, 1), LocalDate.of(1891, 10, 1), LocalDate.of(1969, 6, 23), "D")
   )
 
   @Test
@@ -129,11 +131,11 @@ class JusticeControllerTest {
 
   @Test
   fun testCreateJustice() {
-    val justiceString = "{\"name\":\"New Justice\",\"dateConfirmed\":\"2011-04-21\",\"birthday\":\"1969-10-10\"}"
+    val justiceString = "{\"name\":\"New Justice\",\"dateConfirmed\":\"2011-04-21\",\"birthday\":\"1969-10-10\",\"party\":\"D\"}"
 
     whenever(service.createJustice(any())).thenAnswer {
       val justice = it.arguments[0] as Justice
-      Justice(33, justice.name, justice.dateConfirmed, justice.birthday, justice.dateRetired)
+      Justice(33, justice.name, justice.dateConfirmed, justice.birthday, justice.dateRetired, justice.party)
     }
 
     this.mockMvc.perform(post("/justices")
@@ -152,7 +154,7 @@ class JusticeControllerTest {
 
   @Test
   fun testCreateJusticeNoName() {
-    val justiceString = "{\"name\":\"\",\"dateConfirmed\":\"2011-04-21\",\"birthday\":\"1969-10-10\"}"
+    val justiceString = "{\"name\":\"\",\"dateConfirmed\":\"2011-04-21\",\"birthday\":\"1969-10-10\",\"party\":\"D\"}"
     this.mockMvc.perform(post("/justices")
         .contentType(MediaType.APPLICATION_JSON)
         .content(justiceString))
@@ -175,7 +177,7 @@ class JusticeControllerTest {
   @Test
   fun testRetireJustice() {
     whenever(service.retireJustice(4, LocalDate.of(2021, 1, 21))).thenReturn(
-        Justice(4, "Ruth Bader Ginsburg", LocalDate.of(1993, 8, 10), LocalDate.of(1943, 2, 1),  LocalDate.of(2021, 1, 21))
+        Justice(4, "Ruth Bader Ginsburg", LocalDate.of(1993, 8, 10), LocalDate.of(1943, 2, 1),  LocalDate.of(2021, 1, 21), "D")
     )
 
     this.mockMvc.perform(RestDocumentationRequestBuilders.put("/justices/{justiceId}/retire", 4)

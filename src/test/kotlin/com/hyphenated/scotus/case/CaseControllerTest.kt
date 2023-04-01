@@ -419,8 +419,8 @@ class CaseControllerTest {
 
   @Test
   fun testTermSummary() {
-    val rgb = Justice(1, "Ruth Bader Ginsburg", LocalDate.of(1970,1,1), LocalDate.of(1970,1,1), null)
-    val roberts = Justice(2, "John Roberts", LocalDate.of(1970,1,1), LocalDate.of(1970,1,1), null)
+    val rgb = Justice(1, "Ruth Bader Ginsburg", LocalDate.of(1970,1,1), LocalDate.of(1970,1,1), null, "D")
+    val roberts = Justice(2, "John Roberts", LocalDate.of(1970,1,1), LocalDate.of(1970,1,1), null, "R")
     whenever(service.getTermSummary(3)).thenReturn(
         TermSummaryResponse(3, LocalDate.of(2019, 6, 30),
             listOf(

@@ -165,7 +165,8 @@ CREATE TABLE public.justice (
     birthday date,
     date_confirmed date,
     date_retired date,
-    name character varying(255)
+    name character varying(255),
+    party character varying(20)
 );
 
 
@@ -1373,19 +1374,19 @@ COPY public.docket (id, docket_number, overruled, ruling, status, title, case_id
 -- Data for Name: justice; Type: TABLE DATA; Schema: public; Owner: scotus_local
 --
 
-COPY public.justice (id, birthday, date_confirmed, date_retired, name) FROM stdin;
-2	1955-01-27	2005-09-29	\N	John Roberts
-3	1948-06-23	1991-10-23	\N	Clarence Thomas
-5	1938-08-15	1994-08-03	\N	Stephen Breyer
-6	1950-04-01	2006-01-31	\N	Samuel Alito
-7	1954-06-25	2009-08-09	\N	Sonia Sotomayor
-8	1960-04-28	2010-05-10	\N	Elena Kagan
-9	1967-08-29	2017-04-10	\N	Neil Gorsuch
-10	1965-02-12	2018-10-06	\N	Brett Kavanaugh
-11	1936-07-23	1988-02-18	2018-07-31	Anthony Kennedy
-12	1936-03-11	1986-09-26	2016-02-13	Antonin Scalia
-4	1933-03-15	1993-08-10	2020-09-18	Ruth Bader Ginsburg
-13	1972-01-28	2020-10-27	\N	Amy Coney Barrett
+COPY public.justice (id, birthday, date_confirmed, date_retired, name, party) FROM stdin;
+2	1955-01-27	2005-09-29	\N	John Roberts	R
+3	1948-06-23	1991-10-23	\N	Clarence Thomas	R
+5	1938-08-15	1994-08-03	\N	Stephen Breyer	D
+6	1950-04-01	2006-01-31	\N	Samuel Alito	R
+7	1954-06-25	2009-08-09	\N	Sonia Sotomayor	D
+8	1960-04-28	2010-05-10	\N	Elena Kagan	D
+9	1967-08-29	2017-04-10	\N	Neil Gorsuch	R
+10	1965-02-12	2018-10-06	\N	Brett Kavanaugh	R
+11	1936-07-23	1988-02-18	2018-07-31	Anthony Kennedy	R
+12	1936-03-11	1986-09-26	2016-02-13	Antonin Scalia	R
+4	1933-03-15	1993-08-10	2020-09-18	Ruth Bader Ginsburg	D
+13	1972-01-28	2020-10-27	\N	Amy Coney Barrett	R
 \.
 
 

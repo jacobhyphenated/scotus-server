@@ -64,9 +64,9 @@ class ElasticSearchServiceTests {
     val alternateTitles = listOf(AlternateCaseTitle(2,c, "mapping case v. testers"))
     val o1 = Opinion(10, c, OpinionType.MAJORITY, emptyList(), "Case mapping wins the day")
     val o2 = Opinion(11, c, OpinionType.DISSENT, emptyList(), "This mapping will never work")
-    val j1 = Justice(1, "J1", LocalDate.of(1950, 1, 1), LocalDate.of(1990, 1, 1), null)
-    val j2 = Justice(2, "J2", LocalDate.of(1950, 1, 1), LocalDate.of(1990, 1, 1), null)
-    val j3 = Justice(3, "J3", LocalDate.of(1950, 1, 1), LocalDate.of(1990, 1, 1), null)
+    val j1 = Justice(1, "J1", LocalDate.of(1950, 1, 1), LocalDate.of(1990, 1, 1), null, "D")
+    val j2 = Justice(2, "J2", LocalDate.of(1950, 1, 1), LocalDate.of(1990, 1, 1), null, "R")
+    val j3 = Justice(3, "J3", LocalDate.of(1950, 1, 1), LocalDate.of(1990, 1, 1), null, "R")
     val opinions = listOf(
       o1.copy(opinionJustices = listOf(OpinionJustice(50, true, o1, j1), OpinionJustice(51, false, o1, j2))),
       o2.copy(opinionJustices = listOf(OpinionJustice(51, true, o2, j3)))

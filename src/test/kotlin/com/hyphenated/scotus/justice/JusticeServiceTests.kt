@@ -22,9 +22,9 @@ class JusticeServiceTests {
   private lateinit var justiceService: JusticeService
 
   private val justices = listOf(
-    Justice(1, "test1", LocalDate.of(1950, 1, 1), LocalDate.of(1990, 1,1), null),
-    Justice(2, "test2", LocalDate.of(1952, 2, 2), LocalDate.of(1992, 2,2), null),
-    Justice(3, "test3", LocalDate.of(1953, 3, 3), LocalDate.of(1993, 3,3), LocalDate.of(2013, 3,3)),
+    Justice(1, "test1", LocalDate.of(1950, 1, 1), LocalDate.of(1990, 1,1), null, "D"),
+    Justice(2, "test2", LocalDate.of(1952, 2, 2), LocalDate.of(1992, 2,2), null, "R"),
+    Justice(3, "test3", LocalDate.of(1953, 3, 3), LocalDate.of(1993, 3,3), LocalDate.of(2013, 3,3), "D"),
   )
 
   @Test
@@ -64,15 +64,16 @@ class JusticeServiceTests {
       justice.copy(id = 10)
     }
 
-    val request = Justice(null, "test10", LocalDate.of(1960, 10, 10), LocalDate.of(2000, 10, 10), null)
+    val request = Justice(null, "test10", LocalDate.of(1960, 10, 10), LocalDate.of(2000, 10, 10), null, "D")
     val result = justiceService.createJustice(request)
     assertThat(result.id).isEqualTo(10)
     assertThat(result.name).isEqualTo("test10")
+    assertThat(result.party).isEqualTo("D")
   }
 
   @Test
   fun testCreateJustice_withId() {
-    val request = Justice(3, "test10", LocalDate.of(1960, 10, 10), LocalDate.of(2000, 10, 10), null)
+    val request = Justice(3, "test10", LocalDate.of(1960, 10, 10), LocalDate.of(2000, 10, 10), null, "R")
     assertThrows<JusticeCreateWithIdException> {
       justiceService.createJustice(request)
     }

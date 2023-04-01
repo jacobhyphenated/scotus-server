@@ -29,7 +29,7 @@ class JusticeService(private val justiceRepo: JusticeRepo) {
   @PreAuthorize("hasRole('ADMIN')")
   fun retireJustice(id: Long, retireDate: LocalDate): Justice? {
     val justice =  justiceRepo.findByIdOrNull(id) ?: return null
-    val updated = Justice(justice.id, justice.name, justice.dateConfirmed, justice.birthday, retireDate)
+    val updated = Justice(justice.id, justice.name, justice.dateConfirmed, justice.birthday, retireDate, justice.party)
     return justiceRepo.save(updated)
   }
 }

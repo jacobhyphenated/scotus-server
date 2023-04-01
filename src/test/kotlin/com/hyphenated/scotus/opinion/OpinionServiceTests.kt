@@ -43,10 +43,10 @@ class OpinionServiceTests {
     "7-2", "Apples cannot be successfully compared to oranges", Term(1, "2020", "ot2020"),
     false, listOf(), listOf())
   private val justices = listOf(
-    Justice(1, "test justice 1", LocalDate.of(1990, 1, 1), LocalDate.of(1950,1,1), null),
-    Justice(2, "test justice 2", LocalDate.of(1990, 1, 1), LocalDate.of(1950,1,1), null),
-    Justice(3, "test justice 3", LocalDate.of(1990, 1, 1), LocalDate.of(1950,1,1), null),
-    Justice(4, "test justice 4", LocalDate.of(1990, 1, 1), LocalDate.of(1950,1,1), null)
+    Justice(1, "test justice 1", LocalDate.of(1990, 1, 1), LocalDate.of(1950,1,1), null, "D"),
+    Justice(2, "test justice 2", LocalDate.of(1990, 1, 1), LocalDate.of(1950,1,1), null, "R"),
+    Justice(3, "test justice 3", LocalDate.of(1990, 1, 1), LocalDate.of(1950,1,1), null, "R"),
+    Justice(4, "test justice 4", LocalDate.of(1990, 1, 1), LocalDate.of(1950,1,1), null, "R")
   )
   private val oj1s = mutableListOf<OpinionJustice>()
   private val oj2s = mutableListOf<OpinionJustice>()

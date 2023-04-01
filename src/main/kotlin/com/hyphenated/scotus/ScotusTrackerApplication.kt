@@ -38,10 +38,10 @@ class ScotusTrackerApplication {
     courtRepo.save(Court(null, "Kansas", "Kansas Supreme Court"))
     val texas = courtRepo.save(Court(null, "Texas", "Texas Supreme Court"))
 
-    val j1 = justiceRepo.save(Justice(null,"RBG", LocalDate.of(1995, 5, 10), LocalDate.of(1950, 10, 10), null))
-    justiceRepo.save(Justice(null,"John Paul Stevens", LocalDate.of(1999, 11, 10), LocalDate.of(1950, 10, 10), LocalDate.of(2009, 3, 1)))
-    val j3 = justiceRepo.save(Justice(null,"Roberts", LocalDate.of(2005, 5, 10), LocalDate.of(1975, 10, 10), null))
-    justiceRepo.save(Justice(null,"Elena Kegan", LocalDate.of(2010, 5, 10), LocalDate.of(1971, 4, 20), null))
+    val j1 = justiceRepo.save(Justice(null,"RBG", LocalDate.of(1995, 5, 10), LocalDate.of(1950, 10, 10), null, "D"))
+    justiceRepo.save(Justice(null,"John Paul Stevens", LocalDate.of(1999, 11, 10), LocalDate.of(1950, 10, 10), LocalDate.of(2009, 3, 1), "R"))
+    val j3 = justiceRepo.save(Justice(null,"Roberts", LocalDate.of(2005, 5, 10), LocalDate.of(1975, 10, 10), null, "R"))
+    justiceRepo.save(Justice(null,"Elena Kegan", LocalDate.of(2010, 5, 10), LocalDate.of(1971, 4, 20), null, "D"))
 
     val t1 = termRepo.save(Term(null, "2019-2020", "OT2019"))
 

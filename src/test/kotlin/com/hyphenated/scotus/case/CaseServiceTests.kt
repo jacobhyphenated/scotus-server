@@ -425,9 +425,9 @@ class CaseServiceTests {
 
   private fun mockTestCases(): List<Case> {
     val datePlaceholder = LocalDate.of(2000, 1, 1)
-    val j1 = Justice(100, "Roberts", datePlaceholder, datePlaceholder, null)
-    val j2 = Justice(101, "Sotomayor", datePlaceholder, datePlaceholder, null)
-    val j3 = Justice(102, "Alito", datePlaceholder, datePlaceholder, null)
+    val j1 = Justice(100, "Roberts", datePlaceholder, datePlaceholder, null, "R")
+    val j2 = Justice(101, "Sotomayor", datePlaceholder, datePlaceholder, null, "D")
+    val j3 = Justice(102, "Alito", datePlaceholder, datePlaceholder, null, "R")
 
     val c1 = Court(500, "te01", "test court 1")
     val c2 = Court(501, "te02", "test court 2")

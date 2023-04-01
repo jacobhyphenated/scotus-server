@@ -22,6 +22,9 @@ data class Justice (
     val birthday: LocalDate,
 
     @Column(name = "date_retired", nullable = true)
-    val dateRetired: LocalDate?
+    val dateRetired: LocalDate?,
 
+    @get:NotEmpty
+    @Column
+    val party: String
 )

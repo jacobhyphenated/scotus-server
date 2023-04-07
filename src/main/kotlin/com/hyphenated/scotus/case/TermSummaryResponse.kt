@@ -9,7 +9,9 @@ class TermSummaryResponse (
     val termId: Long,
     val termEndDate: LocalDate?,
     val justiceSummary: List<TermJusticeSummary>,
-    val courtSummary: List<TermCourtSummary>
+    val courtSummary: List<TermCourtSummary>,
+    val unanimous: List<Case>,
+    val partySplit: List<Case>
 )
 
 class TermJusticeSummary (

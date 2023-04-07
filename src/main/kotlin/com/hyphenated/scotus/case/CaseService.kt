@@ -36,6 +36,8 @@ class CaseService(private val caseRepo: CaseRepo,
     }
     val justiceSummary = mutableListOf<TermJusticeSummary>()
     val courtSummary = mutableListOf<TermCourtSummary>()
+    val unanimousCases = mutableListOf<Case>()
+    val partySplitCases = mutableListOf<Case>()
     var lastCaseDate: LocalDate? = null
     val meritCases = termCases.filter { it.opinions.isNotEmpty() && it.argumentDate != null }
     meritCases.forEach {
@@ -44,8 +46,13 @@ class CaseService(private val caseRepo: CaseRepo,
       }
       this.evaluateOpinionAuthorSummary(it, justiceSummary)
       this.evaluateCourtSummary(it, courtSummary)
+      if (isUnanimous(it)) {
+        unanimousCases.add(it)
+      } else if (isSplitOnParty(it)) {
+        partySplitCases.add(it)
+      }
     }
-    return TermSummaryResponse(termId, lastCaseDate, justiceSummary, courtSummary)
+    return TermSummaryResponse(termId, lastCaseDate, justiceSummary, courtSummary, unanimousCases, partySplitCases)
   }
 
   @Transactional
@@ -131,13 +138,32 @@ class CaseService(private val caseRepo: CaseRepo,
     caseRepo.save(case.copy(dockets = newDocketList))
   }
 
+  fun isUnanimous(case: Case): Boolean {
+    return case.opinions.all { it.opinionType !in listOf(OpinionType.DISSENT, OpinionType.DISSENT_JUDGEMENT) }
+  }
+
+  fun isSplitOnParty(case: Case): Boolean {
+    // TODO: Per curium?
+    val justicePartyInMajority = case.opinions.filter { it.opinionType in MAJORITY_TYPES }
+      .flatMap { it.opinionJustices.map { oj -> oj.justice.party } }
+      .toSet()
+
+    val justicePartyInDissent = case.opinions.filter { it.opinionType in DISSENT_TYPES }
+      .flatMap { it.opinionJustices.map { oj -> oj.justice.party } }
+      .toSet()
+
+    return justicePartyInMajority.size == 1
+        && justicePartyInDissent.size == 1
+        && justicePartyInMajority.intersect(justicePartyInDissent).isEmpty()
+  }
+
   private fun evaluateOpinionAuthorSummary(case: Case, justiceSummary: MutableList<TermJusticeSummary>) {
     case.opinions.map {
       JusticeOpinionAuthorType(it.opinionJustices.first { oj -> oj.isAuthor }.justice, it.opinionType)
     }.toSet()
     .forEach { author -> retrieveJusticeSummary(justiceSummary, author.justice).incrementType(author.opinionType) }
 
-    case.opinions.filter { o ->  o.opinionType == OpinionType.MAJORITY || o.opinionType == OpinionType.CONCUR_JUDGEMENT || o.opinionType == OpinionType.PER_CURIUM || o.opinionType == OpinionType.CONCURRENCE }
+    case.opinions.filter { o ->  o.opinionType in MAJORITY_TYPES }
         .flatMap { o -> o.opinionJustices.map { oj -> oj.justice }}
         .toSet()
         .forEach { justice -> retrieveJusticeSummary(justiceSummary, justice).casesInMajority++ }
@@ -171,8 +197,12 @@ class CaseService(private val caseRepo: CaseRepo,
         }
   }
 
+
+
   companion object {
     private val log = LoggerFactory.getLogger(CaseService::class.java)
+    private val MAJORITY_TYPES = listOf(OpinionType.MAJORITY, OpinionType.CONCUR_JUDGEMENT, OpinionType.CONCURRENCE, OpinionType.PER_CURIUM)
+    private val DISSENT_TYPES =  listOf(OpinionType.DISSENT, OpinionType.DISSENT_JUDGEMENT)
   }
 }
 

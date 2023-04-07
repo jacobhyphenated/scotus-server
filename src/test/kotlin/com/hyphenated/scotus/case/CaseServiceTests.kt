@@ -428,6 +428,8 @@ class CaseServiceTests {
     val j1 = Justice(100, "Roberts", datePlaceholder, datePlaceholder, null, "R")
     val j2 = Justice(101, "Sotomayor", datePlaceholder, datePlaceholder, null, "D")
     val j3 = Justice(102, "Alito", datePlaceholder, datePlaceholder, null, "R")
+    val kbj = Justice(2, "Katanji Brown Jackson", datePlaceholder, datePlaceholder, null, "D")
+
 
     val c1 = Court(500, "te01", "test court 1")
     val c2 = Court(501, "te02", "test court 2")

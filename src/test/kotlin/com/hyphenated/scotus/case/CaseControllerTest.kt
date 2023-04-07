@@ -421,6 +421,20 @@ class CaseControllerTest {
   fun testTermSummary() {
     val rgb = Justice(1, "Ruth Bader Ginsburg", LocalDate.of(1970,1,1), LocalDate.of(1970,1,1), null, "D")
     val roberts = Justice(2, "John Roberts", LocalDate.of(1970,1,1), LocalDate.of(1970,1,1), null, "R")
+
+    val c1 = Case(102, "People v Mr. Peanut", listOf(),"Mr peanut was murdered and the court needs to decide why",
+      "RESOLVED", LocalDate.of(2020,2,2), "February", LocalDate.of(2020, 2,3),
+      "http://example.com/opinion.pdf","9-0", "Not justiciable",
+      Term(1, "2020-2021", "OT2020"), true, emptyList(), emptyList()
+    )
+
+    val c2 = Case(104, "Obergefell v. Hodges", emptyList(), "A state marriage license for a same sex couple should be recognized in all states",
+      "REVERSED", LocalDate.of(2015,4,28), "April", LocalDate.of(2015,6,26),
+      "5-4", "Right to marry is a fundamental right guaranteed by the Fourteenth Amendment. State laws prohibiting same sex marriage are invalidated",
+      "https://www.supremecourt.gov/opinions/14pdf/14-556_3204.pdf", Term(33, "2014-2015", "OT2014"),
+      true, emptyList(), emptyList()
+    )
+
     whenever(service.getTermSummary(3)).thenReturn(
         TermSummaryResponse(3, LocalDate.of(2019, 6, 30),
             listOf(
@@ -431,8 +445,11 @@ class CaseControllerTest {
                 TermCourtSummary(Court(1, "CA05", "Fifth Circuit Court of Appeals"), 5, 1, 4),
                 TermCourtSummary(Court(2, "CA04", "Fourth Circuit Court of Appeals"), 3, 3, 0),
                 TermCourtSummary(Court(3, "CA09", "Ninth Circuit Court of Appeals"), 7, 2, 5)
-            )
+            ),
+            listOf(c1),
+            listOf(c2)
         )
+
     )
 
     this.mockMvc.perform(RestDocumentationRequestBuilders.get("/cases/term/{termId}/summary", 3))
@@ -446,7 +463,9 @@ class CaseControllerTest {
                 fieldWithPath("termId").description("Id of the Term this summary is for"),
                 fieldWithPath("termEndDate").description("Date of the last decision handed down this term"),
                 fieldWithPath("justiceSummary[]").description("Summary statistics for each justice who participated in the term"),
-                fieldWithPath("courtSummary[]").description("Summary statistics for each court that had a case appealed before SCOTUS this term")
+                fieldWithPath("courtSummary[]").description("Summary statistics for each court that had a case appealed before SCOTUS this term"),
+                fieldWithPath("unanimous[]").description("Cases this term with a unanimous ruling"),
+                fieldWithPath("partySplit[]").description("Cases this term split along party lines"),
             ).andWithPrefix("justiceSummary[].",
                 fieldWithPath("justice").description("The justice the following summary information relates to"),
                 fieldWithPath("majorityAuthor").description("The number of cases for which this justice wrote the majority opinion"),
@@ -464,6 +483,8 @@ class CaseControllerTest {
                 fieldWithPath("affirmed").description("The number of cases that SCOTUS affirmed"),
                 fieldWithPath("reversedRemanded").description("The number of cases that SCOTUS overturned, either by reversing or by remanding for further orders")
             ).andWithPrefix("courtSummary[].court.", *CourtControllerTests.commonCourtFields)
+              .andWithPrefix("unanimous[].", *caseFields)
+              .andWithPrefix("partySplit[]", *caseFields)
         ))
   }
 

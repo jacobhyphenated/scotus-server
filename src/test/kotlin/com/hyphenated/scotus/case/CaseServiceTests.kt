@@ -10,6 +10,8 @@ import com.hyphenated.scotus.opinion.OpinionJustice
 import com.hyphenated.scotus.opinion.OpinionType
 import com.nhaarman.mockitokotlin2.*
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.within
+import org.assertj.core.data.Offset
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
@@ -421,6 +423,18 @@ class CaseServiceTests {
     assertThat(j3.dissentAuthor).isEqualTo(1)
     assertThat(j3.dissentJudgementAuthor).isEqualTo(0)
 
+    val justiceAgreement = result.justiceAgreement
+    val j1Map = justiceAgreement.first { it.justiceId == 100L }
+    assertThat(j1Map.agreementMap[101L]).isEqualTo(0.5f)
+    assertThat(j1Map.agreementMap[102L]).isNull()
+
+    val j2Map = justiceAgreement.first { it.justiceId == 101L }
+    assertThat(j2Map.agreementMap[100L]).isEqualTo(0.5f)
+    assertThat(j2Map.agreementMap[102L]).isEqualTo(0.5f)
+
+    val j3Map = justiceAgreement.first { it.justiceId == 102L }
+    assertThat(j3Map.agreementMap[100L]).isNull()
+    assertThat(j3Map.agreementMap[101L]).isCloseTo(0.333f, Offset.offset(0.01f))
   }
 
   private fun mockTestCases(): List<Case> {
@@ -428,8 +442,6 @@ class CaseServiceTests {
     val j1 = Justice(100, "Roberts", datePlaceholder, datePlaceholder, null, "R")
     val j2 = Justice(101, "Sotomayor", datePlaceholder, datePlaceholder, null, "D")
     val j3 = Justice(102, "Alito", datePlaceholder, datePlaceholder, null, "R")
-    val kbj = Justice(2, "Katanji Brown Jackson", datePlaceholder, datePlaceholder, null, "D")
-
 
     val c1 = Court(500, "te01", "test court 1")
     val c2 = Court(501, "te02", "test court 2")

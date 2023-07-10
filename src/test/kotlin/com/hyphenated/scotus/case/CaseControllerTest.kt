@@ -435,6 +435,11 @@ class CaseControllerTest {
       true, emptyList(), emptyList()
     )
 
+    val justiceAgreement = listOf(
+      JusticeAgreementResponse(1, mapOf(1L to 1.0f, 2L to 0.5f)),
+      JusticeAgreementResponse(2, mapOf(1L to 0.5f, 2L to 1.0f))
+    )
+
     whenever(service.getTermSummary(3)).thenReturn(
         TermSummaryResponse(3, LocalDate.of(2019, 6, 30),
             listOf(
@@ -446,10 +451,10 @@ class CaseControllerTest {
                 TermCourtSummary(Court(2, "CA04", "Fourth Circuit Court of Appeals"), 3, 3, 0),
                 TermCourtSummary(Court(3, "CA09", "Ninth Circuit Court of Appeals"), 7, 2, 5)
             ),
+            justiceAgreement,
             listOf(c1),
             listOf(c2)
         )
-
     )
 
     this.mockMvc.perform(RestDocumentationRequestBuilders.get("/cases/term/{termId}/summary", 3))
@@ -483,8 +488,12 @@ class CaseControllerTest {
                 fieldWithPath("affirmed").description("The number of cases that SCOTUS affirmed"),
                 fieldWithPath("reversedRemanded").description("The number of cases that SCOTUS overturned, either by reversing or by remanding for further orders")
             ).andWithPrefix("courtSummary[].court.", *CourtControllerTests.commonCourtFields)
-              .andWithPrefix("unanimous[].", *caseFields)
-              .andWithPrefix("partySplit[]", *caseFields)
+            .andWithPrefix("justiceAgreement[].",
+                fieldWithPath("justiceId").description("The ID of the Justice to be compared with the the other justices"),
+                subsectionWithPath("agreementMap").description("A map of the justice ID being compared to the percentage of opinions the two justices both joined, represented by a decimal number")
+            )
+            .andWithPrefix("unanimous[].", *caseFields)
+            .andWithPrefix("partySplit[]", *caseFields)
         ))
   }
 

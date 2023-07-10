@@ -38,6 +38,7 @@ class CaseService(private val caseRepo: CaseRepo,
     val courtSummary = mutableListOf<TermCourtSummary>()
     val unanimousCases = mutableListOf<Case>()
     val partySplitCases = mutableListOf<Case>()
+    val justiceAgreementMap = mutableListOf<JusticeAgreementMap>()
     var lastCaseDate: LocalDate? = null
     val meritCases = termCases.filter { it.opinions.isNotEmpty() && it.argumentDate != null }
     meritCases.forEach {
@@ -52,7 +53,10 @@ class CaseService(private val caseRepo: CaseRepo,
         partySplitCases.add(it)
       }
     }
-    return TermSummaryResponse(termId, lastCaseDate, justiceSummary, courtSummary, unanimousCases, partySplitCases)
+    justiceSummary.mapNotNull { j -> j.justice.id }
+      .forEach{ justiceId -> justiceAgreementMap.add(JusticeAgreementMap(justiceId)) }
+    meritCases.forEach { this.evaluateJusticeAgreement(it, justiceAgreementMap) }
+    return TermSummaryResponse(termId, lastCaseDate, justiceSummary, courtSummary, justiceAgreementMap.map { it.toResponse() }, unanimousCases, partySplitCases)
   }
 
   @Transactional
@@ -197,7 +201,11 @@ class CaseService(private val caseRepo: CaseRepo,
         }
   }
 
-
+  private fun evaluateJusticeAgreement(case: Case, justiceAgreementMap: MutableList<JusticeAgreementMap>) {
+    case.opinions.forEach { opinion ->
+      justiceAgreementMap.forEach { it.countAgreementFromOpinion(opinion) }
+    }
+  }
 
   companion object {
     private val log = LoggerFactory.getLogger(CaseService::class.java)

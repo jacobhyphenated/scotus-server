@@ -10,7 +10,6 @@ import com.hyphenated.scotus.opinion.OpinionJustice
 import com.hyphenated.scotus.opinion.OpinionType
 import com.nhaarman.mockitokotlin2.*
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.within
 import org.assertj.core.data.Offset
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -425,16 +424,22 @@ class CaseServiceTests {
 
     val justiceAgreement = result.justiceAgreement
     val j1Map = justiceAgreement.first { it.justiceId == 100L }
-    assertThat(j1Map.agreementMap[101L]).isEqualTo(0.5f)
-    assertThat(j1Map.agreementMap[102L]).isNull()
+    assertThat(j1Map.opinionAgreementMap[101L]).isEqualTo(0.5f)
+    assertThat(j1Map.opinionAgreementMap[102L]).isNull()
+    assertThat(j1Map.caseAgreementMap[101L]).isEqualTo(0.5f)
+    assertThat(j1Map.caseAgreementMap[102L]).isNull()
 
     val j2Map = justiceAgreement.first { it.justiceId == 101L }
-    assertThat(j2Map.agreementMap[100L]).isEqualTo(0.5f)
-    assertThat(j2Map.agreementMap[102L]).isEqualTo(0.5f)
+    assertThat(j2Map.opinionAgreementMap[100L]).isEqualTo(0.5f)
+    assertThat(j2Map.opinionAgreementMap[102L]).isEqualTo(0.5f)
+    assertThat(j2Map.caseAgreementMap[100L]).isEqualTo(0.5f)
+    assertThat(j2Map.caseAgreementMap[102L]).isEqualTo(0.5f)
 
     val j3Map = justiceAgreement.first { it.justiceId == 102L }
-    assertThat(j3Map.agreementMap[100L]).isNull()
-    assertThat(j3Map.agreementMap[101L]).isCloseTo(0.333f, Offset.offset(0.01f))
+    assertThat(j3Map.opinionAgreementMap[100L]).isNull()
+    assertThat(j3Map.opinionAgreementMap[101L]).isCloseTo(0.333f, Offset.offset(0.01f))
+    assertThat(j3Map.caseAgreementMap[100L]).isNull()
+    assertThat(j3Map.caseAgreementMap[101L]).isEqualTo(0.5f)
   }
 
   private fun mockTestCases(): List<Case> {

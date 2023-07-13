@@ -436,8 +436,8 @@ class CaseControllerTest {
     )
 
     val justiceAgreement = listOf(
-      JusticeAgreementResponse(1, mapOf(1L to 1.0f, 2L to 0.5f)),
-      JusticeAgreementResponse(2, mapOf(1L to 0.5f, 2L to 1.0f))
+      JusticeAgreementResponse(1, mapOf(1L to 1.0f, 2L to 0.5f), mapOf(1L to 1.0f, 2L to 0.5f)),
+      JusticeAgreementResponse(2, mapOf(1L to 0.5f, 2L to 1.0f), mapOf(1L to 1.0f, 2L to 0.5f))
     )
 
     whenever(service.getTermSummary(3)).thenReturn(
@@ -490,7 +490,8 @@ class CaseControllerTest {
             ).andWithPrefix("courtSummary[].court.", *CourtControllerTests.commonCourtFields)
             .andWithPrefix("justiceAgreement[].",
                 fieldWithPath("justiceId").description("The ID of the Justice to be compared with the the other justices"),
-                subsectionWithPath("agreementMap").description("A map of the justice ID being compared to the percentage of opinions the two justices both joined, represented by a decimal number")
+                subsectionWithPath("opinionAgreementMap").description("A map of the justice ID being compared to the percentage of opinions the two justices both joined, represented by a decimal number"),
+                subsectionWithPath("caseAgreementMap").description("A map of the justice ID being compared to the percentage of cases the two justices were aligned on, represented by a decimal number")
             )
             .andWithPrefix("unanimous[].", *caseFields)
             .andWithPrefix("partySplit[]", *caseFields)

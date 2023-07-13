@@ -4,6 +4,7 @@ import com.hyphenated.scotus.court.Court
 import com.hyphenated.scotus.justice.Justice
 import com.hyphenated.scotus.opinion.Opinion
 import com.hyphenated.scotus.opinion.OpinionType
+import org.slf4j.LoggerFactory
 import java.time.LocalDate
 
 class TermSummaryResponse (
@@ -52,30 +53,68 @@ class TermCourtSummary (
 
 class JusticeAgreementResponse(
   val justiceId: Long,
-  val agreementMap: Map<Long, Float>
+  val opinionAgreementMap: Map<Long, Float>,
+  val caseAgreementMap: Map<Long, Float>
 )
 
 class JusticeAgreementMap(
   private val justiceId: Long,
+  private var totalOpinions: Int = 0,
   private var totalCases: Int = 0,
-  private val agreementMap: MutableMap<Long, Int> = mutableMapOf()
+  private val opinionAgreementMap: MutableMap<Long, Int> = mutableMapOf(),
+  private val caseAgreementMap: MutableMap<Long, Int> = mutableMapOf()
 ) {
+
+  fun countAgreementFromCase(case: Case) {
+    val majorityJustices = case.opinions.filter { o ->  o.opinionType in CaseService.MAJORITY_TYPES }
+      .flatMap { o -> o.opinionJustices.map { oj -> oj.justice.id }}
+      .filterNotNull()
+      .toSet()
+
+    if (justiceId in majorityJustices) {
+      majorityJustices.forEach{ caseAgreementMap.incrementOrPut(it) }
+      totalCases++
+      return
+    }
+
+    val dissentingJustices = case.opinions.filter { o ->  o.opinionType in CaseService.DISSENT_TYPES }
+      .flatMap { o -> o.opinionJustices.map { oj -> oj.justice.id }}
+      .filterNotNull()
+      .toSet()
+
+    if (majorityJustices.size + dissentingJustices.size != 9) {
+      log.debug("Case ${case.id} does not have 9 total justices")
+    }
+
+    if (justiceId in dissentingJustices) {
+      dissentingJustices.forEach{ caseAgreementMap.incrementOrPut(it) }
+      totalCases++
+    }
+  }
 
   fun countAgreementFromOpinion(opinion: Opinion) {
     val justices = opinion.opinionJustices.mapNotNull { it.justice.id }
     if (justiceId in justices) {
-      totalCases++
-      justices.forEach { id ->
-        val agreementNum = agreementMap.getOrPut(id) { 0 }
-        agreementMap[id] = agreementNum + 1
-      }
+      totalOpinions++
+      justices.forEach { opinionAgreementMap.incrementOrPut(it) }
     }
   }
   fun toResponse(): JusticeAgreementResponse {
-    val resultMap = agreementMap.map { (justiceId, caseCount) ->
+    val opinionResultMap = opinionAgreementMap.map { (justiceId, caseCount) ->
+      justiceId to caseCount.toFloat() / totalOpinions
+    }.toMap()
+    val caseResultMap = caseAgreementMap.map { (justiceId, caseCount) ->
       justiceId to caseCount.toFloat() / totalCases
     }.toMap()
-    return JusticeAgreementResponse(justiceId, resultMap)
+    return JusticeAgreementResponse(justiceId, opinionResultMap, caseResultMap)
+  }
+
+  companion object {
+    private val log = LoggerFactory.getLogger(TermSummaryResponse::class.java)
   }
 }
 
+fun <T>MutableMap<T, Int>.incrementOrPut(key: T) {
+  val current = this.getOrPut(key) { 0 }
+  this[key] = current + 1
+}

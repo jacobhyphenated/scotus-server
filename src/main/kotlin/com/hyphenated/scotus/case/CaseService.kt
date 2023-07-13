@@ -205,12 +205,13 @@ class CaseService(private val caseRepo: CaseRepo,
     case.opinions.forEach { opinion ->
       justiceAgreementMap.forEach { it.countAgreementFromOpinion(opinion) }
     }
+    justiceAgreementMap.forEach { it.countAgreementFromCase(case) }
   }
 
   companion object {
     private val log = LoggerFactory.getLogger(CaseService::class.java)
-    private val MAJORITY_TYPES = listOf(OpinionType.MAJORITY, OpinionType.CONCUR_JUDGEMENT, OpinionType.CONCURRENCE, OpinionType.PER_CURIUM)
-    private val DISSENT_TYPES =  listOf(OpinionType.DISSENT, OpinionType.DISSENT_JUDGEMENT)
+    val MAJORITY_TYPES = listOf(OpinionType.MAJORITY, OpinionType.CONCUR_JUDGEMENT, OpinionType.CONCURRENCE, OpinionType.PER_CURIUM)
+    val DISSENT_TYPES =  listOf(OpinionType.DISSENT, OpinionType.DISSENT_JUDGEMENT)
   }
 }
 

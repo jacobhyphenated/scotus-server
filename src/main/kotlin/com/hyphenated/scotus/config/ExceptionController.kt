@@ -1,7 +1,7 @@
 package com.hyphenated.scotus.config
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
-import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
+import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.hyphenated.scotus.case.DocketAlreadyAssignedException
 import com.hyphenated.scotus.court.CourtDeleteConstraintException
 import com.hyphenated.scotus.docket.NoEntityIdException
@@ -49,15 +49,15 @@ class ExceptionController(private val env: Environment) {
 
   @ExceptionHandler(HttpMessageNotReadableException::class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  fun missingKotlinParameterHandler(e: HttpMessageNotReadableException): ErrorResponse {
+  fun httpMessageNotReadableHandler(e: HttpMessageNotReadableException): ErrorResponse {
     return when (val causedBy = e.cause) {
-        is MissingKotlinParameterException -> {
-          ErrorResponse("MISSING_PARAMETER",
-            "Required parameter: ${causedBy.parameter.name} (${causedBy.parameter.type}) is missing or null",
-            null)
-        }
       is InvalidFormatException -> {
         ErrorResponse("INVALID_FORMAT",
+          causedBy.localizedMessage,
+          null)
+      }
+      is MismatchedInputException -> {
+        ErrorResponse("MISSING_PARAMETER",
           causedBy.localizedMessage,
           null)
       }

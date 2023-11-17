@@ -4,16 +4,16 @@ plugins {
   java
   idea
   jacoco
-  id("org.springframework.boot") version "3.0.4"
-  id("io.spring.dependency-management") version "1.1.0"
+  id("org.springframework.boot") version "3.1.5"
+  id("io.spring.dependency-management") version "1.1.3"
   id("org.asciidoctor.jvm.convert") version "3.3.2"
-  kotlin("jvm") version "1.7.22"
-  kotlin("plugin.spring") version "1.7.22"
-  kotlin("plugin.jpa") version "1.7.22"
+  kotlin("jvm") version "1.8.22"
+  kotlin("plugin.spring") version "1.8.22"
+  kotlin("plugin.jpa") version "1.8.22"
 }
 
 group = "com.hyphenated"
-version = "0.13.0"
+version = "0.13.1"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
@@ -28,7 +28,7 @@ idea {
 }
 
 val snippetsDir = file("build/generated-snippets")
-val coroutinesVersion = "1.6.4"
+val coroutinesVersion = "1.7.1"
 
 // define "asciidoctor" as a custom dependency configuration
 // The latest asciidoctor converter plugin no longer defines this in a global scope
@@ -47,7 +47,7 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
   implementation("org.apache.commons:commons-lang3")
 
-  implementation("org.opensearch.client:spring-data-opensearch-starter:1.0.1")
+  implementation("org.opensearch.client:spring-data-opensearch-starter:1.2.1")
 
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutinesVersion}")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:${coroutinesVersion}")

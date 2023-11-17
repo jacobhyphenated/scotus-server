@@ -15,7 +15,10 @@ import org.springframework.web.filter.CorsFilter
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED
+import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
+import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector
 
 
 @Configuration
@@ -44,32 +47,35 @@ class SecurityConfig() {
   }
 
   @Bean
-  fun configureSecurityChain(http: HttpSecurity): SecurityFilterChain {
+  fun mvc(introspector: HandlerMappingIntrospector): MvcRequestMatcher.Builder {
+    return MvcRequestMatcher.Builder(introspector)
+  }
+
+    @Bean
+  fun configureSecurityChain(http: HttpSecurity, mvc: MvcRequestMatcher.Builder ): SecurityFilterChain {
     http
-        .authorizeHttpRequests()
-          // Add path specific authorizations to restrict
-          .requestMatchers("/docs/admin.html").hasRole("ADMIN")
-          .requestMatchers("/actuator/health").permitAll()
-          .requestMatchers("/actuator", "/actuator/**").hasRole("ADMIN")
-          .requestMatchers("/h2-console", "/h2-console/**").hasRole("ADMIN")
-          .anyRequest().permitAll()
-          .and()
-        .httpBasic()
-          .and()
+        .authorizeHttpRequests { authorize ->
+          authorize
+            .requestMatchers(mvc.pattern("/docs/admin.html")).hasRole("ADMIN")
+            .requestMatchers(mvc.pattern("/actuator/health")).permitAll()
+            .requestMatchers(mvc.pattern("/actuator"), mvc.pattern("/actuator/**")).hasRole("ADMIN")
+            .requestMatchers(mvc.pattern("/h2-console"), mvc.pattern("/h2-console/**")).hasRole("ADMIN")
+            .anyRequest().permitAll()
+        }
+
+        .httpBasic(Customizer.withDefaults())
         .addFilterBefore(corsFilterBean(), ChannelProcessingFilter::class.java)
-        .exceptionHandling()
-          .authenticationEntryPoint(unauthorizedEntryPoint())
-          .and()
+        .exceptionHandling { it.authenticationEntryPoint(unauthorizedEntryPoint()) }
         // CSRF protection is not necessary because this service does not depend on session cookies.
         // Authenticated requests require a header or other user input that cannot be faked via CSRF.
-        .csrf().disable()
-        .headers()
-          .frameOptions().sameOrigin()
-          .and()
-        .sessionManagement()
-          .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-          .and()
-        .anonymous()
+        .csrf { it.disable() }
+        .headers { headers ->
+          headers.frameOptions { it.sameOrigin() }
+        }
+        .sessionManagement {
+          it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        }
+        .anonymous { }
     return http.build()
   }
 

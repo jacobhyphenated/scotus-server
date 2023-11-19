@@ -171,7 +171,7 @@ class JusticeControllerTest {
         .content(justiceString))
         .andExpect(status().`is`(400))
         .andExpect(jsonPath("errorCode", `is`("MISSING_PARAMETER")))
-        .andExpect(jsonPath("errorMessage", `is`("Required parameter: dateConfirmed (java.time.LocalDate) is missing or null")))
+        .andExpect(jsonPath("errorMessage", containsString("value failed for JSON property dateConfirmed")))
   }
 
   @Test

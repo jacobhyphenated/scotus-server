@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 
 @ControllerAdvice
 @RestController
@@ -79,6 +80,27 @@ class ExceptionController(private val env: Environment) {
             ?: e.message,
         null)
   }
+
+  @ExceptionHandler(MethodArgumentTypeMismatchException::class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  fun requestNotValidHandler(e: MethodArgumentTypeMismatchException): ErrorResponse {
+    return when (e.cause) {
+      is NumberFormatException -> {
+        ErrorResponse("INVALID_PARAMETER",
+          "${e.propertyName ?: "parameter"} must be a number",
+          null
+        )
+      }
+      else -> {
+        log.error("Unhandled MethodArgumentTypeMismatchException", e)
+        ErrorResponse("INVALID_PARAMETER",
+          e.localizedMessage,
+          if (isLocal()) ExceptionUtils.getStackTrace(e) else null
+        )
+      }
+    }
+  }
+
 
   @ExceptionHandler(CourtDeleteConstraintException::class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)

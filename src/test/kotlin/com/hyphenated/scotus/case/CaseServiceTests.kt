@@ -32,6 +32,9 @@ class CaseServiceTests {
   @Mock
   private lateinit var termRepo: TermRepo
 
+  @Mock
+  private lateinit var decisionLinkClient: CaseURLValidationClient
+
   @InjectMocks
   private lateinit var caseService: CaseService
 
@@ -72,6 +75,7 @@ class CaseServiceTests {
   fun testGetCase() {
     val testCase = mockTestCases()[0]
     whenever(caseRepo.findById(1)).thenReturn(Optional.of(testCase))
+    whenever(decisionLinkClient.getValidCaseLink(any())).thenReturn("archive.link.url")
 
     val result = caseService.getCase(1)
     assertThat(result).isNotNull
@@ -81,6 +85,7 @@ class CaseServiceTests {
     assertThat(result?.result).isEqualTo("7-2")
     assertThat(result?.important).isTrue
     assertThat(result?.status).isEqualTo("AFFIRMED")
+    assertThat(result?.decisionLink).isEqualTo("archive.link.url")
     assertThat(result?.term?.id).isEqualTo(1)
     assertThat(result?.opinions).hasSize(2)
     assertThat(result?.opinions!![0].opinionType).isEqualTo(OpinionType.MAJORITY)

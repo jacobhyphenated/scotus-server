@@ -18,6 +18,7 @@ import jakarta.transaction.Transactional
 @Service
 class CaseService(private val caseRepo: CaseRepo,
                   private val docketRepo: DocketRepo,
+                  private val decisionLinkClient: CaseURLValidationClient,
                   private val termRepo: TermRepo) {
 
   fun getAllCases(): List<Case> {
@@ -62,7 +63,10 @@ class CaseService(private val caseRepo: CaseRepo,
   @Transactional
   fun getCase(id: Long): CaseResponse? {
     log.debug("get case called with $id")
-    return caseRepo.findByIdOrNull(id)?.toResponse()
+    return caseRepo.findByIdOrNull(id)?.let {
+      val archiveDecisionLink = decisionLinkClient.getValidCaseLink(it)
+      it.copy(decisionLink = archiveDecisionLink).toResponse()
+    }
   }
 
   @Transactional
@@ -147,7 +151,7 @@ class CaseService(private val caseRepo: CaseRepo,
   }
 
   fun isSplitOnParty(case: Case): Boolean {
-    // TODO: Per curium?
+    // TODO: Per curium? currently included in majority types so possible to be included as a split on party case
     val justicePartyInMajority = case.opinions.filter { it.opinionType in MAJORITY_TYPES }
       .flatMap { it.opinionJustices.map { oj -> oj.justice.party } }
       .toSet()

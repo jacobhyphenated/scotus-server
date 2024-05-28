@@ -22,15 +22,21 @@ class CaseURLValidationClient(private val restTemplate: RestTemplate) {
       val requestUri = "https://archive.org/wayback/available?url=$decisionLink&timestamp=$archiveDate"
       val result = restTemplate.getForObject(requestUri, ArchiveResult::class.java)
       log.debug("Archive URL: ${result?.archivedSnapshot?.closest?.url}")
-      result?.archivedSnapshot?.closest?.url?.let {
-        // if the url is valid, then modify the url to include "if_" to use as an iframe only URL
-        val archivePart = it.indexOf("/http")
-        if (archivePart == -1) {
-          it
-        } else {
-          "${it.substring(0, archivePart)}if_${it.substring(archivePart)}"
-        }
-      } ?: decisionLink
+      try {
+        result?.archivedSnapshot?.closest?.url?.let {
+          // if the url is valid, then modify the url to include "if_" to use as an iframe only URL
+          val archivePart = it.indexOf("/http")
+          if (archivePart == -1) {
+            it
+          } else {
+            "${it.substring(0, archivePart)}if_${it.substring(archivePart)}"
+          }
+        } ?: decisionLink
+      }catch(e: Exception) {
+        log.error("Error fetching URL from archive.org", e)
+        decisionLink
+      }
+
     }
   }
 

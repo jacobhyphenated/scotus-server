@@ -51,7 +51,7 @@ You must provide the following environment variables: `ELASTICSEARCH_USER`, `ELA
 Note that you can provide multiple active profiles such as: `dev,search`
 
 ## License
-Copyright 2023 Jacob Kanipe-Illig
+Copyright 2024 Jacob Kanipe-Illig
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 

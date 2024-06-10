@@ -14,7 +14,9 @@ class TermSummaryResponse (
   val courtSummary: List<TermCourtSummary>,
   var justiceAgreement: List<JusticeAgreementResponse>,
   val unanimous: List<Case>,
-  val partySplit: List<Case>
+  val partySplit: List<Case>,
+  val averageDecisionDays: Int,
+  val medianDecisionDays: Int
 )
 
 class TermJusticeSummary (

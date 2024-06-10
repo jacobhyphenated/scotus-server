@@ -14,6 +14,8 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import jakarta.transaction.Transactional
+import java.time.Period
+import java.time.temporal.ChronoUnit
 
 @Service
 class CaseService(private val caseRepo: CaseRepo,
@@ -41,6 +43,7 @@ class CaseService(private val caseRepo: CaseRepo,
     val partySplitCases = mutableListOf<Case>()
     val justiceAgreementMap = mutableListOf<JusticeAgreementMap>()
     var lastCaseDate: LocalDate? = null
+    val decisionDays = mutableListOf<Int>()
     val meritCases = termCases.filter { it.opinions.isNotEmpty() && it.argumentDate != null }
     meritCases.forEach {
       if (it.decisionDate?.isAfter(lastCaseDate ?: LocalDate.MIN) == true) {
@@ -53,11 +56,26 @@ class CaseService(private val caseRepo: CaseRepo,
       } else if (isSplitOnParty(it)) {
         partySplitCases.add(it)
       }
+      // Merit cases should have a decision date. Catch and log if it doesn't
+      it.decisionDate?.let { decisionDate ->
+        val daysToDecision = ChronoUnit.DAYS.between(it.argumentDate, decisionDate).toInt()
+        decisionDays.add(daysToDecision)
+      } ?: log.warn("No decision date for ${it.case} (${it.id})")
     }
     justiceSummary.mapNotNull { j -> j.justice.id }
       .forEach{ justiceId -> justiceAgreementMap.add(JusticeAgreementMap(justiceId)) }
     meritCases.forEach { this.evaluateJusticeAgreement(it, justiceAgreementMap) }
-    return TermSummaryResponse(termId, lastCaseDate, justiceSummary, courtSummary, justiceAgreementMap.map { it.toResponse() }, unanimousCases, partySplitCases)
+    val averageDecisionDays = decisionDays.average().toInt()
+    val medianDecisionDays = decisionDays.sorted().let {
+      if (it.size % 2 == 0) {
+        (it[it.size / 2] + it[(it.size - 1) / 2]) / 2
+      }
+      else {
+        it[it.size / 2]
+      }
+    }
+    return TermSummaryResponse(termId, lastCaseDate, justiceSummary, courtSummary,
+      justiceAgreementMap.map { it.toResponse() }, unanimousCases, partySplitCases, averageDecisionDays, medianDecisionDays)
   }
 
   @Transactional
@@ -147,7 +165,7 @@ class CaseService(private val caseRepo: CaseRepo,
   }
 
   fun isUnanimous(case: Case): Boolean {
-    return case.opinions.all { it.opinionType !in listOf(OpinionType.DISSENT, OpinionType.DISSENT_JUDGEMENT) }
+    return case.opinions.all { it.opinionType !in DISSENT_TYPES }
   }
 
   fun isSplitOnParty(case: Case): Boolean {

@@ -453,7 +453,9 @@ class CaseControllerTest {
             ),
             justiceAgreement,
             listOf(c1),
-            listOf(c2)
+            listOf(c2),
+            110,
+            91
         )
     )
 
@@ -471,6 +473,8 @@ class CaseControllerTest {
                 fieldWithPath("courtSummary[]").description("Summary statistics for each court that had a case appealed before SCOTUS this term"),
                 fieldWithPath("unanimous[]").description("Cases this term with a unanimous ruling"),
                 fieldWithPath("partySplit[]").description("Cases this term split along party lines"),
+                fieldWithPath("averageDecisionDays").description("Average number of days between hearing arguments in the case and deciding the case"),
+                fieldWithPath("medianDecisionDays").description("Median number of days between hearing arguments in the case and deciding the case"),
             ).andWithPrefix("justiceSummary[].",
                 fieldWithPath("justice").description("The justice the following summary information relates to"),
                 fieldWithPath("majorityAuthor").description("The number of cases for which this justice wrote the majority opinion"),

@@ -445,6 +445,9 @@ class CaseServiceTests {
     assertThat(j3Map.opinionAgreementMap[101L]).isCloseTo(0.333f, Offset.offset(0.01f))
     assertThat(j3Map.caseAgreementMap[100L]).isNull()
     assertThat(j3Map.caseAgreementMap[101L]).isEqualTo(0.5f)
+
+    assertThat(result.averageDecisionDays).isEqualTo(245)
+    assertThat(result.medianDecisionDays).isEqualTo(245)
   }
 
   private fun mockTestCases(): List<Case> {

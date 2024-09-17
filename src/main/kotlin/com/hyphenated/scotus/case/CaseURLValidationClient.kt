@@ -9,27 +9,37 @@ import java.time.format.DateTimeFormatter
 @Service
 class CaseURLValidationClient(private val restTemplate: RestTemplate) {
 
+  // consider redis cache
+  // in memory cache is acceptable for now
+  private val cache: MutableMap<Long, String> = mutableMapOf()
+
   fun getValidCaseLink(case: Case): String? {
     if (case.decisionDate == null) {
       return case.decisionLink
     }
+    checkCache(case)?.let { return it }
     return case.decisionLink?.let { decisionLink ->
       log.debug("checking for archive link for $decisionLink")
       val archiveDate = case.decisionDate
         .plusDays(7)
         .format(DateTimeFormatter.ofPattern("yyyyMMdd"))
 
-      val requestUri = "https://archive.org/wayback/available?url=$decisionLink&timestamp=$archiveDate"
-      val result = restTemplate.getForObject(requestUri, ArchiveResult::class.java)
-      log.debug("Archive URL: ${result?.archivedSnapshot?.closest?.url}")
       try {
+        val requestUri = "https://archive.org/wayback/available?url=$decisionLink&timestamp=$archiveDate"
+        val result = restTemplate.getForObject(requestUri, ArchiveResult::class.java)
+        log.debug("Archive URL: ${result?.archivedSnapshot?.closest?.url}")
         result?.archivedSnapshot?.closest?.url?.let {
           // if the url is valid, then modify the url to include "if_" to use as an iframe only URL
           val archivePart = it.indexOf("/http")
           if (archivePart == -1) {
             it
           } else {
-            "${it.substring(0, archivePart)}if_${it.substring(archivePart)}"
+            val link = "${it.substring(0, archivePart)}if_${it.substring(archivePart)}"
+            log.debug("final archive link: $link")
+            if (case.id != null) {
+              cache[case.id] = link
+            }
+            link
           }
         } ?: decisionLink
       }catch(e: Exception) {
@@ -37,6 +47,12 @@ class CaseURLValidationClient(private val restTemplate: RestTemplate) {
         decisionLink
       }
 
+    }
+  }
+
+  fun checkCache(case: Case): String? {
+    return cache[case.id].also {
+      log.debug("Checking decision archive link cache: $it")
     }
   }
 

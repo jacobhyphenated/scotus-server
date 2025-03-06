@@ -45,9 +45,11 @@ class ElasticSearchServiceTests {
     whenever(client.search<CaseSearchDocument>(any<NativeSearchQuery>(), any(), any())).thenThrow(RuntimeException())
     whenever(caseTitleSearchService.searchCases("teststring")).thenReturn(listOf(
       Case(3, "a v. b", emptyList(), "", "ARGUED", null, null, null, null, null, null,
-        Term(1, "", ""), false, emptyList(), emptyList()),
+        Term(1, "", ""), false, emptyList(), emptyList(), emptyList()
+      ),
       Case(14, "1 v. 2", emptyList(), "", "ARGUED", null, null, null, null, null, null,
-        Term(1, "", ""), false, emptyList(), emptyList())
+        Term(1, "", ""), false, emptyList(), emptyList(), emptyList()
+      )
     ))
 
     val result = service.searchCases("teststring")
@@ -59,7 +61,7 @@ class ElasticSearchServiceTests {
     val c = Case(3, "test case v. junit", emptyList(), "testing the elasticsearch document map",
       "GRANTED", LocalDate.of(2000, 1, 15), "January",
       LocalDate.of(2000, 6, 30), null, "9-0", "Case is properly mapped",
-      Term(5, "2019-2020", "OT2019"), true, emptyList(), emptyList()
+      Term(5, "2019-2020", "OT2019"), true, emptyList(), emptyList(), emptyList()
     )
     val alternateTitles = listOf(AlternateCaseTitle(2,c, "mapping case v. testers"))
     val o1 = Opinion(10, c, OpinionType.MAJORITY, emptyList(), "Case mapping wins the day")

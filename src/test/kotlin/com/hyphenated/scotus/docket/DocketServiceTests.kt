@@ -36,7 +36,7 @@ class DocketServiceTests {
   private val case = Case(100, "New York v. California", listOf(), "East coast vs west coast showdown",
     "REMANDED", LocalDate.of(2019, 10, 1), "October", LocalDate.of(2020, 1, 5),
     null, "7-2", "Remanded for further arguments on what constitutes the definition of pizza",
-    Term(50, "2019-2020", "OT2019"), true, listOf(), listOf()
+    Term(50, "2019-2020", "OT2019"), true, listOf(), listOf(), listOf()
   )
   private val dockets = listOf(
     Docket(1, null, "ABC v. DEF", "01-222", lowerCourt, "2-1", null, "PENDING"),
@@ -174,7 +174,7 @@ class DocketServiceTests {
   fun testEditDocket_changeCase() {
     val case = Case(2, "California Pizza Kitchen v. Sbarros", listOf(),  "pizza showdown", "GRANTED",
       null, null, null, null, null, null, Term(50, "2019-2020", "OT2019"),
-      true, listOf(), listOf()
+      true, listOf(), listOf(), listOf()
     )
     whenever(docketRepo.findById(3)).thenReturn(Optional.of(dockets[2]))
     whenever(docketRepo.save<Docket>(any())).thenAnswer { it.arguments[0] }

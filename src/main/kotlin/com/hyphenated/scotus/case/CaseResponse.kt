@@ -5,6 +5,7 @@ import com.hyphenated.scotus.docket.DocketCaseResponse
 import com.hyphenated.scotus.docket.toCaseResponse
 import com.hyphenated.scotus.opinion.OpinionResponse
 import com.hyphenated.scotus.opinion.toResponse
+import com.hyphenated.scotus.tag.Tag
 import java.time.LocalDate
 
 class CaseResponse(
@@ -23,10 +24,11 @@ class CaseResponse(
     val term: Term,
     val important: Boolean,
     val opinions: List<OpinionResponse>,
-    val dockets: List<DocketCaseResponse>
+    val dockets: List<DocketCaseResponse>,
+    val tags: List<Tag>,
 )
 
 fun Case.toResponse(): CaseResponse {
   return CaseResponse(id!!, case, alternateTitles.map { it.title }, shortSummary, status, resultStatus, argumentDate, sitting, decisionDate,
-      result, decisionSummary, decisionLink, term, important, opinions.map { it.toResponse() }, dockets.map { it.toCaseResponse() })
+      result, decisionSummary, decisionLink, term, important, opinions.map { it.toResponse() }, dockets.map { it.toCaseResponse() }, tags.map { it })
 }

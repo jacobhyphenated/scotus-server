@@ -9,6 +9,7 @@ import com.hyphenated.scotus.docket.ObjectNotFoundException
 import com.hyphenated.scotus.justice.CreateWithIdException
 import com.hyphenated.scotus.opinion.MultipleOpinionAuthorException
 import com.hyphenated.scotus.opinion.NoOpinionAuthorException
+import com.hyphenated.scotus.tag.TagDeleteConstraintException
 import com.hyphenated.scotus.user.UsernameNotAvailable
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.slf4j.LoggerFactory
@@ -105,6 +106,12 @@ class ExceptionController(private val env: Environment) {
   @ExceptionHandler(CourtDeleteConstraintException::class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   fun deleteCourtConstraintHandler(e: CourtDeleteConstraintException): ErrorResponse {
+    return ErrorResponse("CONSTRAINT_VIOLATION", e.message, null)
+  }
+
+  @ExceptionHandler(TagDeleteConstraintException::class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  fun deleteTagConstraintHandler(e: TagDeleteConstraintException): ErrorResponse {
     return ErrorResponse("CONSTRAINT_VIOLATION", e.message, null)
   }
 

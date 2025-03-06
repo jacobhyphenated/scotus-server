@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.hyphenated.scotus.term.Term
 import com.hyphenated.scotus.docket.Docket
 import com.hyphenated.scotus.opinion.Opinion
+import com.hyphenated.scotus.tag.Tag
 import java.time.LocalDate
 import jakarta.persistence.*
 
@@ -60,7 +61,12 @@ data class Case (
 
     @get:JsonIgnore
     @OneToMany(mappedBy = "case", fetch = FetchType.LAZY)
-    val dockets: List<Docket>
+    val dockets: List<Docket>,
+
+    @get:JsonIgnore
+    @ManyToMany
+    @JoinTable(name = "case_tag")
+    val tags: List<Tag>
 ) {
     val status: String
         get() = resultStatus ?:

@@ -1,12 +1,10 @@
 package com.hyphenated.scotus.case
 
 import com.hyphenated.scotus.court.Court
-import com.hyphenated.scotus.docket.CaseNotFoundException
-import com.hyphenated.scotus.docket.DocketRepo
-import com.hyphenated.scotus.docket.NoDocketIdException
-import com.hyphenated.scotus.docket.NoTermIdException
+import com.hyphenated.scotus.docket.*
 import com.hyphenated.scotus.justice.Justice
 import com.hyphenated.scotus.opinion.OpinionType
+import com.hyphenated.scotus.tag.TagRepo
 import com.hyphenated.scotus.term.TermRepo
 import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull
@@ -14,14 +12,14 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import jakarta.transaction.Transactional
-import java.time.Period
 import java.time.temporal.ChronoUnit
 
 @Service
 class CaseService(private val caseRepo: CaseRepo,
                   private val docketRepo: DocketRepo,
                   private val decisionLinkClient: CaseURLValidationClient,
-                  private val termRepo: TermRepo) {
+                  private val termRepo: TermRepo,
+                  private val tagRepo: TagRepo) {
 
   fun getAllCases(): List<Case> {
     return caseRepo.findAll()
@@ -95,7 +93,8 @@ class CaseService(private val caseRepo: CaseRepo,
     val term = termRepo.findByIdOrNull(request.termId) ?: throw NoTermIdException(request.termId)
 
     var newCase = caseRepo.save(Case(null, request.case, listOf(), request.shortSummary, null, null,
-      null, null, null, null, null, term, request.important, emptyList(), dockets))
+      null, null, null, null, null, term, request.important, emptyList(), dockets, emptyList()
+    ))
     if (request.alternateTitles.isNotEmpty()) {
       val alternativeTitles = request.alternateTitles.map {
         AlternateCaseTitle(null, newCase, it)
@@ -111,6 +110,7 @@ class CaseService(private val caseRepo: CaseRepo,
   fun editCase(id: Long, request: PatchCaseRequest): CaseResponse? {
     val case = caseRepo.findByIdOrNull(id) ?: return null
     val term = request.termId?.let { termRepo.findByIdOrNull(it) }
+    val tags = request.tagIds?.map { tagRepo.findByIdOrNull(it) ?: throw NoTagIdException(it) }
     val editCase = Case(
         case.id,
         request.case ?: case.case,
@@ -126,7 +126,8 @@ class CaseService(private val caseRepo: CaseRepo,
         term ?: case.term,
         request.important ?: case.important,
         case.opinions,
-        case.dockets
+        case.dockets,
+        tags ?: case.tags,
     )
     return caseRepo.save(editCase).toResponse()
   }

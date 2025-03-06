@@ -41,7 +41,8 @@ class OpinionServiceTests {
   private val case = Case(100, "Apples v. Oranges", listOf(), "Judicial review of comparison techniques",
     "AFFIRMED", LocalDate.of(2020, 2,2), "February", LocalDate.of(2020, 6, 1), null,
     "7-2", "Apples cannot be successfully compared to oranges", Term(1, "2020", "ot2020"),
-    false, listOf(), listOf())
+    false, listOf(), listOf(), listOf()
+  )
   private val justices = listOf(
     Justice(1, "test justice 1", LocalDate.of(1990, 1, 1), LocalDate.of(1950,1,1), null, "D"),
     Justice(2, "test justice 2", LocalDate.of(1990, 1, 1), LocalDate.of(1950,1,1), null, "R"),

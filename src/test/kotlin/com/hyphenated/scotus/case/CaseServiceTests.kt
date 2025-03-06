@@ -8,6 +8,8 @@ import com.hyphenated.scotus.justice.Justice
 import com.hyphenated.scotus.opinion.Opinion
 import com.hyphenated.scotus.opinion.OpinionJustice
 import com.hyphenated.scotus.opinion.OpinionType
+import com.hyphenated.scotus.tag.Tag
+import com.hyphenated.scotus.tag.TagRepo
 import com.nhaarman.mockitokotlin2.*
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Offset
@@ -33,6 +35,9 @@ class CaseServiceTests {
   private lateinit var termRepo: TermRepo
 
   @Mock
+  private lateinit var tagRepo: TagRepo
+
+  @Mock
   private lateinit var decisionLinkClient: CaseURLValidationClient
 
   @InjectMocks
@@ -40,20 +45,25 @@ class CaseServiceTests {
 
   private val terms = listOf(Term(1, "2019", "OT2019"), Term(2, "2020", "OT2020"))
 
+  private val tags = listOf(
+    Tag(1, "t1", "tag1", emptyList()),
+    Tag(2, "t2", "tag2", emptyList())
+  )
+
   private val cases = listOf(
     Case(1, "Trump v. Vance", listOf(), "Can you criminally subpoena a sitting president?",
       "AFFIRMED", LocalDate.of(2019, 10, 1), "October", LocalDate.of(2020, 6, 30),
       "link.url", "7-2","No heightened standard for subpoenas exist for the president", terms[0], true,
-      listOf(), listOf()
+      listOf(), listOf(), listOf()
     ),
     Case(2, "McGirt v. Oklahoma", listOf(), "Is the area of eastern OK near Tulsa tribal land?", "REVERSED",
       LocalDate.of(2019, 11, 2), "November", LocalDate.of(2020, 6, 7), "url.com", "5-4",
       "The area is tribal land for the purposes of the major crimes act",  terms[0], true,
-      listOf(), listOf()
+      listOf(), listOf(), listOf(tags[0])
     ),
     Case(3, "PennEast Pipeline Co. v. New Jersey", listOf(), "Can private gas companies use eminent domain on state lands?",
       null, null, null, null, null, null,null, terms[1], false,
-      listOf(), listOf()
+      listOf(), listOf(), listOf()
     )
   )
 
@@ -177,7 +187,7 @@ class CaseServiceTests {
   @Test
   fun testEditCase_noId() {
     whenever(caseRepo.findById(any())).thenReturn(Optional.empty())
-    val request = PatchCaseRequest(null, null, null, null, null, null, null, null, null, null, null, null)
+    val request = PatchCaseRequest(null, null, null, null, null, null, null, null, null, null, null, null, null)
     val result = caseService.editCase(10, request)
     assertThat(result).isNull()
   }
@@ -187,7 +197,7 @@ class CaseServiceTests {
     whenever(caseRepo.findById(1)).thenReturn(Optional.of(cases[0]))
     whenever(caseRepo.save<Case>(any())).thenAnswer { it.arguments[0] }
     val request = PatchCaseRequest("Trump v. Vaaance", "Criminal subpoena power",
-      null, null, null, null, null, null, null, null,  null, null
+      null, null, null, null, null, null, null, null,  null, null, null
     )
     val result = caseService.editCase(1, request)
     assertThat(result).isNotNull
@@ -212,7 +222,7 @@ class CaseServiceTests {
     whenever(termRepo.findById(2)).thenReturn(Optional.of(terms[1]))
     whenever(caseRepo.save<Case>(any())).thenAnswer { it.arguments[0] }
     val request = PatchCaseRequest(null, null, "REMANDED", LocalDate.of(2019, 11, 30),
-      "November", null, "6-3", null, "updated.link",2, null, null
+      "November", null, "6-3", null, "updated.link",2, null, null, null
     )
     val result = caseService.editCase(1, request)
     assertThat(result).isNotNull
@@ -237,7 +247,7 @@ class CaseServiceTests {
     whenever(caseRepo.save<Case>(any())).thenAnswer { it.arguments[0] }
     val request = PatchCaseRequest(null, null, null, null, null,
       LocalDate.of(2020, 7, 10), null, "Not above the law", null,
-      null, false, listOf("Trump v. DA Vance")
+      null, false, listOf("Trump v. DA Vance"), null
     )
     val result = caseService.editCase(1, request)
     assertThat(result).isNotNull
@@ -255,6 +265,31 @@ class CaseServiceTests {
     assertThat(result?.important).isFalse
     assertThat(result?.alternateTitles).hasSize(1)
     assertThat(result?.alternateTitles!![0]).isEqualTo("Trump v. DA Vance")
+  }
+
+  @Test
+  fun testEditCase_invalidTag() {
+    whenever(tagRepo.findById(3)).thenReturn(Optional.empty())
+    whenever(caseRepo.findById(2)).thenReturn(Optional.of(cases[1]))
+    val request = PatchCaseRequest(null, null, null, null, null, null, null,
+      null, null, null, null, null, listOf(3)
+    )
+    assertThrows<NoTagIdException> { caseService.editCase(2, request) }
+  }
+
+  @Test
+  fun testEditCase_tags() {
+    whenever(tagRepo.findById(2)).thenReturn(Optional.of(tags[1]))
+    whenever(caseRepo.findById(2)).thenReturn(Optional.of(cases[1]))
+    whenever(caseRepo.save<Case>(any())).thenAnswer { it.arguments[0] }
+    val request = PatchCaseRequest(null, null, null, null, null, null, null,
+      null, null, null, null, null, listOf(2)
+    )
+    val result = caseService.editCase(2, request)
+    assertThat(result).isNotNull
+    assertThat(result?.id).isEqualTo(2)
+    assertThat(result?.tags).hasSize(1)
+    assertThat(result?.tags!![0].name).isEqualTo("t2")
   }
 
   @Test

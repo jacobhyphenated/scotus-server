@@ -110,5 +110,6 @@ data class PatchCaseRequest (
   val decisionLink: String?,
   val termId: Long?,
   val important: Boolean?,
-  val alternateTitles: List<String>?
+  val alternateTitles: List<String>?,
+  val tagIds: List<Long>?,
 )

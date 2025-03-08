@@ -354,3 +354,40 @@ include::{snippets}/opinion/id/response-fields.adoc[]
 
 .response body
 include::{snippets}/opinion/id/response-body.adoc[]
+
+== Tags
+Tags are associated with cases to denote cases with similar characteristics.
+Tags can be used to group like cases or as part of advanced searching.
+
+=== Get All Tags
+Get a list of all available tags
+
+.curl request
+include::{snippets}/tags/all/curl-request.adoc[]
+
+.request
+include::{snippets}/tags/all/http-request.adoc[]
+
+.response fields
+include::{snippets}/tags/all/response-fields.adoc[]
+
+.response body
+include::{snippets}/tags/all/response-body.adoc[]
+
+=== Get Tag Details
+Gets a specific tag and a list of all cases associated with the tag
+
+.curl request
+include::{snippets}/tags/details/curl-request.adoc[]
+
+.request
+include::{snippets}/tags/details/http-request.adoc[]
+
+.path parameters
+include::{snippets}/tags/details/path-parameters.adoc[]
+
+.response fields
+include::{snippets}/tags/details/response-fields.adoc[]
+
+.response body
+include::{snippets}/tags/details/response-body.adoc[]

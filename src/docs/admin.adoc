@@ -345,3 +345,60 @@ include::{snippets}/opinion/admin/delete/path-parameters.adoc[]
 
 .response
 include::{snippets}/opinion/admin/delete/http-response.adoc[]
+
+== Tags
+Admin endpoints for managing tags
+
+=== Create Tag
+Create a new tag
+
+.curl request
+include::{snippets}/tags/admin/create/curl-request.adoc[]
+
+.request
+include::{snippets}/tags/admin/create/http-request.adoc[]
+
+.request fields
+include::{snippets}/tags/admin/create/request-fields.adoc[]
+
+.response fields
+include::{snippets}/tags/admin/create/response-fields.adoc[]
+
+.response body
+include::{snippets}/tags/admin/create/response-body.adoc[]
+
+=== Edit Tag
+Edit a tag. The patch endpoing only modifies fields that are sent in the request. Null fields are not modified.
+
+.curl request
+include::{snippets}/tags/admin/edit/curl-request.adoc[]
+
+.request
+include::{snippets}/tags/admin/edit/http-request.adoc[]
+
+.path parameters
+include::{snippets}/tags/admin/edit/path-parameters.adoc[]
+
+.request fields
+include::{snippets}/tags/admin/edit/request-fields.adoc[]
+
+.response fields
+include::{snippets}/tags/admin/edit/response-fields.adoc[]
+
+.response body
+include::{snippets}/tags/admin/edit/response-body.adoc[]
+
+=== Delete Tag
+Deletes the tag. This will only work if no cases are associated with the tag
+
+.curl request
+include::{snippets}/tags/admin/delete/curl-request.adoc[]
+
+.request
+include::{snippets}/tags/admin/delete/http-request.adoc[]
+
+.path parameters
+include::{snippets}/tags/admin/delete/path-parameters.adoc[]
+
+.response
+include::{snippets}/tags/admin/delete/http-response.adoc[]

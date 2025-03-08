@@ -17,7 +17,7 @@ class TagService(private val tagRepo: TagRepo) {
   @Transactional
   fun getCasesForTag(tagId: Long): TagDetailResponse {
     val tag = tagRepo.findByIdOrNull(tagId) ?: throw TagNotFoundException(tagId)
-    return TagDetailResponse(tagId, tag.name, tag.description, tag.cases.map { it })
+    return tag.toDetailResponse()
   }
 
   @Transactional
@@ -50,3 +50,7 @@ class TagService(private val tagRepo: TagRepo) {
 }
 
 class TagDeleteConstraintException(id: Long): RuntimeException("Cannot delete Tag with id $id. Tag is currently associated with cases.")
+
+fun Tag.toDetailResponse(): TagDetailResponse {
+  return TagDetailResponse(id!!, name, description, cases.map { it } )
+}

@@ -64,7 +64,7 @@ class TagControllerTests {
       .andExpect(status().isOk)
       .andExpect(jsonPath("id").value(3))
       .andExpect(jsonPath("name").value("LGBTQ"))
-      .andDo(document("/tags/details",
+      .andDo(document("tags/details",
         preprocessResponse(prettyPrint()),
         pathParameters(
           parameterWithName("id").description("Id of the tag")
